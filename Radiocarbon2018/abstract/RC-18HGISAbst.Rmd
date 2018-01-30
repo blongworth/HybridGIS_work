@@ -1,0 +1,36 @@
+---
+title: "Data acquisition and analysis at NOSAMS"
+author:
+  - name: Brett E. Longworth
+    email: blongworth@whoi.edu
+    affiliation: Woods Hole Oceanographic Institution 
+    footnote: Corresponding Author
+  - name: Alan R. Gagnon
+    affiliation: Woods Hole Oceanographic Institution 
+  - name: Kalina Godispodinova
+    affiliation: Woods Hole Oceanographic Institution 
+  - name: Joshua Hlavenka
+    affiliation: Woods Hole Oceanographic Institution 
+  - name: Ann P. McNichol
+    affiliation: Woods Hole Oceanographic Institution 
+  - name: Mark L. Roberts 
+    affiliation: Woods Hole Oceanographic Institution 
+address:
+  - code: Woods Hole Oceanographic Institution 
+    address: WHOI/NOSAMS, Woods Hole, MA, 02543
+abstract: |
+
+Here we present progress on development of a hybrid sputter gas ion source and associated gas inlets. 
+
+We are focussing on two inlet technologies (compare and contrast) modified
+hardware from a vg stable isotope mass spectrometer and an open split.
+
+progress
+
+application
+
+goals
+
+
+keywords: ion source, gas ion source, inlet, accelerator mass
+spectrometry, radiocarbon output: rticles::elsevier_article ---

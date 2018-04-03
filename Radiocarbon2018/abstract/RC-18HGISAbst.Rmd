@@ -1,5 +1,5 @@
 ---
-title: "Data acquisition and analysis at NOSAMS"
+title: "Development of a Hybrid Gas Ion Source and Gas Inlets at NOSAMS"
 author:
   - name: Brett E. Longworth
     email: blongworth@whoi.edu
@@ -7,9 +7,11 @@ author:
     footnote: Corresponding Author
   - name: Alan R. Gagnon
     affiliation: Woods Hole Oceanographic Institution 
-  - name: Kalina Godispodinova
+  - name: Joshua R. Burton
     affiliation: Woods Hole Oceanographic Institution 
-  - name: Joshua Hlavenka
+  - name: Kalina D. Godispodinova
+    affiliation: Woods Hole Oceanographic Institution 
+  - name: Joshua D. Hlavenka
     affiliation: Woods Hole Oceanographic Institution 
   - name: Ann P. McNichol
     affiliation: Woods Hole Oceanographic Institution 
@@ -20,17 +22,12 @@ address:
     address: WHOI/NOSAMS, Woods Hole, MA, 02543
 abstract: |
 
-Here we present progress on development of a hybrid sputter gas ion source and associated gas inlets. 
-
-We are focussing on two inlet technologies (compare and contrast) modified
-hardware from a vg stable isotope mass spectrometer and an open split.
-
-progress
-
-application
-
-goals
-
-
-keywords: ion source, gas ion source, inlet, accelerator mass
-spectrometry, radiocarbon output: rticles::elsevier_article ---
+  Here we present progress on development of gas inlet systems for a hybrid sputter gas ion source (HGIS). Our HGIS is a lightly modified gas-capable 134-sample MCSNICS source from NEC. The ion optics and cesium delivery have been upgraded following Roberts et al. [-@Roberts2010]. Gas delivery to the source is via a short glass capillary which crosses the source HV potential.
+  
+  We are developing two inlet technologies, one delivering gas to the source at low pressure using modified gas handling hardware from a VG stable isotope mass spectrometer and the other sampling gas at atmospheric pressure using an open split. The gas handling system designed for use with SIRMS is nearly ideal for our purposes, providing low volume, low pressure delivery of gas, and control of mixing ratios and delivery pressure using variable volumes. We will use the open split with large samples, focussing first on carbonate samples, hydrolysed and delivered using the gasbench system developed for use with the CFAMS microwave plasma GIS [@Roberts2013].
+  
+keywords: ion source, gas ion source, inlet, accelerator mass spectrometry, radiocarbon 
+bibliography: RC-18HGISAbst.bib
+csl: nuclear-inst-and-methods-in-physics-research-b.csl
+output: rticles::elsevier_article 
+---

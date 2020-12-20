@@ -4,17 +4,13 @@
 RDIR = .
 DATA_DIR = $(RDIR)/Data
 SRC_DIR = $(RDIR)/R
-RES_DIR = //fileshare.whoi.edu/whoi/dept/gg/NOSAMS/USAMS/Results
-FILES = '2018 Results/USAMS052318RHGIS.txt' '2018 Results/USAMS053018R.txt' USAMS012220R.txt USAMS101320R.txt
+RES_DIR = /mnt/shared/USAMS/Results
+FILES = 2018\ Results/USAMS052318RHIGS.txt 2018\ Results/USAMS053018R.txt USAMS012220R.txt USAMS101320R.txt USAMS120320R.txt
 
 all: data
 
+data: $(FILES)
 
-clean:
-	rm -f $(DATA_DIR)/
-	rm -f $(DATA_DIR)/
-	rm -f $(DATA_DIR)/
-	rm -f $(DATA_DIR)/
-	rm -f $(DATA_DIR)/
+$(FILES): 
+	cp '$(RES_DIR)/$@' $(DATA_DIR)/
 
-data:

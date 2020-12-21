@@ -1,0 +1,96 @@
+---
+title: "USAMS Hybrid Source Summary"
+author: "Brett Longworth"
+date: "12/20/2020"
+output: html_document
+---
+
+This document summarizes the operating parameters, development, and questions
+for the hybrid gas ion source on USAMS.
+
+
+# Source parameters
+
+Best currents for the source are around 10uA 12C- or roughly 1/10 of graphite
+currents. This is in line with what other hybrid sources produce.  The source
+typically produces best current at around 10uLs-1 CO2. Literature values give
+1.5uLs-1 as optimal, but we've never seen that, and pressures, capillaries and
+flows in at least one of these papers doesn't make sense.  Precision on modern
+targets has been as good as 1% (SD of multiple measurements of a target) with
+directly introduced bottle gas. Typical precision in tests of inlet systems has
+been around 3%. Measured value of tank modern gas agrees with the accepted
+value within error when normalizing to solid graphite standards.  The system
+seems to have a constant blank contribution from the target and source of about
+100nA 12C- or 1% of a sample producing 10uA 12C-. Helium does not seem to add
+significantly to this blank. Since the blank current is constant, the blank
+contribution is inversely related to the sample current, ie. if the sample
+current is 5uA, 2% of that will be from the blank and so on.
+
+
+# Open split inlet
+
+The open split interface supplies a helium-co2 mixture to a split where a
+capillary delivers ~10uL/min to the source and the rest is vented. The current
+split starts showing "breakthrough" of lab air at around 150uLs-1 flow.
+Currently using 3m of 50um capillary with a bulkhead connector at the source
+cage.  Precision of measurements of modern CO2 has been 3% at best, 10% at
+worst, with better precision most recently. This is much less precise than the
+expected 1%.  Accuracy is reasonable within the large errors on gas
+measurements. Uncorrected measurements of dead CO2 range from 1% to 5%
+depending on sample current.
+
+## Questions
+
+Q: Background from the source/target is relatively stable at roughly 100nA or
+1% of maximum CO2 current. Is the relative blank contribution proportional to
+CO2 current?
+
+A: Based on limited data, it's looking like yes, this follows a constant
+contamination model.
+
+Q: If the relative blank contribution is proportional to sample current, can we
+correct for a varying sample current over a run (due to variable dillution,
+pressure, etc.)?
+
+A: If the sample current varies widely, this will likely require taking data in
+shorter segments and blank correcting each segment using the mean current for
+that segment.
+
+Q: Why is the precision not as expected? Can we replicate the
+literature/initial test precision?
+
+A: Unknown. We can rerun a test with the best performing conditions (bottle gas
+through capillary to source) to eliminate as many variables as possible.
+
+
+## Development
+
+2020-12-18 - Continue testing lower open split flows with leak checker, run
+dead and live gas at lower flows. Spoke with Josh B. about double needle
+setups.
+
+2020-12-11 - Open split flow reduction. Test flow controller for helium, adjust
+needle valves to allow lower CO2 flows. Measure blanks of target, helium, CO2
+and dilluted CO2.
+
+2020-12-04 - Measure blank contributions of target/source, helium, CO2, and
+dilluted CO2. Install flow controller for helium.
+
+2020-12-03 - Prepare and load new HGIS test wheel.
+
+2020-11-17 - Diagnose issue with low currents, measure diluted and pure live
+and dead gas.
+
+2020-11-03 - Troubleshoot low currents, measure dilluted and pure live and dead
+gas.
+
+2020-10-15 - Troubleshoot low currents. Lots of tune and target position
+testing.
+
+2020-10-13 - Prepare and load new HGIS test wheel.
+
+2020-10-06 - Dillution tests of live and dead gas. Test stability of currents
+over time.
+
+2020-09-29 - Starting up HGIS. Load sample wheel. Reterminate capillaries at
+cage wall and open split.

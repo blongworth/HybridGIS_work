@@ -1,0 +1,14 @@
+inlet,source,current,Alignment
+0,8,1.5,before
+135,6.5,1.5,before
+230,6.2,1.8,before
+330,6.5,2.1,before
+405,7.3,3.2,before
+535,9.4,6.7,before
+640,12,9,before
+725,16,10,before
+0,4.7,1.5,after
+134,5.4,2.4,after
+264,9.3,9,after
+350,13,9,after
+201,7.1,9,best

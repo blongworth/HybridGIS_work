@@ -1,0 +1,18 @@
+Data from low pressure capillary test with source running.
+Used 100um PEEK capillary. Couldn't get glass cap to seal on
+source side. Hard to see source alignment.
+supply=mbar,source=mbarxE-7,current=uA
+supply,source,current
+0,4,1
+110,4,1
+245,4,2.6
+293,5,4.8
+394,6.7,7.6
+460,8,8.2
+502,9,8.4
+618,25,9.2
+700,35,9.1
+807,46,8.9
+530,21,8.6
+350,11,7.6
+233,6.3,4.7

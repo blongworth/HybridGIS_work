@@ -2,7 +2,7 @@
 
 
 RDIR = .
-DATA_DIR = $(RDIR)/Data
+DATA_DIR = $(RDIR)/data
 SRC_DIR = $(RDIR)/R
 RES_DIR = /mnt/shared/USAMS/Results
 FILES = 2017\ Results/USAMS032817R.txt \

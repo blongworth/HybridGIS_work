@@ -15,29 +15,46 @@ Best currents for the source are around 10uA 12C- or roughly 1/10 of graphite
 currents. This is in line with what other hybrid sources produce.  The source
 typically produces best current at around 10uLs-1 CO2. Literature values give
 1.5uLs-1 as optimal, but we've never seen that, and pressures, capillaries and
-flows in at least one of these papers doesn't make sense.  Precision on modern
-targets has been as good as 1% (SD of multiple measurements of a target) with
-directly introduced bottle gas. Typical precision in tests of inlet systems has
-been around 3%. Measured value of tank modern gas agrees with the accepted
-value within error when normalizing to solid graphite standards.  The system
-seems to have a constant blank contribution from the target and source of about
-100nA 12C- or 1% of a sample producing 10uA 12C-. Helium does not seem to add
-significantly to this blank. Since the blank current is constant, the blank
-contribution is inversely related to the sample current, ie. if the sample
-current is 5uA, 2% of that will be from the blank and so on.
+flows in at least one of these papers doesn't make sense.
 
+Initially, precision on modern targets was thought to be as good as 1% (SD of
+multiple measurements of a modern target) with directly introduced bottle gas,
+which is in agreement with literature values. Revisiting these data show
+precision in the range of 2-4%. Typical precision in tests of inlet systems has
+been in the range of 2-4%.
+
+Measured value of tank modern gas agrees with the accepted value within error
+when normalizing to solid graphite standards.  The system seems to have a
+constant blank contribution from the target and source of about 100nA 12C- or 1%
+of a sample producing 10uA 12C-. Helium does not seem to add significantly to
+this blank. Since the blank current is constant, the blank contribution is
+inversely related to the sample current, ie. if the sample current is 5uA, 2% of
+that will be from the blank and so on.
+
+The above measurements are at optimum sample current of 6-10uA 12C-. Precision
+and measured ratio both decrease as sample current drops below the optimum
+range. The ratio effects may be related to the "constant current" blank
+discussed above.
 
 # Open split inlet
 
 The open split interface supplies a helium-co2 mixture to a split where a
 capillary delivers ~10uL/min to the source and the rest is vented. The current
-split starts showing "breakthrough" of lab air at around 150uLs-1 flow.
+split starts showing "breakthrough" of lab air at around 150uL/min flow.
 Currently using 3m of 50um capillary with a bulkhead connector at the source
-cage.  Precision of measurements of modern CO2 has been 3% at best, 10% at
+cage.  Precision of measurements of modern CO2 has been 2% at best, 10% at
 worst, with better precision most recently. This is much less precise than the
 expected 1%.  Accuracy is reasonable within the large errors on gas
 measurements. Uncorrected measurements of dead CO2 range from 1% to 5%
 depending on sample current.
+
+## Helium displacement from vials
+
+First tests of displacing pure CO2 from a vial into the open split using helium
+are promising. Helium flowing at 100uLm-1 produces current from 7mL of CO2 for
+over 2 hours. Currents do decrease with time due to dilution, but by supplying
+higher than optimal CO2 flow to the source initially, stable currents can be
+maintained for some time.
 
 ## Questions
 
@@ -49,21 +66,40 @@ A: Based on limited data, it's looking like yes, this follows a constant
 contamination model.
 
 Q: If the relative blank contribution is proportional to sample current, can we
-correct for a varying sample current over a run (due to variable dillution,
+correct for a varying sample current over a run (due to variable dilution,
 pressure, etc.)?
 
 A: If the sample current varies widely, this will likely require taking data in
 shorter segments and blank correcting each segment using the mean current for
-that segment.
+that segment. We may be able to mitigate by setting capillary length such that
+CO2 flow starts above optimal and drops to optimal by the end of the
+acquisition.
 
 Q: Why is the precision not as expected? Can we replicate the
 literature/initial test precision?
 
-A: Unknown. We can rerun a test with the best performing conditions (bottle gas
-through capillary to source) to eliminate as many variables as possible.
+A: Unknown. Tests with the best performing conditions (bottle gas through
+capillary to source) give 2% precision, and revisiting early test data shows
+precision of 2%. Precision is driven by variability between measurements of a
+sample. Investigating correlations here may help. We should also look at
+variability between identical samples to get a sense of reproducibility.
 
 
 ## Development
+2021-01-15 - Pure CO2 and displacement tests using vial and double needle. Tested precision with vial setup by flowing CO2 at 200kPa (high flow, roughly 400ul/min) into open split. Followed this by switching to helium flow to vial at 100kPa (200ul/min). Repeated test with a second vial. Built second dual needle setup for use in vial filling (can also use Gilson).
+
+2021-01-08 - Precision tests with direct CO2-source connection. Tested source pressure and current vs CO2 regulator pressure. Tested flow vs pressure with leak checker. Several capillary swaps. Acquired data at several flow rates for precision testing.
+
+2021-01-07 - Set up for precision test using 7m x 50um capillary from CO2/he via Valco valve to cage wall.
+
+2020-12-31 - Add CO2/He valve to vial test setup. VICI 4-way valve connected
+with 1/16" ss tubing from CO2 and He regulators allows switching between gasses
+delivered to a glass capillary leading to outer needle of dual needle. Leak
+checking and capillary adjustments for good flow range at reasonable pressures.
+
+2020-12-24 - Build dual needle setup. Supply displacement helium through outer
+1/16" tubing, sample mixture through inner needle. Use VICI Luer adapter on top
+of needle as open split with inserted capillary to source.
 
 2020-12-18 - Continue testing lower open split flows with leak checker, run
 dead and live gas at lower flows. Spoke with Josh B. about double needle

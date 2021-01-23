@@ -12,7 +12,8 @@ FILES = 2017\ Results/USAMS032817R.txt \
 				2018\ Results/USAMS060618R.txt \
 				2020\ Results/USAMS012220R.txt \
 				2020\ Results/USAMS101320R.txt \
-				USAMS120320R.txt
+				USAMS120320R.txt \
+				USAMS012121R.txt
 
 all: data
 

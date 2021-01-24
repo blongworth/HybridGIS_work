@@ -13,40 +13,38 @@ for the hybrid gas ion source on USAMS.
 
 Best currents for the source are around 10uA 12C- or roughly 1/10 of graphite
 currents. This is in line with what other hybrid sources produce.  The source
-typically produces best current at around 10uLs-1 CO2. Literature values give
+typically produces best current at around 5uLs-1 CO2. Literature values give
 1.5uLs-1 as optimal, but we've never seen that, and pressures, capillaries and
 flows in at least one of these papers doesn't make sense.
 
-Initially, precision on modern targets was thought to be as good as 1% (SD of
-multiple measurements of a modern target) with directly introduced bottle gas,
-which is in agreement with literature values. Revisiting these data show
-precision in the range of 2-4%. Typical precision in tests of inlet systems has
-been in the range of 2-4%.
+Precision taken as the standard error of the mean of repeated runs of a sample is around 1%. Precision is typically a little worse than predicted by counting statistics. More work is needed to look at whether this reflects variability between samples.
 
-Measured value of tank modern gas agrees with the accepted value within error
-when normalizing to solid graphite standards.  The system seems to have a
-constant blank contribution from the target and source of about 100nA 12C- or 1%
-of a sample producing 10uA 12C-. Helium does not seem to add significantly to
-this blank. Since the blank current is constant, the blank contribution is
-inversely related to the sample current, ie. if the sample current is 5uA, 2% of
-that will be from the blank and so on.
+Measured value of tank modern gas normalized to solid graphite standards ranges from agreeing with solid OX-I to 7% lower than expected for low current samples. Normalizing to tank CO2 is probably the best method to account for variability in hybrid source performance. 
+
+The system seems to have a constant blank contribution from the target and
+source of about 100nA 12C- or 1% of a sample producing 10uA 12C-. Helium does
+not seem to add significantly to this blank. Since the blank current is
+constant, the blank contribution is inversely related to the sample current, ie.
+if the sample current is 5uA, 2% of that will be from the blank and so on.
 
 The above measurements are at optimum sample current of 6-10uA 12C-. Precision
 and measured ratio both decrease as sample current drops below the optimum
 range. The ratio effects may be related to the "constant current" blank
-discussed above.
+discussed above. More work is needed to see whether this is just a blank effect or whether there are other factors at low current.
 
 # Open split inlet
 
 The open split interface supplies a helium-co2 mixture to a split where a
 capillary delivers ~10uL/min to the source and the rest is vented. The current
-split starts showing "breakthrough" of lab air at around 150uL/min flow.
-Currently using 3m of 50um capillary with a bulkhead connector at the source
-cage.  Precision of measurements of modern CO2 has been 2% at best, 10% at
-worst, with better precision most recently. This is much less precise than the
-expected 1%.  Accuracy is reasonable within the large errors on gas
-measurements. Uncorrected measurements of dead CO2 range from 1% to 5%
-depending on sample current.
+split starts showing "breakthrough" of lab air at around 150uL/min flow. A new open split with lower volume should have improved this, but testing is needed.
+
+Currently, 250cm of 50um capillary defines flow rate from the open split into
+the source, with a bulkhead connector at the source cage.  Precision of
+measurements of modern CO2 has been better than 1% (std error of mean of
+measurements of a target) for high current samples, with precision dropping off
+as current decreases below 6uA or so. Accuracy is reasonable within the large
+errors on gas measurements. Uncorrected measurements of dead CO2 range from 1%
+to 5% of modern depending on sample current.
 
 ## Helium displacement from vials
 
@@ -54,7 +52,7 @@ First tests of displacing pure CO2 from a vial into the open split using helium
 are promising. Helium flowing at 100uLm-1 produces current from 7mL of CO2 for
 over 2 hours. Currents do decrease with time due to dilution, but by supplying
 higher than optimal CO2 flow to the source initially, stable currents can be
-maintained for some time.
+maintained for some time. Targets have shown "pulses" of higher current. Not sure why this is, but I suspect it's either buildup of graphite or other available carbon on the target, or target switching to the "high state" as sometimes happens with solid targets.
 
 ## Questions
 
@@ -75,17 +73,15 @@ that segment. We may be able to mitigate by setting capillary length such that
 CO2 flow starts above optimal and drops to optimal by the end of the
 acquisition.
 
-Q: Why is the precision not as expected? Can we replicate the
-literature/initial test precision?
+Q: Does standard error of the mean as a sample error agree with between target variability?
 
-A: Unknown. Tests with the best performing conditions (bottle gas through
-capillary to source) give 2% precision, and revisiting early test data shows
-precision of 2%. Precision is driven by variability between measurements of a
-sample. Investigating correlations here may help. We should also look at
-variability between identical samples to get a sense of reproducibility.
+A: Unknown. We should look at variability between identical samples to get a sense of reproducibility. Some data are available, but no controlled replicates have been run.
 
 
 ## Development
+
+2021-01-22 - Ran pure CO2 at different pressures to look at effect of current on precision and ratio. Repeated test for live and dead tank CO2.
+
 2021-01-15 - Pure CO2 and displacement tests using vial and double needle. Tested precision with vial setup by flowing CO2 at 200kPa (high flow, roughly 400ul/min) into open split. Followed this by switching to helium flow to vial at 100kPa (200ul/min). Repeated test with a second vial. Built second dual needle setup for use in vial filling (can also use Gilson).
 
 2021-01-08 - Precision tests with direct CO2-source connection. Tested source pressure and current vs CO2 regulator pressure. Tested flow vs pressure with leak checker. Several capillary swaps. Acquired data at several flow rates for precision testing.

@@ -103,17 +103,17 @@ setups.
 
 2020-12-11 - Open split flow reduction. Test flow controller for helium, adjust
 needle valves to allow lower CO2 flows. Measure blanks of target, helium, CO2
-and dilluted CO2.
+and diluted CO2.
 
 2020-12-04 - Measure blank contributions of target/source, helium, CO2, and
-dilluted CO2. Install flow controller for helium.
+diluted CO2. Install flow controller for helium.
 
 2020-12-03 - Prepare and load new HGIS test wheel.
 
 2020-11-17 - Diagnose issue with low currents, measure diluted and pure live
 and dead gas.
 
-2020-11-03 - Troubleshoot low currents, measure dilluted and pure live and dead
+2020-11-03 - Troubleshoot low currents, measure diluted and pure live and dead
 gas.
 
 2020-10-15 - Troubleshoot low currents. Lots of tune and target position
@@ -121,7 +121,7 @@ testing.
 
 2020-10-13 - Prepare and load new HGIS test wheel.
 
-2020-10-06 - Dillution tests of live and dead gas. Test stability of currents
+2020-10-06 - Dilution tests of live and dead gas. Test stability of currents
 over time.
 
 2020-09-29 - Starting up HGIS. Load sample wheel. Reterminate capillaries at

@@ -35,7 +35,7 @@ discussed above. More work is needed to see whether this is just a blank effect 
 # Open split inlet
 
 The open split interface supplies a helium-co2 mixture to a split where a
-capillary delivers ~10uL/min to the source and the rest is vented. The current
+capillary delivers gas to the source and the rest is vented. The current
 split starts showing "breakthrough" of lab air at around 150uL/min flow. A new open split with lower volume should have improved this, but testing is needed.
 
 Currently, 250cm of 50um capillary defines flow rate from the open split into
@@ -52,7 +52,9 @@ First tests of displacing pure CO2 from a vial into the open split using helium
 are promising. Helium flowing at 100uLm-1 produces current from 7mL of CO2 for
 over 2 hours. Currents do decrease with time due to dilution, but by supplying
 higher than optimal CO2 flow to the source initially, stable currents can be
-maintained for some time. Targets have shown "pulses" of higher current. Not sure why this is, but I suspect it's either buildup of graphite or other available carbon on the target, or target switching to the "high state" as sometimes happens with solid targets.
+maintained for some time.  Setting flow to the source to 10uL/min provides excess CO2 to source until the helium dilution ratio increases to > 1:1. Another approach may be to backfill vials with helium and run at a higher dilution ratio and flow to the source. This should produce a smaller change in He:CO2 over the course of a run. MICADAS runs at 95% He:CO2, which would mean producing < 0.5mL CO2 in a 7mL vial and backfilling with helium before displacing to the source. Some intermediate dilution may be appropriate.
+
+Targets have shown "pulses" of higher current. Not sure why this is, but I suspect it's either buildup of graphite or other available carbon on the target, or target switching to the "high state" as sometimes happens with solid targets.
 
 ## Questions
 
@@ -76,6 +78,17 @@ acquisition.
 Q: Does standard error of the mean as a sample error agree with between target variability?
 
 A: Unknown. We should look at variability between identical samples to get a sense of reproducibility. Some data are available, but no controlled replicates have been run.
+
+## To do
+
+* Repeated measurements under identical conditions to determine reproducibility
+* Test breakthrough with new open split
+* Establish best helium flow for displacement
+* Fine tune capillary length for best flow to source over pCO2 range of full size sample
+* How to handle < 1 Atm in vials. Backfill?
+* Measure test samples prepped on Gilson (7mL CO2, Atm pressure)
+* Define blank, determine whether current-balance correction is needed.
+* Refine normalization and error propagation for data reduction.
 
 
 ## Development

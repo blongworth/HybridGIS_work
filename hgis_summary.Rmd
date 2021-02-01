@@ -17,6 +17,8 @@ typically produces best current at around 5uLs-1 CO2. Literature values give
 1.5uLs-1 as optimal, but we've never seen that, and pressures, capillaries and
 flows in at least one of these papers doesn't make sense.
 
+Source currents are variable by day and by target. "Good" currents for a given day vary between 5-10uA, and it's not yet clear what causes this variability. Alignment, source condition, and settings of the ionizer and cesium are all factors. Current also varies by target for a given set of gas and source conditions. Some targets are clearly "bad", producing currents much lower than other targets for a given set of conditions.
+
 Precision taken as the standard error of the mean of repeated runs of a sample is around 1%. Precision is typically a little worse than predicted by counting statistics. More work is needed to look at whether this reflects variability between samples.
 
 Measured value of tank modern gas normalized to solid graphite standards ranges from agreeing with solid OX-I to 7% lower than expected for low current samples. Normalizing to tank CO2 is probably the best method to account for variability in hybrid source performance. 
@@ -45,6 +47,8 @@ measurements of a target) for high current samples, with precision dropping off
 as current decreases below 6uA or so. Accuracy is reasonable within the large
 errors on gas measurements. Uncorrected measurements of dead CO2 range from 1%
 to 5% of modern depending on sample current.
+
+Measurement of a small number of replicates shows that between sample reproducibility is around 1%. Samples displaced by helium have slightly higher variability, but more tests are needed to better assess reproducibility.
 
 ## Helium displacement from vials
 
@@ -77,11 +81,11 @@ acquisition.
 
 Q: Does standard error of the mean as a sample error agree with between target variability?
 
-A: Unknown. We should look at variability between identical samples to get a sense of reproducibility. Some data are available, but no controlled replicates have been run.
+A: Initial data from identical samples run under similar conditions show standard deviation of around 1-1.5% for modern samples.
 
 ## To do
 
-* Repeated measurements under identical conditions to determine reproducibility
+* More repeated measurements under identical conditions to determine reproducibility
 * Test breakthrough with new open split
 * Establish best helium flow for displacement
 * Fine tune capillary length for best flow to source over pCO2 range of full size sample
@@ -92,6 +96,8 @@ A: Unknown. We should look at variability between identical samples to get a sen
 
 
 ## Development
+
+2021-01-29 - Ran a series of vial tests with modern and dead CO2 to assess reproducibility.
 
 2021-01-22 - Ran pure CO2 at different pressures to look at effect of current on precision and ratio. Repeated test for live and dead tank CO2.
 

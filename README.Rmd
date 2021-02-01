@@ -1,15 +1,50 @@
 ---
-title: "USAMS Hybrid Source Summary"
-author: "Brett Longworth"
-date: "12/20/2020"
-output: html_document
+output: github_document
 ---
 
-This document summarizes the operating parameters, development, and questions
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# HybridGIS
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The HybridGIS project contains functions, analysis scripts and data for the NOSAMS hybrid gas ion source.
+
+## Installation
+
+You can install the development version from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("blongworth/hgis")
+```
+
+Running `make` will download the NOSAMS results files if a connection to the NOSAMS file server is available. `make` will eventually run the analysis scripts as well. 
+
+## Functions
+
+Loading the package loads functions for flow calculation, efficiency, data import, data reduction and plotting.
+
+```{r example}
+library(HybridGIS)
+```
+
+# Project Summary
+
+The information below summarizes the operating parameters, development, and questions
 for the hybrid gas ion source on USAMS.
 
-
-# Source parameters
+## Source parameters
 
 Best currents for the source are around 10uA 12C- or roughly 1/10 of graphite
 currents. This is in line with what other hybrid sources produce.  The source
@@ -34,7 +69,7 @@ and measured ratio both decrease as sample current drops below the optimum
 range. The ratio effects may be related to the "constant current" blank
 discussed above. More work is needed to see whether this is just a blank effect or whether there are other factors at low current.
 
-# Open split inlet
+## Open split inlet
 
 The open split interface supplies a helium-co2 mixture to a split where a
 capillary delivers gas to the source and the rest is vented. The current
@@ -50,7 +85,7 @@ to 5% of modern depending on sample current.
 
 Measurement of a small number of replicates shows that between sample reproducibility is around 1%. Samples displaced by helium have slightly higher variability, but more tests are needed to better assess reproducibility.
 
-## Helium displacement from vials
+### Helium displacement from vials
 
 The test setup for extracting CO2 from septa-sealed vials is as follows: a double needle is inserted into the vial through the septa. One side of the needle is connected to helium which is used to force CO2 from the vial through the other side of the needle. The outflow from the vial enters an open split where a capillary is used to admit sample to the ion source. The system is currently set up to run with samples starting at atmospheric pressure.
 

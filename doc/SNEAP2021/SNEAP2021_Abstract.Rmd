@@ -1,0 +1,18 @@
+---
+title: "Progress with the NOSAMS Hybrid Gas Ion Source"
+author: "Brett Longworth"
+date: "3/31/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+A hybrid sputter ion source produces carbon ions from CO2 gas for measurement of 14/12C via accelerator mass spectrometry. CO2 is introduced onto a titanium surface within a cathode sputtered by cesium ions, dissociating the CO2 and ionizing some of the carbon ions for extraction as in a solid sputter source. At NOSAMS we have been working to find ideal conditions for this process and develop interfaces for producing CO2 and introducing it to the source under these conditions. Early development with pure CO2 from gas cylinders gave way to introduction of CO2 diluted with helium carrier in a closed system, and most recent development introduces a CO2/He mixture to the source via an open split. Current development focuses on producing CO2 from carbonates (CaCO3) which is delivered to the open split and ion source using a flow of helium carrier gas. We will discuss efficiency of the system, issues with background carbon current and precision and accuracy of the measurement.
+
+hybrid source introduction
+direct injection of CO2
+closed source development with irms inlet
+open split development to introduce CO2 from vials
+advantages and disadvantages of closed and open methods

@@ -5,7 +5,6 @@ author:
 - Josh Burton
 - Josh Hlavenka
 - Mark Roberts
-date: "`r format(Sys.time(), '%B %d, %Y')`"
 output:
   pdf_document: default
   html_document: default
@@ -16,4 +15,6 @@ output:
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-A hybrid gas-sputter ion source produces carbon ions from CO~2~ gas for measurement of ^14/12^C via accelerator mass spectrometry. CO~2~ is introduced onto a titanium surface within a cathode sputtered by cesium ions, dissociating CO~2~ and ionizing some of the carbon for extraction as in a solid sputter source. We are working to optimize ionization and develop interfaces that produce CO~2~ from samples and introduce it to the source. Early tests with CO~2~ standard gas gave way to introduction of CO~2~ diluted with helium carrier in a closed system, and most recent work introduces a CO~2~/He mixture to the source via an open split. Current development focuses on producing CO~2~ from carbonates (CaCO~3~) which is delivered to the open split and ion source using a flow of helium carrier gas. We will discuss efficiency, background carbon current, precision, and accuracy of the method.
+### National Ocean Sciences AMS Facility, Woods Hole Oceanographic Institution, Woods Hole, MA, USA
+
+We are using a hybrid gas-sputter ion source to produce carbon ions from CO~2~ gas for measurement of ^14/12^C via accelerator mass spectrometry. In our source, CO~2~ is introduced onto a titanium surface within a cathode sputtered by cesium ions, dissociating CO~2~ and ionizing some of the carbon for extraction as in a solid sputter source. We are working to optimize ionization and develop interfaces that produce CO~2~ from samples and introduce it to the source. Early tests with CO~2~ standard gas gave way to introduction of CO~2~ diluted with helium carrier in a closed system, and most recent work introduces a CO~2~/He mixture to the source via an open split. Current development focuses on producing CO~2~ from carbonates (CaCO~3~) which is delivered to the open split and ion source using a flow of helium carrier gas. We will discuss efficiency, background carbon current, precision, and accuracy of the method.

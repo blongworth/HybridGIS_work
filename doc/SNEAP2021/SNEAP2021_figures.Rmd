@@ -1,0 +1,143 @@
+---
+title: "SNEAP2021 Figures"
+output:
+  html_document:
+    df_print: paged
+---
+
+Figures for SNEAP talk
+
+# Setup
+
+```{r}
+library(tidyverse)
+library(here)
+library(amstools)
+library(HybridGIS)
+```
+
+# Current vs flow
+
+Good figure in first tests. Combine with data from dual bellows?
+
+```{r, message = FALSE}
+
+# factors for flow calc
+r <- 2.5E-5
+u <- 1.49E-5
+x <- 8.2
+
+data <- get_hgis_data(here("data/USAMS040317R.txt")) %>% 
+  filter(Pos == 13)
+
+# Assign Run numbers
+counter <- 0
+Run <- c(1:190)
+for (i in 1:nrow(data)) {
+  if (data$Meas[i] == 1) {
+    counter <- counter + 1
+  }
+  Run[i] <- counter
+} 
+data$Run <- Run
+
+# Load pressure data
+pres <- read.csv(here("data/USAMS040317Pressure.csv"))
+pres$Run <- as.numeric(row.names(pres))
+
+# Join to run data
+data <- inner_join(data, pres) %>%
+  mutate(Source = Source * 1E-7, # I think the source pressures were to the -7, but unsure...
+         flow = flowcalc(Bottle, r, u, x),
+         eff = hgis_eff(flow, he12C, cs = 1)) # cs 1 to estimate LE current
+
+# summarize
+d.s <- data %>% 
+  group_by(Run, Bottle, Source, flow) %>% 
+  summarize(le12C = mean(le12C),
+            he12C = mean(he12C),
+            counts = sum(CntTotGT),
+            interr = 1/sqrt(counts),
+            C1412he = mean(X14.12he),
+            C1412he_sd = sd(X14.12he),
+            ferr = interr * C1412he,
+            cor1412he = mean(cor1412he),
+            eff = mean(eff))
+
+# plot
+filter(d.s, flow > 0) %>%
+  ggplot(aes(flow, le12C)) +
+  geom_smooth() +
+  geom_point() +
+  labs(x = expression(CO[2]~flow~rate~~mu~L %.% min^{-1}),
+       y = bquote('12C-  ' *mu~ 'A')) +
+  scale_y_reverse() +
+  ylim(0,-10) +
+  xlim(0,15.5)
+```
+
+# Efficiency vs flow
+
+
+# Dual bellows
+
+Breakseal results for OX-I, C-1, OX-II
+
+# Open split
+
+## Dillution curve
+
+From helium_displacement.Rmd
+
+Maybe also show long dillution runs plotted by CO2 flow?
+
+Yes. Calculate flow at time using concCO2
+
+## Reproducibility of standards
+
+Data from 1-08, 1-22, 1-29
+
+## Blanks - blank values
+
+compare dead gas, vial dead gas, C1, and TIRI-F
+
+## Blanks - estimation of constant current contaminant
+
+combine data from 12-04, 12-11, 12-18, 
+
+
+## Results for carbonates
+
+Combine all runs 2-05, 3-05, 4-09, 4-16
+
+show as agreement with consensus vs consensus value with sample names
+
+Need normalized values, BC values, Errors, and rec_num or consensus value
+
+```{r}
+df <- map_dfr(list.files(here("data_analysed"), full.names = TRUE), read_csv)
+```
+
+```{r}
+ggplot(df, aes(fm_consensus, mean - fm_consensus)) +
+  geom_hline(yintercept = 0) +
+  geom_errorbar(aes(ymin = diff - merr, ymax = diff + merr)) +
+  geom_point() +
+  ggtitle("Difference in LBC-corrected vs consensus")
+```
+
+```{r}
+ggplot(df, aes(fm_consensus, diff)) +
+  geom_hline(yintercept = 0) +
+  geom_errorbar(aes(ymin = diff - merr, ymax = diff + merr)) +
+  geom_point() +
+  ggtitle("Difference in LBC-corrected vs consensus")
+```
+
+```{r}
+ggplot(df, aes(fm_consensus, sigma)) +
+  geom_hline(yintercept = 0) +
+  geom_point() +
+  ggtitle("Sigma of LBC-corrected vs consensus")
+```
+

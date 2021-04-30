@@ -180,11 +180,15 @@ Need normalized values, BC values, Errors, and rec_num or consensus value
 
 ```{r, message = FALSE}
 df <- map_dfr(list.files(here("data_analysed"), full.names = TRUE), read_csv) %>% 
-  mutate(fm_normdiff = normFm(mean, fm_consensus),
+  filter(!is.na(rec_num)) %>% 
+  mutate(fm_diff = mean - fm_consensus,
+         fm_normdiff = normFm(mean, fm_consensus),
          fm_sigma = sigma(mean, fm_consensus, merr),
+         fmbc_diff = fm_lbc - fm_consensus,
          fmbc_normdiff = normFm(fm_lbc, fm_consensus),
          fmbc_sigma = sigma(fm_lbc, fm_consensus, merr))
 ```
+
 
 ```{r}
 df %>% 
@@ -205,18 +209,49 @@ ggplot(aes(fm_consensus, fm_normdiff)) +
   geom_point() +
   ggtitle("Difference in measured Fm vs. consensus")
 ```
-```{r}
-ggplot(df, aes(fm_consensus, diff)) +
-  geom_hline(yintercept = 0) +
-  geom_errorbar(aes(ymin = diff - merr, ymax = diff + merr)) +
-  geom_point() +
-  ggtitle("Difference in LBC-corrected vs consensus")
-```
 
 ```{r}
 ggplot(df, aes(fm_consensus, sigma)) +
   geom_hline(yintercept = 0) +
   geom_point() +
   ggtitle("Sigma of LBC-corrected vs consensus")
+```
+
+### difference from consensus
+
+```{r}
+secs <- df %>% 
+  filter(fm_diff < .1) %>% 
+ggplot(aes(fm_consensus, fm_diff, color = Cur)) +
+  geom_hline(yintercept = 0) +
+  geom_smooth(method = "lm", se = FALSE) +
+  geom_pointrange(aes(ymin = fm_diff - merr, ymax = fm_diff + merr)) +
+  geom_point() +
+  lims(x = c(0, 1.1),
+       y = c(-.15, .15)) +
+  ggtitle("Difference from consensus",
+          subtitle = "Uncorrected") +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank())
+```
+
+
+```{r}
+secs_lbc <- df %>% 
+  filter(fm_diff < .1) %>% 
+  mutate(mean_diff = mean(fmbc_diff)) %>% 
+ggplot(aes(fm_consensus, fmbc_diff, color = Cur)) +
+  geom_hline(yintercept = 0) +
+  geom_smooth(method = "lm", se = FALSE) +
+  #geom_hline(yintercept = mean_diff) +
+  geom_pointrange(aes(ymin = fmbc_diff - merr, ymax = fmbc_diff + merr)) +
+  geom_point() +
+  lims(x = c(0, 1.1),
+       y = c(-.15, .15)) +
+  labs(subtitle = "LBC-corrected")
+```
+
+```{r}
+secs / secs_lbc
 ```
 

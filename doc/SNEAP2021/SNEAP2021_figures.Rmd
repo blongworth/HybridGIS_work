@@ -167,7 +167,135 @@ compare dead gas, vial dead gas, C1, and TIRI-F
 
 ## Blanks - estimation of constant current contaminant
 
-combine data from 12-04, 12-11, 12-18, 
+```{r}
+data<- get_hgis_data(here("data/USAMS101320R.txt"), as.Date("2020-11-17")) %>% 
+  mutate(Num = ifelse(Pos %in% c(2, 4), "S", ifelse(Num == "S", "U", Num)))
+stdrat <- mean(data$cor1412he[data$Num == "S" & !data$outlier])
+data1013 <- data %>% mutate(normFm = norm_gas(cor1412he, stdrat))
+
+data <- get_hgis_data(here("data/USAMS120320R.txt"), as.Date("2020-12-04")) %>% 
+  mutate(Num = ifelse(Pos %in% c(2, 4), "S", ifelse(Num == "S", "U", Num)))
+stdrat <- mean(data$cor1412he[data$Num == "S" & !data$outlier])
+data1204 <- data %>% mutate(normFm = norm_gas(cor1412he, stdrat))
+
+data1211 <- get_hgis_data(here("data/USAMS120320R.txt")) %>% 
+  filter(Pos %in% 1:4 | as.Date(ts) == "2020-12-11")
+
+data <- get_hgis_data(here("data/USAMS120320R.txt"), as.Date("2020-12-18")) %>% 
+  filter(Pos != 0) %>% 
+  mutate(Num = ifelse(Pos %in% c(2, 4), "S", ifelse(Num == "S", "U", Num)))
+stdrat <- mean(data$cor1412he[data$Num == "S" & !data$outlier])
+data1218 <- data %>% mutate(normFm = norm_gas(cor1412he, stdrat))
+
+data0108 <- get_hgis_data(here("data/USAMS120320R.txt"), as.Date("2021-01-08"))
+
+# no solid standards
+# df <- get_hgis_data(here("data/USAMS120320R.txt"), as.Date("2021-01-15")) 
+# stdrat <- mean(df$cor1412he[df$pos_name == "8 - LiveGasOS" & !df$outlier])
+# data0115 <- mutate(df, normFm = norm_gas(cor1412he, stdrat))
+
+data <- get_hgis_data(here("data/USAMS020521R.txt")) %>% 
+  mutate(Num = ifelse(Pos %in% c(2, 4), "S", ifelse(Num == "S", "U", Num)))
+stdrat <- mean(data$cor1412he[data$Num == "S" & !data$outlier])
+data205 <- data %>% mutate(normFm = norm_gas(cor1412he, stdrat))
+
+data <- get_hgis_data(here("data/USAMS030421R.txt"), as.Date("2021-03-05")) %>% 
+  mutate(Num = ifelse(Pos %in% c(2, 4), "S", ifelse(Num == "S", "U", Num)))
+stdrat <- mean(data$cor1412he[data$Num == "S" & !data$outlier])
+data304 <- data %>% mutate(normFm = norm_gas(cor1412he, stdrat))
+
+data <- get_hgis_data(here("data/USAMS040121R.txt"), as.Date("2021-04-09")) %>% 
+  mutate(Num = ifelse(Pos %in% c(22, 24), "S", ifelse(Num == "S", "U", Num)))
+stdrat <- mean(data$cor1412he[data$Num == "S" & !data$outlier])
+data409 <- data %>% mutate(normFm = norm_gas(cor1412he, stdrat))
+
+data <- get_hgis_data(here("data/USAMS041521R.txt"), as.Date("2021-04-16"))  %>% 
+  mutate(Num = ifelse(Pos %in% c(22, 24), "S", ifelse(Num == "S", "U", Num)))
+stdrat <- mean(data$cor1412he[data$Num == "S" & !data$outlier])
+data415 <- data %>% mutate(normFm = norm_gas(cor1412he, stdrat))
+
+std <- getStdTable()
+
+data <- rbind(data1013, data1204, data1211, data1218, data205, data304, data409, data415) %>% 
+  mutate(rec_num = case_when(str_detect(Sample.Name, "LiveGas") ~ 101730,
+                             str_starts(Sample.Name, "C-1") ~ 83028,
+                             str_starts(Sample.Name, "C1") ~ 83028,
+                             str_starts(Sample.Name, "TIRI-F") ~ 2138,
+                             str_starts(Sample.Name, "TIRI-I") ~ 17185,
+                             str_starts(Sample.Name, "C-2") ~ 1082,
+                             str_starts(Sample.Name, "C2") ~ 1082,
+                             str_starts(Sample.Name, "NOSAMS") ~ 38809,
+                             str_detect(Sample.Name, "DeadGas") ~ 72446)) %>% 
+ left_join(select(std, rec_num, fm_consensus), by = "rec_num") %>% 
+ mutate(fm_consensus = case_when(rec_num == 101730 ~ 1.0398,
+                                 rec_num == 72446 ~ 0.0013,
+                                 TRUE ~ fm_consensus))
+
+xl <- 8
+
+livefm_cur <- data %>% 
+  filter(!(he12C < 2.5 & normFm > 1.05) & fm_consensus > 0.9) %>% 
+  ggplot(aes(he12C, normFm)) + 
+  geom_point() +
+  xlim(0, xl) +
+  ylim(.8, 1.2) +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank())
+
+deadfm_cur <- data %>% 
+  filter(fm_consensus < 0.1 & normFm < 0.3 & Sample.Name != "DilDeadGas6") %>% 
+  ggplot(aes(he12C, normFm)) + 
+  geom_point() +
+  xlim(0, xl) +
+  ylim(0, .4) 
+
+livefm_cur / deadfm_cur
+```
+
+### Current dependent model
+
+```{r}
+ds <- sum_hgis(data) %>% 
+  filter((str_detect(Sample.Name, "LiveGas") & Cur > 1) |
+         (str_detect(Sample.Name, "DeadGas") & Cur > 1) |
+          str_detect(Sample.Name, "Blank")) %>% 
+  mutate(Gas = case_when(str_detect(Sample.Name, "LiveGas") ~ "LiveGas",
+                         str_detect(Sample.Name, "DeadGas") ~ "DeadGas",
+                         TRUE ~ "Blank"),
+         Cur_inv = 1/Cur)
+
+# Fit linear model
+fits <- ds %>% 
+  ungroup() %>% 
+  nest(data = -Gas) %>% 
+  mutate(fit = map(data, ~lm(mean ~ Cur_inv, data = .x)),
+         tidied = map(fit, tidy)) %>% 
+  unnest(tidied) 
+
+blankfit <- fits %>% 
+  select(Gas, term, estimate) %>% 
+  pivot_wider(names_from = c(Gas, term), values_from = estimate) %>% 
+  mutate(inv_m_blank = -(`DeadGas_(Intercept)` - `LiveGas_(Intercept)`)/(DeadGas_Cur_inv - LiveGas_Cur_inv),
+         Fm_blank = `DeadGas_(Intercept)` + DeadGas_Cur_inv * inv_m_blank,
+         m_blank = 1/inv_m_blank) 
+
+# Modeled Fm and mass of blank
+blankfit %>% 
+  select(Fm_blank, m_blank)
+
+# Plot of data and model with measured blanks
+ggplot(ds, aes(Cur_inv, mean, color = Gas)) +
+  geom_abline(slope = blankfit$LiveGas_Cur_inv, 
+              intercept = blankfit$`LiveGas_(Intercept)`) +
+  geom_abline(slope = blankfit$DeadGas_Cur_inv, 
+              intercept = blankfit$`DeadGas_(Intercept)`) +
+  geom_pointrange(aes(ymin = mean - merr, ymax = mean + merr), size = .3) + 
+  xlim(0, 10) +
+  #ylim(0, 1.2)
+  ggtitle("Fm of live and dead CO2 vs. inverse 12C current",
+          subtitle = "Fit lines should cross at Fm and current of blank")
+```
+
 
 
 ## Results for carbonates
@@ -182,33 +310,60 @@ Need normalized values, BC values, Errors, and rec_num or consensus value
 df <- map_dfr(list.files(here("data_analysed"), full.names = TRUE), read_csv) %>% 
   filter(!is.na(rec_num)) %>% 
   mutate(fm_diff = mean - fm_consensus,
-         fm_normdiff = normFm(mean, fm_consensus),
          fm_sigma = sigma(mean, fm_consensus, merr),
          fmbc_diff = fm_lbc - fm_consensus,
-         fmbc_normdiff = normFm(fm_lbc, fm_consensus),
          fmbc_sigma = sigma(fm_lbc, fm_consensus, merr))
 ```
 
 
-```{r}
-df %>% 
-  filter(fm_normdiff < 100) %>% 
-ggplot(aes(fm_consensus, fm_normdiff)) +
-  geom_hline(yintercept = 0) +
-  geom_errorbar(aes(ymin = fm_normdiff - merr, ymax = fm_normdiff + merr)) +
-  geom_point() +
-  ggtitle("Difference in measured Fm vs. consensus")
-```
 
-```{r}
-df %>% 
-  filter(fm_normdiff < 1) %>% 
-ggplot(aes(fm_consensus, fm_normdiff)) +
+### difference from consensus
+
+```{r, fig.height=5, dev='svg'}
+
+dfc <- df %>% 
+  filter(Cur > 2)
+
+ps <- 0.3
+dw <- 0.03
+yl <- .1
+
+secs <- ggplot(dfc, aes(fm_consensus, fm_diff, color = Cur)) +
   geom_hline(yintercept = 0) +
-  geom_errorbar(aes(ymin = fm_normdiff - merr, ymax = fm_normdiff + merr)) +
-  geom_point() +
-  ggtitle("Difference in measured Fm vs. consensus")
+  geom_smooth(method = "lm", se = FALSE) +
+  geom_pointrange(aes(ymin = fm_diff - merr, ymax = fm_diff + merr), 
+                  position = position_dodge2(width = dw),
+                  size = ps,) +
+  #geom_point() +
+  lims(x = c(-0.05, 1.1),
+       y = c(-yl, yl)) +
+  labs(title = "Difference from consensus",
+       subtitle = "Uncorrected",
+       y = "Fm difference") +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        legend.direction = "horizontal",
+        legend.position = c(.88, 1),
+        legend.justification = "bottom")
+
+secs_lbc <- ggplot(dfc, aes(fm_consensus, fmbc_diff, color = Cur)) +
+  geom_hline(yintercept = 0) +
+  geom_smooth(method = "lm", se = FALSE) +
+  #geom_hline(yintercept = mean_diff) +
+  geom_pointrange(aes(ymin = fmbc_diff - merr, ymax = fmbc_diff + merr), 
+                  position = position_dodge2(width = dw),
+                  size = ps) +
+  #geom_point() +
+  lims(x = c(-0.05, 1.1),
+       y = c(-yl, yl)) +
+  labs(subtitle = "LBC-corrected",
+       x = "Fm consensus",
+       y = "Fm difference") +
+  theme(legend.position = "None")
+
+secs / secs_lbc
 ```
+### same for sigma
 
 ```{r}
 ggplot(df, aes(fm_consensus, sigma)) +
@@ -217,41 +372,9 @@ ggplot(df, aes(fm_consensus, sigma)) +
   ggtitle("Sigma of LBC-corrected vs consensus")
 ```
 
-### difference from consensus
+### Blanks - current independent
 
 ```{r}
-secs <- df %>% 
-  filter(fm_diff < .1) %>% 
-ggplot(aes(fm_consensus, fm_diff, color = Cur)) +
-  geom_hline(yintercept = 0) +
-  geom_smooth(method = "lm", se = FALSE) +
-  geom_pointrange(aes(ymin = fm_diff - merr, ymax = fm_diff + merr)) +
-  geom_point() +
-  lims(x = c(0, 1.1),
-       y = c(-.15, .15)) +
-  ggtitle("Difference from consensus",
-          subtitle = "Uncorrected") +
-  theme(axis.title.x = element_blank(),
-        axis.text.x = element_blank())
-```
-
-
-```{r}
-secs_lbc <- df %>% 
-  filter(fm_diff < .1) %>% 
-  mutate(mean_diff = mean(fmbc_diff)) %>% 
-ggplot(aes(fm_consensus, fmbc_diff, color = Cur)) +
-  geom_hline(yintercept = 0) +
-  geom_smooth(method = "lm", se = FALSE) +
-  #geom_hline(yintercept = mean_diff) +
-  geom_pointrange(aes(ymin = fmbc_diff - merr, ymax = fmbc_diff + merr)) +
-  geom_point() +
-  lims(x = c(0, 1.1),
-       y = c(-.15, .15)) +
-  labs(subtitle = "LBC-corrected")
-```
-
-```{r}
-secs / secs_lbc
+dfc
 ```
 

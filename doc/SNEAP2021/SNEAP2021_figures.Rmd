@@ -95,6 +95,50 @@ read.csv(here("data/14Nov2017LPtest.csv"), skip = 4) %>%
 
 Breakseal results for OX-I, C-1, OX-II
 
+```{r}
+data <- get_hgis_data(here("data/USAMS052318RHIGS.txt")) %>% 
+                  mutate(Num = ifelse(Pos == 15, "S", "U"))
+stdrat <- mean(data$cor1412he[data$Num == "S" & data$outlier == FALSE])
+data_523 <- mutate(data, normFm = norm_gas(cor1412he, stdrat))
+
+data <- get_hgis_data(here("data/USAMS053018R.txt"), as.Date("2018-05-30")) %>% 
+           mutate(Pos = ifelse(Sample.Name == "OX-II", 6, Pos),
+                  Num = ifelse(Pos == 5, "S", "U"))
+stdrat <- mean(data$cor1412he[data$Num == "S"])
+data_530 <- mutate(data, normFm = norm_gas(cor1412he, stdrat))
+
+data <- get_hgis_data(here("data/USAMS060618R.txt")) %>% 
+  filter(Pos != 1,                           #remove spurious pos1 runs
+         !(Pos == 3 & X13.12he > 0.011)) %>%     #remove solid OX-I fliers
+                  mutate(Num = ifelse(Pos == 5, "S", "U"))
+stdrat <- mean(data$cor1412he[data$Num == "S" & data$outlier == FALSE])
+data_606 <- mutate(data, normFm = norm_gas(cor1412he, stdrat))
+
+dbd <- rbind(data_523, data_530, data_606)
+
+std <- getStdTable()
+
+dbds <- sum_hgis(dbd) %>% 
+  mutate(rec_num = case_when(str_detect(Sample.Name, "Live") ~ 101730,
+                             Sample.Name == "OX-I" ~ 34148,
+                             Sample.Name == "OX-II" ~ 34149,
+                             str_starts(Sample.Name, "C1") ~ 83028)) %>% 
+ left_join(select(std, rec_num, fm_consensus), by = "rec_num") %>% 
+ mutate(fm_consensus = case_when(rec_num == 101730 ~ 1.0398,
+                                 rec_num == 72446 ~ 0.0013,
+                                 TRUE ~ fm_consensus),
+        fm_diff = mean - fm_consensus)
+
+dbds %>% 
+  filter(Cur < 10) %>% 
+  ggplot(aes(fm_consensus, fm_diff)) +
+  geom_hline(yintercept = 0) +
+  geom_pointrange(aes(ymin = fm_diff - merr, ymax = fm_diff + merr),
+                 position = position_dodge2(width = .1),
+                 size = .5) +
+  labs(title = "Closed inlet")
+```
+
 # Open split
 
 ## Dillution curve
@@ -375,6 +419,16 @@ ggplot(df, aes(fm_consensus, sigma)) +
 ### Blanks - current independent
 
 ```{r}
-dfc
+df %>% filter(fm_consensus < 0.1 &
+              Cur > 2) %>% 
+  ggplot(aes(Cur, mean)) +
+  geom_errorbar(aes(ymin = mean - merr, ymax = mean + merr)) +
+  geom_errorbarh(aes(xmin = Cur - Cur.sd, xmax = Cur + Cur.sd)) +
+  geom_point(aes(color = wheel), size = 3) +
+  labs(title = "Blanks",
+       x = "Current (uA)",
+       y = "Fraction modern") +
+  theme(legend.position = c(0.85, 0.8),
+        legend.background = element_rect(fill = "white", color = "black")) 
 ```
 

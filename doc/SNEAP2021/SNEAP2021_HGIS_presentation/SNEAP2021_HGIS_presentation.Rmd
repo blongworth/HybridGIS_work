@@ -345,7 +345,8 @@ dbds %>%
   geom_hline(yintercept = 0) +
   geom_pointrange(aes(ymin = fm_diff - merr, ymax = fm_diff + merr),
                  position = position_dodge2(width = .1),
-                 size = .5) +
+                 size = .6,
+                 color = "#0069b1") +
   labs(title = "Closed inlet",
        x = "Expected Fm",
        y = "Fm difference") +
@@ -440,9 +441,9 @@ data <- get_hgis_data(here("data/USAMS040121R.txt"), as.Date("2021-04-02")) %>%
 # flow vs time subplot
 flow_time <- data.frame(x = 0:125) %>% 
   ggplot(aes(x)) +
-  stat_function(fun=function(x) concCO2(x, r = 244) * 30, aes(color = "CO2")) +
-  stat_function(fun=function(x) 30 - (concCO2(x, r = 244) * 30), aes(color = "Helium")) +
-  scale_color_manual("Gas", values = c("green", "blue")) +
+  stat_function(fun=function(x) concCO2(x, r = 244) * 30, aes(color = "CO2"), size = 1.5) +
+  stat_function(fun=function(x) 30 - (concCO2(x, r = 244) * 30), aes(color = "Helium"), size = 1.5) +
+  scale_color_manual("Gas", values = c("#00b7bd", "#b7bf10")) +
   labs(title = "Gas flows to source",
        subtitle = "7mL vial, 244μL/min helium, 30μL/min to source",
        y = "Gas flow (μL/min)") +
@@ -457,8 +458,8 @@ flow_time <- data.frame(x = 0:125) %>%
 
 # current vs time subplot
 cur_time <- ggplot(data, aes(time, he12C)) +
-  geom_smooth(span = .4, se=FALSE, color = "green") +
-  geom_point() +
+  geom_smooth(span = .4, se=FALSE, color = "#00b7bd") +
+  geom_point(size = 3, color = "#0069b1") +
   xlim(0, 125) +
   labs(title = "Ion current",
        x = "Time (min)",
@@ -491,8 +492,8 @@ flow_time / cur_time
 <br>
 ```{r cur-flow-os, fig.height=6, dev='svg'}
 ggplot(data, aes(co2flow, he12C)) +
-  geom_smooth(span = .3, se=FALSE, color = medium_blue) +
-  geom_point() +
+  geom_smooth(span = .3, se=FALSE, color = "#00b7bd") +
+  geom_point(size = 3, color = "#0069b1") +
   labs(title = "Vial dillution current",
        subtitle = "250μL/min displacement, 30μl/min delivery",
        x = bquote('CO'[2]~'Flow (μl/min)'), 
@@ -634,7 +635,7 @@ xl <- 8
 livefm_cur <- data %>% 
   filter(!(he12C < 2.5 & normFm > 1.05) & fm_consensus > 0.9) %>% 
   ggplot(aes(he12C, normFm)) + 
-  geom_point() +
+  geom_point(size = 2, color = "#0069b1") +
   xlim(0, xl) +
   ylim(.8, 1.2) +
   ggtitle("Ratio vs current") +
@@ -649,7 +650,7 @@ livefm_cur <- data %>%
 deadfm_cur <- data %>% 
   filter(fm_consensus < 0.1 & normFm < 0.3 & Sample.Name != "DilDeadGas6") %>% 
   ggplot(aes(he12C, normFm)) + 
-  geom_point() +
+  geom_point(size = 2, color = "#00a9e0") +
   xlim(0, xl) +
   ylim(0, .4) +
   xlab("12C Current (μA)") +
@@ -668,10 +669,13 @@ deadfm_cur <- data %>%
 # Plot of data and model with measured blanks
 ggplot(ds, aes(Cur_inv, mean, color = Gas)) +
   geom_abline(slope = blankfit$LiveGas_Cur_inv, 
-              intercept = blankfit$`LiveGas_(Intercept)`) +
+              intercept = blankfit$`LiveGas_(Intercept)`,
+              color = "#0069b1") +
   geom_abline(slope = blankfit$DeadGas_Cur_inv, 
-              intercept = blankfit$`DeadGas_(Intercept)`) +
+              intercept = blankfit$`DeadGas_(Intercept)`,
+              color = "#00a9e0") +
   geom_pointrange(aes(ymin = mean - merr, ymax = mean + merr), size = .3) + 
+  scale_color_manual("Gas", values = c("#b7bf10", "#00a9e0", "#0069b1")) +
   xlim(0, 10) +
   labs(title = "Modelled blank",
        subtitle = "Fits cross at Fm and current of blank",
@@ -683,6 +687,8 @@ ggplot(ds, aes(Cur_inv, mean, color = Gas)) +
                  background_color = "#ffffff") +
   theme(legend.position = "none",
         legend.background = element_rect(fill = "white", color = "black")) 
+
+factor(ds$Gas)
 ```
 ]
 
@@ -728,6 +734,7 @@ carb_data %>% filter(fm_consensus < 0.1 &
   geom_errorbar(aes(ymin = mean - merr, ymax = mean + merr)) +
   geom_errorbarh(aes(xmin = Cur - Cur.sd, xmax = Cur + Cur.sd)) +
   geom_point(aes(color = wheel), size = 3) +
+  scale_color_manual("wheel", values = c("#b7bf10", "#00a9e0", "#0069b1")) +
   labs(title = "Blanks",
        x = "12C Current (μA)",
        y = "Fraction modern") +

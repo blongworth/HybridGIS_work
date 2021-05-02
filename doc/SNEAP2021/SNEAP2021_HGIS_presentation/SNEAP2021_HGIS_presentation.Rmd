@@ -42,6 +42,7 @@ background <- "#e6e7e8"
 style_mono_light(
   # colors
   base_color = dark_blue,
+  white_color = lighten_color("#d9d9d6", .5),
   # primary_color = background,
   # secondary_color = dark_blue,
   
@@ -193,8 +194,8 @@ Potential for:
 read.csv(here("data/14Nov2017LPtest.csv"), skip = 4) %>%
   mutate(flow = flowcalc(supply/10, 2E-5, 1.49E-5, 1.58)) %>% 
   ggplot(aes(flow, current)) +
-  geom_smooth(se = FALSE, span = 0.7, color = dark_blue) + 
-  geom_point() +
+  geom_smooth(se = FALSE, span = 0.7, color = "#00b7bd") + 
+  geom_point(size = 4, color = "#0069b1") +
   labs(title = "Ion current and gas flow",
           x = bquote('CO'[2]~'Flow (μl/min)'), 
           y = "12C current (μA)") +

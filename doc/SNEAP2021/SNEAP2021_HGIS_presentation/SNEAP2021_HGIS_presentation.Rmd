@@ -70,6 +70,7 @@ style_extra_css(
 ### Benefits
 
 - Skip a time-consuming reduction to graphite
+- Rapid iteration for science/development
 - Eliminate blank associated with graphitization
 
 ### Challenges
@@ -178,8 +179,9 @@ Potential for:
 
 .pull-left[
 ### Conditions
+* Pure CO<sub>2</sub> to source
 * Modern and dead CO<sub>2</sub>
-* 8m x 50 μm capillary
+* 8 m x 50 μm capillary
 * 0-4 atm supply pressure
 
 ### Results
@@ -223,15 +225,16 @@ Gas mixtures - helium dilution:
 * Increase pressure and total flow
 * Reduce pCO<sub>2</sub>
 * CO<sub>2</sub> flow remains constant? No - viscosity
+* He is 25% more viscous than CO<sub>2</sub>
 ]
 
 .pull-right[
 
-<br>
 ### $$PV=nRT$$
 
 ![](images/inlet_flow_diag.svg)
 
+### $$Q=\frac{\Delta P \pi R^4}{8\mu L}$$
 ]
 
 ???
@@ -239,6 +242,8 @@ Gas mixtures - helium dilution:
 Pressure of CO<sub>2</sub> in inlet controls flow in capillary
 
 P = flow = current
+
+1/viscosity = flow
 
 * increase partial pressure of CO<sub>2</sub> by dilution?
 Gas inlet controls flow of CO<sub>2</sub> to source by varying pressure, volume, and gas composition.
@@ -405,11 +410,13 @@ Open inlets maintain constant atmospheric pressure, producing constant<sup>1</su
 * Pre-sputter target
 * Displace sample from vial to split with He 
 * Measure ratios for 15-30 min.
+
 ]
 
 .pull-right[
 .center[![gilson autosampler](images/gilson.png)]
-.right[Automated gas handling system]
+.right[Automated gas handling system (Roberts, 2013)
+]
 ]
 
 ???
@@ -480,7 +487,7 @@ flow_time / cur_time
 
 * Note similarity to first tests
 * Flat top means stable currents/ratios for long enough to measure
-* Sample size can be reduced to 2 mL
+* Sample size can be reduced to 2 mL (~1 mg C)
 * Further reduction with increased flow to source
 
 ### Balance flow rates to maximize stable currents and minimize sample size
@@ -494,7 +501,7 @@ flow_time / cur_time
 ggplot(data, aes(co2flow, he12C)) +
   geom_smooth(span = .3, se=FALSE, color = "#00b7bd") +
   geom_point(size = 3, color = "#0069b1") +
-  labs(title = "Vial dillution current",
+  labs(title = "Vial dilution current",
        subtitle = "250μL/min displacement, 30μl/min delivery",
        x = bquote('CO'[2]~'Flow (μl/min)'), 
        y = "12C current (μA)") +
@@ -611,7 +618,7 @@ blank_val <- blankfit %>%
 # Current dependent blank
 
 $$I_{sample} + I_{blank} = I_{meas}$$
-$$Fm_m=Fm_bI_b+Fm_sI_s$$
+$$Fm_mI_m=Fm_bI_b+Fm_sI_s$$
 
 $$Fm_s = Fm_m + \frac{I_b(Fm_m-Fm_b)}{I_m-I_b}$$
 
@@ -677,7 +684,7 @@ ggplot(ds, aes(Cur_inv, mean, color = Gas)) +
   geom_pointrange(aes(ymin = mean - merr, ymax = mean + merr), size = .3) + 
   scale_color_manual("Gas", values = c("#b7bf10", "#00a9e0", "#0069b1")) +
   xlim(0, 10) +
-  labs(title = "Modelled blank",
+  labs(title = "Modeled blank",
        subtitle = "Fits cross at Fm and current of blank",
        x = "Inverse 12C Current (μA-1)",
        y = "Fraction modern") +
@@ -687,8 +694,6 @@ ggplot(ds, aes(Cur_inv, mean, color = Gas)) +
                  background_color = "#ffffff") +
   theme(legend.position = "none",
         legend.background = element_rect(fill = "white", color = "black")) 
-
-factor(ds$Gas)
 ```
 ]
 
@@ -883,7 +888,7 @@ Current goals:
 
 Mark Roberts, Josh Burton, Josh Hlavenka, Al Gagnon, Kalina Gospodinova, Mark Kurz, and the staff of NOSAMS
 
-Karl von Reden, Ann McNichol
+Karl von Reden
 
 Cam McIntyre, SUERC
 
@@ -905,17 +910,3 @@ Ted Ognibene, CAMS
 </td>
 </tr>
 </table>
-
----
-
-# Sample size reduction
-
-Open split defines pressure, therefore
-
-smaller samples = higher dilution = higher flow
-
-plot: sample size vs. required flow
-
-pressure control to maintain constant CO<sub>2</sub> to source
-
-figure: setup with pressure control

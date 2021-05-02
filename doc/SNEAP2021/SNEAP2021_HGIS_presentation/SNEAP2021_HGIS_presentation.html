@@ -104,7 +104,9 @@ Performance = currents counts stability efficiency time
 
 .pull-right[
 ![Salazar, 2013](images/salazar_hgis_target_flow.png)
-.right[Salazar, 2013]
+.right[Gas density in HGIS Cathode
+
+(Salazar, 2013)]
 ]
 
 ???
@@ -118,12 +120,15 @@ Predicted chemistry/physics of decomposition and ionization
 # The NEC HGIS
 
 .pull-left[
+
+* Pneumatic arm brings gas to source
 * Introduce gas to back of cathode
-* Rest is gas handling
+* The rest is gas handling
 &lt;br&gt;
 &lt;br&gt;
 
-&lt;img src="images/hgis_arm_source.jpeg" width="80%" style="display: block; margin: auto;" /&gt;
+.center[&lt;img src="images/hgis_arm_source.jpeg" width="80%" /&gt;]
+.right[MCSNICS source with gas arm]
 ]
 
 .pull-right[
@@ -149,7 +154,7 @@ Potential for:
 
 .pull-right[
 ![HGIS Target](images/target_cutaway.png)
-NEC hybrid target cutaway
+.right[NEC hybrid target cutaway]
 ]
 
 ---
@@ -163,7 +168,7 @@ NEC hybrid target cutaway
 * 0-4 atm supply pressure
 
 ### Results
-* ~10μA &lt;sup&gt;12&lt;/sup&gt;C&lt;sup&gt;-&lt;/sup&gt;
+* ~8 μA &lt;sup&gt;12&lt;/sup&gt;C&lt;sup&gt;-&lt;/sup&gt;
 * &lt;1% precision (SE of repeat measurements)
 * 1% blank
 * 1-3% total efficiency
@@ -182,14 +187,14 @@ Adapter between CO&lt;sub&gt;2&lt;/sub&gt; producers and source.
 
 Goal: constant flow of CO&lt;sub&gt;2&lt;/sub&gt; to source at ideal rate.
 
-Increase flow by
-* increasing pCO&lt;sub&gt;2&lt;/sub&gt;
-* reducing volume
+Increase CO&lt;sub&gt;2&lt;/sub&gt; flow by increasing pCO&lt;sub&gt;2&lt;/sub&gt;:
+* Add CO&lt;sub&gt;2&lt;/sub&gt; 
+* Reduce volume
 
-Gas mixtures - partial pressure
-* adding another gas increases pressure and total flow
-* reduces pCO&lt;sub&gt;2&lt;/sub&gt;
-* CO&lt;sub&gt;2&lt;/sub&gt; remains constant? No- viscosity
+Gas mixtures - helium dilution:
+* Increase pressure and total flow
+* Reduce pCO&lt;sub&gt;2&lt;/sub&gt;
+* CO&lt;sub&gt;2&lt;/sub&gt; flow remains constant? No - viscosity
 ]
 
 .pull-right[
@@ -243,6 +248,8 @@ Smallest samples require minimizing inlet volume and pressure while maintaining 
 .pull-right.center[
 &lt;br&gt;&lt;br&gt;&lt;br&gt;
 &lt;img src="images/dual_bellows.png" width="80%" /&gt;
+
+.right[Dual-bellows closed inlet]
 ]
 
 ???
@@ -259,14 +266,14 @@ Smallest samples require minimizing inlet volume and pressure while maintaining 
 .pull-left[
 #### IRMS dual bellows
 
-
-* VG Prism dual bellows
-* LabVIEW interface
-* 2 x bellows
-* Cryotraps
+* VG Prism inlet
+* Bellows for volume control
+* Cryotraps to move and isolate CO&lt;sub&gt;2&lt;/sub&gt;
+* LabVIEW control
 * Manifold capable
 
 ![IRMS inlet diagram](images/HGIS_dual_bellows_drawing.svg)
+.right[Closed inlet schematic]
 ]
 
 .pull-right[
@@ -278,24 +285,24 @@ Smallest samples require minimizing inlet volume and pressure while maintaining 
 .pull-left[
 # Open split
 
-P and V are held constant, so only mixture controls pCO&lt;sub&gt;2&lt;/sub&gt;
+* Pressure is held constant at 1 atm
+* Gas mixture controls pCO&lt;sub&gt;2&lt;/sub&gt;
+* Helium displaces CO&lt;sub&gt;2&lt;/sub&gt; from vials into split
+* Capillary to source controls gas flow
 
-Use helium to displace CO&lt;sub&gt;2&lt;/sub&gt; from vials into split.
-
-Capillary to source controls gas flow
-
-Open inlets maintain constant atmospheric pressure, producing constant&lt;sup&gt;1&lt;/sup&gt; flow to source
+Open inlets maintain constant atmospheric pressure, producing constant&lt;sup&gt;1&lt;/sup&gt; flow to source.
 
 
 ![open split diagram](images/HGIS_open_split_drawing.svg)
-
-.footnote[ [1] flow varies by composition due to differing viscosity]
 ]
 
 .pull-right.center[
-&lt;br&gt;&lt;br&gt;&lt;br&gt;
+&lt;br&gt;&lt;br&gt;
 &lt;img src="images/gas_control.jpg" width="75%" /&gt;
+.right[Open inlet setup]
 ]
+
+.footnote[[1] flow varies by composition due to differing viscosity]
 
 ???
 
@@ -311,19 +318,21 @@ Open inlets maintain constant atmospheric pressure, producing constant&lt;sup&gt
 .pull-left[
 #### Sample preparation
 
+* Weigh carbonate into vial
 * Evacuate vial
 * Add acid to carbonate
-* Fills vial with CO&lt;sub&gt;2&lt;/sub&gt; at 1 atm
+* Reaction fills vial with CO&lt;sub&gt;2&lt;/sub&gt; at 1 atm
 
 #### Measurement
 
 * Pre-sputter target
-* Displace sample 
-* Measurement
+* Displace sample from vial to split with He 
+* Measure ratios for 15-30 min.
 ]
 
 .pull-right[
 .center[![gilson autosampler](images/gilson.png)]
+.right[Automated gas handling system]
 ]
 
 ???
@@ -338,30 +347,34 @@ figure: DAG graph of process
 
 Helium displacement of CO&lt;sub&gt;2&lt;/sub&gt; from vial. Monitor currents and ratios as pCO&lt;sub&gt;2&lt;/sub&gt; decreases.
 
-* No current suppresion at high CO&lt;sub&gt;2&lt;/sub&gt;
+* No current suppression at high pCO&lt;sub&gt;2&lt;/sub&gt;
 * Current stable until 40 min
-* Corresponds to 2mL CO&lt;sub&gt;2&lt;/sub&gt;
-
-Balance flow rates to maximize stable currents and minimize sample size
+* 40 min ≈ 2 mL CO&lt;sub&gt;2&lt;/sub&gt;
 ]
 
-
 .pull-right[
+&lt;br&gt;
+&lt;br&gt;
 ![](SNEAP2021_HGIS_presentation_files/figure-html/cur-time-os-1.svg)&lt;!-- --&gt;
 ]
 
 ---
 
+.pull-left[
 # Currents and flows
 
-.pull-left[
 * Note similarity to first tests
 * Flat top means stable currents/ratios for long enough to measure
-* Sample size can be reduced to 2mL
+* Sample size can be reduced to 2 mL
 * Further reduction with increased flow to source
+
+### Balance flow rates to maximize stable currents and minimize sample size
 ]
 
 .pull-right[
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
 ![](SNEAP2021_HGIS_presentation_files/figure-html/cur-flow-os-1.svg)&lt;!-- --&gt;
 ]
 
@@ -388,7 +401,7 @@ Lead into blank on next slide
 
 `$$Fm_s = Fm_m + \frac{I_b(Fm_m-Fm_b)}{I_m-I_b}$$`
 
-0.1μA blank current with 10μA total means 1% blank
+0.1 μA blank current with 10 μA total = 1% blank
 
 Modeled blank:
 * Fm: 0.425
@@ -423,14 +436,13 @@ Targets alone and targets + helium (fm and current)
 # Current independent blank
 
 .pull-left[
-If standards, blanks, and unknowns have same current:
+If **standards**, **blanks**, and **unknowns** have the **same** blank and current:
 
-linear fit used to correct
+### Linear fit used to correct:
 
 `$$Fm_s = Fm_m - Fm_{blk}\frac{Fm_{std} - Fm_m}{Fm_{std}}$$`
 
-#### Mean Fm of blanks:
-0.0203
+### Mean Fm of blanks: 0.0203
 
 ]
 
@@ -461,7 +473,7 @@ It's relatively easy to produce runs with terrible current, but usually not good
 .left-column[
 # Secondary standards
 
-* Currents &gt; 2μA
+* Currents &gt; 2 μA
 * Note current dependence
 
 ### Data summary
@@ -483,36 +495,25 @@ issues with blank and normalization
 
 ---
 
-# Sample size reduction
-
-Open split defines pressure, therefore
-
-smaller samples = higher dilution = higher flow
-
-plot: sample size vs. required flow
-
-pressure control to maintain constant CO&lt;sub&gt;2&lt;/sub&gt; to source
-
-figure: setup with pressure control
-
----
-
 # MICADAS
 
 .pull-left[
 ### Coming soon(ish)...
 
-Source differences
+#### Source differences
 * one target in source at a time - lower blank
 * gas supplied via conical joint in side of target
 
-Inlet differences
+#### Inlet differences
 * MICADAS uses closed inlet
 * CO&lt;sub&gt;2&lt;/sub&gt; from carbonates transferred onto resin trap in stream of helium
 * Sample introduced by adding helium and adjusting flow using variable volume
 ]
 
-.pull-right[![](images/MICADAS_HGIS_interface.jpeg)]
+.pull-right[
+![](images/MICADAS_HGIS_interface.jpeg)
+.right[MICADAS Gas Interface]
+]
 
 ???
 
@@ -525,14 +526,15 @@ photo: micadas source
 
 # Summary
 
-NOSAMS has developed a successful method for analysing carbonates with an open-split interface delivering gas to a NEC MCSNICS gas-accepting Cesium sputter ion source.
+NOSAMS has developed a successful method for analyzing radiocarbon in carbonates with an open-split interface delivering CO&lt;sub&gt;2&lt;/sub&gt; gas to a NEC MCSNICS gas-accepting cesium sputter ion source.
 
 Current goals:
-* finish characterization of the method
-* Comparison to graphite with test samples
+* Finish characterization of the method
+* Compare to graphite with test samples
 * Improve accuracy
 * Better understand method blank
 * Reduce sample size
+* Automation of data acquisition and reduction
 
 ---
 
@@ -562,6 +564,20 @@ Ted Ognibene, CAMS
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;/table&gt;
+
+---
+
+# Sample size reduction
+
+Open split defines pressure, therefore
+
+smaller samples = higher dilution = higher flow
+
+plot: sample size vs. required flow
+
+pressure control to maintain constant CO&lt;sub&gt;2&lt;/sub&gt; to source
+
+figure: setup with pressure control
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Progress with the NOSAMS</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Brett Longworth" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Progress with the NOSAMS
+## Hybrid Gas Ion Source
+### Brett Longworth
+### NOSAMS/WHOI
+### 2021/05/03
+
+---
+
+
+
+
+# Why run gas instead of graphite?
+
+
+.pull-left[
+### Benefits
+
+- Skip a time-consuming reduction to graphite
+- Eliminate blank associated with graphitization
+
+### Challenges
+
+- Ultimate precision is lower
+- Lower currents/counts (time to precision)
+- variability in blank (current dependent)
+- variability in sample performance
+]
+
+.pull-right[
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;table&gt;
+&lt;caption&gt;Comparison of AMS methods&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Graphite &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; CFAMS ECR GIS &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Hybrid GIS &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Continous flow &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; No &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Yes &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; No &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Measurement time &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 30 min &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 5 min &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 15-30 min &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Precision &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.3% &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1% &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1% &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Background &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.1 pmc &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1 pmc &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1 pmc &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+]
+
+???
+
+Performance = currents counts stability efficiency time
+
+---
+
+# How do you sputter a gas?
+
+
+### `$$CO_2+e^- \longrightarrow C^-+2O^-$$`
+
+&lt;br&gt;
+.pull-left[
+* Inject CO&lt;sub&gt;2&lt;/sub&gt; gas onto Ti target
+* Sputter with Cs&lt;sup&gt;+&lt;/sup&gt;
+* Dissociate molecules
+* Produce C&lt;sup&gt;-&lt;/sup&gt; ions (and O&lt;sup&gt;-&lt;/sup&gt;, CH&lt;sup&gt;-&lt;/sup&gt;, OH&lt;sup&gt;-&lt;/sup&gt;, CO&lt;sup&gt;-&lt;/sup&gt;...)
+* Extract C&lt;sup&gt;-&lt;/sup&gt; beam
+]
+
+.pull-right[
+![Salazar, 2013](images/salazar_hgis_target_flow.png)
+.right[Salazar, 2013]
+]
+
+???
+
+introduction onto Ti surface in target recess
+
+Predicted chemistry/physics of decomposition and ionization
+
+---
+
+# The NEC HGIS
+
+.pull-left[
+* Introduce gas to back of cathode
+* Rest is gas handling
+&lt;br&gt;
+&lt;br&gt;
+
+&lt;img src="images/hgis_arm_source.jpeg" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+.center[
+&lt;img src="images/HGIS_arm_drawing.svg" width="60%" /&gt;
+]
+]
+
+???
+
+Figure/photo of NEC bellows system
+
+---
+
+# Targets
+
+.pull-left[
+Potential for:
+
+* Lower cost
+* Better performance
+]
+
+.pull-right[
+![HGIS Target](images/target_cutaway.png)
+NEC hybrid target cutaway
+]
+
+---
+
+# First tests
+
+.pull-left[
+### Conditions
+* Modern and dead CO&lt;sub&gt;2&lt;/sub&gt;
+* 8m x 50 μm capillary
+* 0-4 atm supply pressure
+
+### Results
+* ~10μA &lt;sup&gt;12&lt;/sup&gt;C&lt;sup&gt;-&lt;/sup&gt;
+* &lt;1% precision (SE of repeat measurements)
+* 1% blank
+* 1-3% total efficiency
+]
+
+.pull-right[
+![](SNEAP2021_HGIS_presentation_files/figure-html/cur-flow-1.svg)&lt;!-- --&gt;
+]
+
+---
+
+# Inlet/interface systems
+
+.pull-left[
+Adapter between CO&lt;sub&gt;2&lt;/sub&gt; producers and source. 
+
+Goal: constant flow of CO&lt;sub&gt;2&lt;/sub&gt; to source at ideal rate.
+
+Increase flow by
+* increasing pCO&lt;sub&gt;2&lt;/sub&gt;
+* reducing volume
+
+Gas mixtures - partial pressure
+* adding another gas increases pressure and total flow
+* reduces pCO&lt;sub&gt;2&lt;/sub&gt;
+* CO&lt;sub&gt;2&lt;/sub&gt; remains constant? No- viscosity
+]
+
+.pull-right[
+
+&lt;br&gt;
+### `$$PV=nRT$$`
+
+![](images/inlet_flow_diag.svg)
+
+]
+
+???
+
+Pressure of CO&lt;sub&gt;2&lt;/sub&gt; in inlet controls flow in capillary
+
+P = flow = current
+
+* increase partial pressure of CO&lt;sub&gt;2&lt;/sub&gt; by dilution?
+Gas inlet controls flow of CO&lt;sub&gt;2&lt;/sub&gt; to source by varying pressure, volume, and gas composition.
+
+
+Dilution with helium
+
+Makes moving small amounts of gas easier by increasing pressure
+
+Source doesn't care about helium as long as it gets its CO&lt;sub&gt;2&lt;/sub&gt;
+
+
+Introduce steady, reproducible current as key to data quality
+Constant flow of CO&lt;sub&gt;2&lt;/sub&gt; to source produces constant currents, which reduces ratio variability.
+
+---
+
+.pull-left[
+# Closed inlet
+
+### Flow control
+* Change volume
+* Add CO&lt;sub&gt;2&lt;/sub&gt;
+* Add Helium
+
+
+### For a given sample size:
+* High inlet volume = low inlet pressure (NEC inlet)
+* Low inlet volume = high inlet pressure (Ionplus inlet)
+
+&lt;br&gt;
+Smallest samples require minimizing inlet volume and pressure while maintaining good flow control
+]
+
+.pull-right.center[
+&lt;br&gt;&lt;br&gt;&lt;br&gt;
+&lt;img src="images/dual_bellows.png" width="80%" /&gt;
+]
+
+???
+
+* Mechanically more complex
+* Extra sample transfer time
+    * but can be done during burn-in
+* Data/performance simpler
+
+---
+
+# NOSAMS Closed inlet
+
+.pull-left[
+#### IRMS dual bellows
+
+
+* VG Prism dual bellows
+* LabVIEW interface
+* 2 x bellows
+* Cryotraps
+* Manifold capable
+
+![IRMS inlet diagram](images/HGIS_dual_bellows_drawing.svg)
+]
+
+.pull-right[
+![](SNEAP2021_HGIS_presentation_files/figure-html/dual-bellows-results-1.svg)&lt;!-- --&gt;
+]
+
+---
+
+.pull-left[
+# Open split
+
+P and V are held constant, so only mixture controls pCO&lt;sub&gt;2&lt;/sub&gt;
+
+Use helium to displace CO&lt;sub&gt;2&lt;/sub&gt; from vials into split.
+
+Capillary to source controls gas flow
+
+Open inlets maintain constant atmospheric pressure, producing constant&lt;sup&gt;1&lt;/sup&gt; flow to source
+
+
+![open split diagram](images/HGIS_open_split_drawing.svg)
+
+.footnote[ [1] flow varies by composition due to differing viscosity]
+]
+
+.pull-right.center[
+&lt;br&gt;&lt;br&gt;&lt;br&gt;
+&lt;img src="images/gas_control.jpg" width="75%" /&gt;
+]
+
+???
+
+* Mechanically/operationally simple
+* Harder to control current variability
+    * during run
+    * if sample size differs
+
+---
+
+# Carbonate method
+
+.pull-left[
+#### Sample preparation
+
+* Evacuate vial
+* Add acid to carbonate
+* Fills vial with CO&lt;sub&gt;2&lt;/sub&gt; at 1 atm
+
+#### Measurement
+
+* Pre-sputter target
+* Displace sample 
+* Measurement
+]
+
+.pull-right[
+.center[![gilson autosampler](images/gilson.png)]
+]
+
+???
+
+table: comparison of carbonate methods
+figure: DAG graph of process
+
+---
+
+.pull-left[
+# Currents and flows
+
+Helium displacement of CO&lt;sub&gt;2&lt;/sub&gt; from vial. Monitor currents and ratios as pCO&lt;sub&gt;2&lt;/sub&gt; decreases.
+
+* No current suppresion at high CO&lt;sub&gt;2&lt;/sub&gt;
+* Current stable until 40 min
+* Corresponds to 2mL CO&lt;sub&gt;2&lt;/sub&gt;
+
+Balance flow rates to maximize stable currents and minimize sample size
+]
+
+
+.pull-right[
+![](SNEAP2021_HGIS_presentation_files/figure-html/cur-time-os-1.svg)&lt;!-- --&gt;
+]
+
+---
+
+# Currents and flows
+
+.pull-left[
+* Note similarity to first tests
+* Flat top means stable currents/ratios for long enough to measure
+* Sample size can be reduced to 2mL
+* Further reduction with increased flow to source
+]
+
+.pull-right[
+![](SNEAP2021_HGIS_presentation_files/figure-html/cur-flow-os-1.svg)&lt;!-- --&gt;
+]
+
+???
+
+compare to first tests
+
+Note that our flat-topped current curve allows variable flow of the vial system. MICADAS has a more pronounced peak so this may not work as well. (Check papers for peak shape)
+
+Also note current dependent ratio (blank) as a complicating factor
+
+Lead into blank on next slide
+
+---
+
+
+
+.pull-left[
+
+# Current dependent blank
+
+`$$I_{sample} + I_{blank} = I_{meas}$$`
+`$$Fm_m=Fm_bI_b+Fm_sI_s$$`
+
+`$$Fm_s = Fm_m + \frac{I_b(Fm_m-Fm_b)}{I_m-I_b}$$`
+
+0.1μA blank current with 10μA total means 1% blank
+
+Modeled blank:
+* Fm: 0.425
+* Current: 0.114 μA
+
+Measured blank:
+* Fm: 0.819
+* Current: 0.121 μA
+
+]
+
+.pull-right[
+
+![](SNEAP2021_HGIS_presentation_files/figure-html/ratio-cur-1.svg)&lt;!-- --&gt;
+
+
+![](SNEAP2021_HGIS_presentation_files/figure-html/blank-model-1.svg)&lt;!-- --&gt;
+]
+
+
+???
+
+Blank = Ion current not from sample gas
+
+Targets alone and targets + helium (fm and current)
+
+...but if current is kept constant, current drops out of correction
+---
+
+
+
+# Current independent blank
+
+.pull-left[
+If standards, blanks, and unknowns have same current:
+
+linear fit used to correct
+
+`$$Fm_s = Fm_m - Fm_{blk}\frac{Fm_{std} - Fm_m}{Fm_{std}}$$`
+
+#### Mean Fm of blanks:
+0.0203
+
+]
+
+.pull-right[
+
+![](SNEAP2021_HGIS_presentation_files/figure-html/blanks-1.svg)&lt;!-- --&gt;
+
+]
+
+???
+
+## Current independent correction
+
+Current/target dependent?
+Constant blanks and currents allow single mass independent correction
+
+3 ways to control blank
+* Reduce blank - better cleaning, presputtering
+* Hold standard, blank, unknown current constant and use current independent correction (linear correction based on dead sample Fm)   
+* Determine Fm and current of blank and use current dependent correction (current balance model)
+Idea: use data from dillution runs of live and dead gas to create curves
+
+It's relatively easy to produce runs with terrible current, but usually not good for blank as caused by other issues.
+
+---
+
+
+.left-column[
+# Secondary standards
+
+* Currents &gt; 2μA
+* Note current dependence
+
+### Data summary
+* mean difference: 0.003
+* sd of difference: 0.017
+
+]
+
+.right-column[
+.right[
+![](SNEAP2021_HGIS_presentation_files/figure-html/secondaries-1.svg)&lt;!-- --&gt;
+]
+]
+
+???
+
+precision, accuracy
+issues with blank and normalization
+
+---
+
+# Sample size reduction
+
+Open split defines pressure, therefore
+
+smaller samples = higher dilution = higher flow
+
+plot: sample size vs. required flow
+
+pressure control to maintain constant CO&lt;sub&gt;2&lt;/sub&gt; to source
+
+figure: setup with pressure control
+
+---
+
+# MICADAS
+
+.pull-left[
+### Coming soon(ish)...
+
+Source differences
+* one target in source at a time - lower blank
+* gas supplied via conical joint in side of target
+
+Inlet differences
+* MICADAS uses closed inlet
+* CO&lt;sub&gt;2&lt;/sub&gt; from carbonates transferred onto resin trap in stream of helium
+* Sample introduced by adding helium and adjusting flow using variable volume
+]
+
+.pull-right[![](images/MICADAS_HGIS_interface.jpeg)]
+
+???
+
+More pronounced current vs. flow curve makes measurement more difficult at variable CO&lt;sub&gt;2&lt;/sub&gt; flow.
+Salazar and Szidat are developing an open split interface with EA - squish peak with dead volume
+
+photo: micadas source
+
+---
+
+# Summary
+
+NOSAMS has developed a successful method for analysing carbonates with an open-split interface delivering gas to a NEC MCSNICS gas-accepting Cesium sputter ion source.
+
+Current goals:
+* finish characterization of the method
+* Comparison to graphite with test samples
+* Improve accuracy
+* Better understand method blank
+* Reduce sample size
+
+---
+
+# Thank You!
+
+Mark Roberts, Josh Burton, Josh Hlavenka, Al Gagnon, Kalina Gospodinova, Mark Kurz, and the staff of NOSAMS
+
+Karl von Reden, Ann McNichol
+
+Cam McIntyre, SUERC
+
+Ted Ognibene, CAMS
+
+&lt;br&gt;
+&lt;br&gt;
+
+&lt;table style="width:100%"&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;img src="images/NOSAMS_logo_transparent.png"&gt;
+&lt;/td&gt;
+&lt;td&gt;
+&lt;img src="images/WHOI_PrimaryLogo_DarkBlueType_RGB.png"&gt;
+&lt;/td&gt;
+&lt;td&gt;
+&lt;img src="images/NSF_4-Color_bitmap_Logo.png"&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Progress with the NOSAMS</title>
+    <title>Progress with the NOSAMS Hybrid Gas Ion Source</title>
     <meta charset="utf-8" />
     <meta name="author" content="Brett Longworth" />
     <script src="libs/header-attrs/header-attrs.js"></script>
@@ -11,8 +11,7 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
-# Progress with the NOSAMS
-## Hybrid Gas Ion Source
+# Progress with the NOSAMS<br>Hybrid Gas Ion Source
 ### Brett Longworth
 ### NOSAMS/WHOI
 ### 2021/05/03
@@ -22,8 +21,36 @@ class: center, middle, inverse, title-slide
 
 
 
-# Why run gas instead of graphite?
+# How do you sputter a gas?
 
+### `$$CO_2+e^- \longrightarrow C^-+2O^-$$`
+
+.pull-left[
+* Inject CO&lt;sub&gt;2&lt;/sub&gt; gas onto Ti target
+* Sputter with Cs&lt;sup&gt;+&lt;/sup&gt;
+* Dissociate molecules
+* Produce C&lt;sup&gt;-&lt;/sup&gt; ions (and O&lt;sup&gt;-&lt;/sup&gt;, CH&lt;sup&gt;-&lt;/sup&gt;, OH&lt;sup&gt;-&lt;/sup&gt;, CO&lt;sup&gt;-&lt;/sup&gt;...)
+* Extract C&lt;sup&gt;-&lt;/sup&gt; beam
+]
+
+.pull-right[
+![Salazar, 2013](images/salazar_hgis_target_flow.png)
+.right[Gas density in HGIS Cathode
+
+(Salazar, 2013)]
+]
+
+???
+
+introduction onto Ti surface in target recess
+
+Predicted chemistry/physics of decomposition and ionization
+
+Plasma in target recess? Blue glow.
+
+---
+
+# Why run gas instead of graphite?
 
 .pull-left[
 ### Benefits
@@ -36,8 +63,8 @@ class: center, middle, inverse, title-slide
 
 - Ultimate precision is lower
 - Lower currents/counts (time to precision)
-- variability in blank (current dependent)
-- variability in sample performance
+- Variability in blank (current dependent)
+- Variability in sample performance
 ]
 
 .pull-right[
@@ -85,36 +112,6 @@ class: center, middle, inverse, title-slide
 
 ???
 
-Performance = currents counts stability efficiency time
-
----
-
-# How do you sputter a gas?
-
-
-### `$$CO_2+e^- \longrightarrow C^-+2O^-$$`
-
-&lt;br&gt;
-.pull-left[
-* Inject CO&lt;sub&gt;2&lt;/sub&gt; gas onto Ti target
-* Sputter with Cs&lt;sup&gt;+&lt;/sup&gt;
-* Dissociate molecules
-* Produce C&lt;sup&gt;-&lt;/sup&gt; ions (and O&lt;sup&gt;-&lt;/sup&gt;, CH&lt;sup&gt;-&lt;/sup&gt;, OH&lt;sup&gt;-&lt;/sup&gt;, CO&lt;sup&gt;-&lt;/sup&gt;...)
-* Extract C&lt;sup&gt;-&lt;/sup&gt; beam
-]
-
-.pull-right[
-![Salazar, 2013](images/salazar_hgis_target_flow.png)
-.right[Gas density in HGIS Cathode
-
-(Salazar, 2013)]
-]
-
-???
-
-introduction onto Ti surface in target recess
-
-Predicted chemistry/physics of decomposition and ionization
 
 ---
 
@@ -140,17 +137,20 @@ Predicted chemistry/physics of decomposition and ionization
 
 ???
 
-Figure/photo of NEC bellows system
 
 ---
 
 # Targets
 
 .pull-left[
-Potential for:
+### Goal:
 
-* Lower cost
+* Maximize gas density and residence time where sputtering and ionization are happening.
+
+### Potential for:
+
 * Better performance
+* Lower cost
 ]
 
 .pull-right[
@@ -158,6 +158,13 @@ Potential for:
 .right[NEC hybrid target cutaway]
 ]
 
+???
+
+CAMS and ETH have both done a lot of target geometry research.
+
+In the end, compromise between simplicity and function.
+
+Maybe still gains to be made. 
 ---
 
 # First tests
@@ -179,6 +186,12 @@ Potential for:
 .pull-right[
 ![](SNEAP2021_HGIS_presentation_files/figure-html/cur-flow-1.svg)&lt;!-- --&gt;
 ]
+
+???
+
+Bottle gas allowed testing full range of flows
+
+Precision not accuracy: modern gas normalized to itself
 
 ---
 
@@ -217,18 +230,16 @@ P = flow = current
 
 1/viscosity = flow
 
-* increase partial pressure of CO&lt;sub&gt;2&lt;/sub&gt; by dilution?
 Gas inlet controls flow of CO&lt;sub&gt;2&lt;/sub&gt; to source by varying pressure, volume, and gas composition.
 
+increase partial pressure of CO&lt;sub&gt;2&lt;/sub&gt; by dilution?
 
-Dilution with helium
-
-Makes moving small amounts of gas easier by increasing pressure
+Dilution Makes moving small amounts of gas easier by increasing pressure
 
 Source doesn't care about helium as long as it gets its CO&lt;sub&gt;2&lt;/sub&gt;
 
-
 Introduce steady, reproducible current as key to data quality
+
 Constant flow of CO&lt;sub&gt;2&lt;/sub&gt; to source produces constant currents, which reduces ratio variability.
 
 ---
@@ -239,15 +250,12 @@ Constant flow of CO&lt;sub&gt;2&lt;/sub&gt; to source produces constant currents
 ### Flow control
 * Change volume
 * Add CO&lt;sub&gt;2&lt;/sub&gt;
-* Add Helium
-
+* Add helium
 
 ### For a given sample size:
 * High inlet volume = low inlet pressure (NEC inlet)
 * Low inlet volume = high inlet pressure (Ionplus inlet)
 
-&lt;br&gt;
-Smallest samples require minimizing inlet volume and pressure while maintaining good flow control
 ]
 
 .pull-right.center[
@@ -264,9 +272,10 @@ Smallest samples require minimizing inlet volume and pressure while maintaining 
     * but can be done during burn-in
 * Data/performance simpler
 
+Smallest samples require minimizing inlet volume and pressure while maintaining good flow control
 ---
 
-# NOSAMS Closed inlet
+# NOSAMS closed inlet
 
 .pull-left[
 #### IRMS dual bellows
@@ -371,14 +380,15 @@ Helium displacement of CO&lt;sub&gt;2&lt;/sub&gt; from vial. Monitor currents an
 # Currents and flows
 
 * Note similarity to first tests
-* Flat top means stable currents/ratios for long enough to measure
+* Flat top = stable currents/ratios 
 * Sample size can be reduced to 2 mL (~1 mg C)
 * Further reduction with increased flow to source
 
-### Balance flow rates to maximize stable currents and minimize sample size
+#### Balance flow rates to maximize stable currents and minimize sample size
 ]
 
 .pull-right[
+&lt;br&gt;
 &lt;br&gt;
 &lt;br&gt;
 &lt;br&gt;
@@ -410,14 +420,17 @@ Lead into blank on next slide
 
 0.1 μA blank current with 10 μA total = 1% blank
 
-Modeled blank:
+.pull-left[
+#### Modeled blank:
 * Fm: 0.425
 * Current: 0.114 μA
+]
 
-Measured blank:
+.pull-right[
+#### Measured blank:
 * Fm: 0.819
 * Current: 0.121 μA
-
+]
 ]
 
 .pull-right[
@@ -449,7 +462,7 @@ If **standards**, **blanks**, and **unknowns** have the **same** blank and curre
 
 `$$Fm_s = Fm_m - Fm_{blk}\frac{Fm_{std} - Fm_m}{Fm_{std}}$$`
 
-### Mean Fm of blanks: 0.0203
+#### Mean Fm of blanks: 0.0203
 
 ]
 
@@ -460,6 +473,8 @@ If **standards**, **blanks**, and **unknowns** have the **same** blank and curre
 ]
 
 ???
+
+We'll see what fit looks like on next slide.
 
 ## Current independent correction
 
@@ -508,8 +523,8 @@ issues with blank and normalization
 ### Coming soon(ish)...
 
 #### Source differences
-* one target in source at a time - lower blank
-* gas supplied via conical joint in side of target
+* One target in source at a time - lower blank
+* Gas supplied via conical joint in side of target
 
 #### Inlet differences
 * MICADAS uses closed inlet
@@ -535,13 +550,13 @@ photo: micadas source
 
 NOSAMS has developed a successful method for analyzing radiocarbon in carbonates with an open-split interface delivering CO&lt;sub&gt;2&lt;/sub&gt; gas to a NEC MCSNICS gas-accepting cesium sputter ion source.
 
-Current goals:
+###Goals:
 * Finish characterization of the method
 * Compare to graphite with test samples
 * Improve accuracy
 * Better understand method blank
 * Reduce sample size
-* Automation of data acquisition and reduction
+* Automate data acquisition and reduction
 
 ---
 

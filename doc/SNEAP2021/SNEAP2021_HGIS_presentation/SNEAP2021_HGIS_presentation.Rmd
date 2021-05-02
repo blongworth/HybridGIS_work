@@ -1,6 +1,5 @@
 ---
-title: "Progress with the NOSAMS"
-subtitle: "Hybrid Gas Ion Source"
+title: "Progress with the NOSAMS<br>Hybrid Gas Ion Source"
 author: "Brett Longworth"
 institute: "NOSAMS/WHOI"
 date: "2021/05/03"
@@ -63,8 +62,36 @@ style_extra_css(
 
 ```
 
-# Why run gas instead of graphite?
+# How do you sputter a gas?
 
+### $$CO_2+e^- \longrightarrow C^-+2O^-$$
+
+.pull-left[
+* Inject CO<sub>2</sub> gas onto Ti target
+* Sputter with Cs<sup>+</sup>
+* Dissociate molecules
+* Produce C<sup>-</sup> ions (and O<sup>-</sup>, CH<sup>-</sup>, OH<sup>-</sup>, CO<sup>-</sup>...)
+* Extract C<sup>-</sup> beam
+]
+
+.pull-right[
+![Salazar, 2013](images/salazar_hgis_target_flow.png)
+.right[Gas density in HGIS Cathode
+
+(Salazar, 2013)]
+]
+
+???
+
+introduction onto Ti surface in target recess
+
+Predicted chemistry/physics of decomposition and ionization
+
+Plasma in target recess? Blue glow.
+
+---
+
+# Why run gas instead of graphite?
 
 .pull-left[
 ### Benefits
@@ -77,8 +104,8 @@ style_extra_css(
 
 - Ultimate precision is lower
 - Lower currents/counts (time to precision)
-- variability in blank (current dependent)
-- variability in sample performance
+- Variability in blank (current dependent)
+- Variability in sample performance
 ]
 
 .pull-right[
@@ -100,36 +127,6 @@ methods %>%
 
 ???
 
-Performance = currents counts stability efficiency time
-
----
-
-# How do you sputter a gas?
-
-
-### $$CO_2+e^- \longrightarrow C^-+2O^-$$
-
-<br>
-.pull-left[
-* Inject CO<sub>2</sub> gas onto Ti target
-* Sputter with Cs<sup>+</sup>
-* Dissociate molecules
-* Produce C<sup>-</sup> ions (and O<sup>-</sup>, CH<sup>-</sup>, OH<sup>-</sup>, CO<sup>-</sup>...)
-* Extract C<sup>-</sup> beam
-]
-
-.pull-right[
-![Salazar, 2013](images/salazar_hgis_target_flow.png)
-.right[Gas density in HGIS Cathode
-
-(Salazar, 2013)]
-]
-
-???
-
-introduction onto Ti surface in target recess
-
-Predicted chemistry/physics of decomposition and ionization
 
 ---
 
@@ -155,17 +152,20 @@ Predicted chemistry/physics of decomposition and ionization
 
 ???
 
-Figure/photo of NEC bellows system
 
 ---
 
 # Targets
 
 .pull-left[
-Potential for:
+### Goal:
 
-* Lower cost
+* Maximize gas density and residence time where sputtering and ionization are happening.
+
+### Potential for:
+
 * Better performance
+* Lower cost
 ]
 
 .pull-right[
@@ -173,6 +173,13 @@ Potential for:
 .right[NEC hybrid target cutaway]
 ]
 
+???
+
+CAMS and ETH have both done a lot of target geometry research.
+
+In the end, compromise between simplicity and function.
+
+Maybe still gains to be made. 
 ---
 
 # First tests
@@ -207,6 +214,12 @@ read.csv(here("data/14Nov2017LPtest.csv"), skip = 4) %>%
                  background_color = "#ffffff")
 ```
 ]
+
+???
+
+Bottle gas allowed testing full range of flows
+
+Precision not accuracy: modern gas normalized to itself
 
 ---
 
@@ -245,18 +258,16 @@ P = flow = current
 
 1/viscosity = flow
 
-* increase partial pressure of CO<sub>2</sub> by dilution?
 Gas inlet controls flow of CO<sub>2</sub> to source by varying pressure, volume, and gas composition.
 
+increase partial pressure of CO<sub>2</sub> by dilution?
 
-Dilution with helium
-
-Makes moving small amounts of gas easier by increasing pressure
+Dilution Makes moving small amounts of gas easier by increasing pressure
 
 Source doesn't care about helium as long as it gets its CO<sub>2</sub>
 
-
 Introduce steady, reproducible current as key to data quality
+
 Constant flow of CO<sub>2</sub> to source produces constant currents, which reduces ratio variability.
 
 ---
@@ -267,15 +278,12 @@ Constant flow of CO<sub>2</sub> to source produces constant currents, which redu
 ### Flow control
 * Change volume
 * Add CO<sub>2</sub>
-* Add Helium
-
+* Add helium
 
 ### For a given sample size:
 * High inlet volume = low inlet pressure (NEC inlet)
 * Low inlet volume = high inlet pressure (Ionplus inlet)
 
-<br>
-Smallest samples require minimizing inlet volume and pressure while maintaining good flow control
 ]
 
 .pull-right.center[
@@ -292,9 +300,10 @@ Smallest samples require minimizing inlet volume and pressure while maintaining 
     * but can be done during burn-in
 * Data/performance simpler
 
+Smallest samples require minimizing inlet volume and pressure while maintaining good flow control
 ---
 
-# NOSAMS Closed inlet
+# NOSAMS closed inlet
 
 .pull-left[
 #### IRMS dual bellows
@@ -486,14 +495,15 @@ flow_time / cur_time
 # Currents and flows
 
 * Note similarity to first tests
-* Flat top means stable currents/ratios for long enough to measure
+* Flat top = stable currents/ratios 
 * Sample size can be reduced to 2 mL (~1 mg C)
 * Further reduction with increased flow to source
 
-### Balance flow rates to maximize stable currents and minimize sample size
+#### Balance flow rates to maximize stable currents and minimize sample size
 ]
 
 .pull-right[
+<br>
 <br>
 <br>
 <br>
@@ -624,14 +634,17 @@ $$Fm_s = Fm_m + \frac{I_b(Fm_m-Fm_b)}{I_m-I_b}$$
 
 0.1 μA blank current with 10 μA total = 1% blank
 
-Modeled blank:
+.pull-left[
+#### Modeled blank:
 * Fm: `r format(blank_val$Fm_blank, digits = 3)`
 * Current: `r format(blank_val$m_blank, digits = 3)` μA
+]
 
-Measured blank:
+.pull-right[
+#### Measured blank:
 * Fm: `r ds %>% filter(Gas == "Blank") %>% pull(mean) %>% mean() %>% format(digits = 3)`
 * Current: `r ds %>% filter(Gas == "Blank") %>% pull(Cur) %>% mean() %>% format(digits = 3)` μA
-
+]
 ]
 
 .pull-right[
@@ -726,7 +739,7 @@ If **standards**, **blanks**, and **unknowns** have the **same** blank and curre
 
 $$Fm_s = Fm_m - Fm_{blk}\frac{Fm_{std} - Fm_m}{Fm_{std}}$$
 
-### Mean Fm of blanks: `r carb_data %>% filter(fm_consensus < 0.1 & Cur > 2) %>% pull(mean) %>% mean() %>% format(digits = 3)`
+#### Mean Fm of blanks: `r carb_data %>% filter(fm_consensus < 0.1 & Cur > 2) %>% pull(mean) %>% mean() %>% format(digits = 3)`
 
 ]
 
@@ -754,6 +767,8 @@ carb_data %>% filter(fm_consensus < 0.1 &
 ]
 
 ???
+
+We'll see what fit looks like on next slide.
 
 ## Current independent correction
 
@@ -801,15 +816,16 @@ secs <- ggplot(carb_data, aes(fm_consensus, fm_diff, color = Cur)) +
        y = c(-yl, yl)) +
   labs(title = "Difference from expected Fm",
        subtitle = "Uncorrected",
+       colour = "Cur (μA)",
        y = "Fm difference") +
   theme_classic() +
-  theme_xaringan(title_font_size = 20,
+  theme_xaringan(title_font_size = 18,
                  text_font_size = 16,
                  background_color = "#ffffff") +
   theme(axis.title.x = element_blank(),
         axis.text.x = element_blank(),
         legend.direction = "horizontal",
-        legend.position = c(.86, 1),
+        legend.position = c(.84, 1),
         legend.justification = "bottom")
 
 secs_lbc <- ggplot(carb_data, aes(fm_consensus, fmbc_diff, color = Cur)) +
@@ -824,7 +840,7 @@ secs_lbc <- ggplot(carb_data, aes(fm_consensus, fmbc_diff, color = Cur)) +
        x = "Fm expected",
        y = "Fm difference") +
   theme_classic() +
-  theme_xaringan(title_font_size = 20,
+  theme_xaringan(title_font_size = 18,
                  text_font_size = 16,
                  background_color = "#ffffff") +
   theme(legend.position = "None")
@@ -847,8 +863,8 @@ issues with blank and normalization
 ### Coming soon(ish)...
 
 #### Source differences
-* one target in source at a time - lower blank
-* gas supplied via conical joint in side of target
+* One target in source at a time - lower blank
+* Gas supplied via conical joint in side of target
 
 #### Inlet differences
 * MICADAS uses closed inlet
@@ -874,13 +890,13 @@ photo: micadas source
 
 NOSAMS has developed a successful method for analyzing radiocarbon in carbonates with an open-split interface delivering CO<sub>2</sub> gas to a NEC MCSNICS gas-accepting cesium sputter ion source.
 
-Current goals:
+###Goals:
 * Finish characterization of the method
 * Compare to graphite with test samples
 * Improve accuracy
 * Better understand method blank
 * Reduce sample size
-* Automation of data acquisition and reduction
+* Automate data acquisition and reduction
 
 ---
 

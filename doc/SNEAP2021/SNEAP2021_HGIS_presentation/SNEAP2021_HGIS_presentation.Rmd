@@ -825,7 +825,7 @@ secs <- ggplot(carb_data, aes(fm_consensus, fm_diff, color = Cur)) +
   theme(axis.title.x = element_blank(),
         axis.text.x = element_blank(),
         legend.direction = "horizontal",
-        legend.position = c(.84, 1),
+        legend.position = c(.80, 1),
         legend.justification = "bottom")
 
 secs_lbc <- ggplot(carb_data, aes(fm_consensus, fmbc_diff, color = Cur)) +

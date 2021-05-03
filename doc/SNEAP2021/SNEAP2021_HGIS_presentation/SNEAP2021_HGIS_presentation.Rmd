@@ -158,11 +158,11 @@ methods %>%
 # Targets
 
 .pull-left[
-### Goal:
+### Goal
 
-* Maximize gas density and residence time where sputtering and ionization are happening.
+* Maximize gas density and residence time where sputtering and ionization are happening
 
-### Potential for:
+### Potential for
 
 * Better performance
 * Lower cost
@@ -230,11 +230,11 @@ Adapter between CO<sub>2</sub> producers and source.
 
 Goal: constant flow of CO<sub>2</sub> to source at ideal rate.
 
-Increase CO<sub>2</sub> flow by increasing pCO<sub>2</sub>:
+#### Increase CO<sub>2</sub> flow by increasing pCO<sub>2</sub>
 * Add CO<sub>2</sub> 
 * Reduce volume
 
-Gas mixtures - helium dilution:
+#### Gas mixtures - helium dilution
 * Increase pressure and total flow
 * Reduce pCO<sub>2</sub>
 * CO<sub>2</sub> flow remains constant? No - viscosity
@@ -275,12 +275,12 @@ Constant flow of CO<sub>2</sub> to source produces constant currents, which redu
 .pull-left[
 # Closed inlet
 
-### Flow control
+#### Flow control
 * Change volume
 * Add CO<sub>2</sub>
 * Add helium
 
-### For a given sample size:
+#### For a given sample size
 * High inlet volume = low inlet pressure (NEC inlet)
 * Low inlet volume = high inlet pressure (Ionplus inlet)
 
@@ -438,7 +438,9 @@ figure: DAG graph of process
 .pull-left[
 # Currents and flows
 
-Helium displacement of CO<sub>2</sub> from vial. Monitor currents and ratios as pCO<sub>2</sub> decreases.
+Helium displacement of CO<sub>2</sub> from vial. 
+
+Monitor currents and ratios as pCO<sub>2</sub> decreases.
 
 * No current suppression at high pCO<sub>2</sub>
 * Current stable until 40 min
@@ -635,13 +637,13 @@ $$Fm_s = Fm_m + \frac{I_b(Fm_m-Fm_b)}{I_m-I_b}$$
 0.1 μA blank current with 10 μA total = 1% blank
 
 .pull-left[
-#### Modeled blank:
+#### Modeled blank
 * Fm: `r format(blank_val$Fm_blank, digits = 3)`
 * Current: `r format(blank_val$m_blank, digits = 3)` μA
 ]
 
 .pull-right[
-#### Measured blank:
+#### Measured blank
 * Fm: `r ds %>% filter(Gas == "Blank") %>% pull(mean) %>% mean() %>% format(digits = 3)`
 * Current: `r ds %>% filter(Gas == "Blank") %>% pull(Cur) %>% mean() %>% format(digits = 3)` μA
 ]
@@ -733,9 +735,9 @@ carb_data <- map_dfr(list.files(here("data_analysed"), full.names = TRUE), read_
 # Current independent blank
 
 .pull-left[
-If **standards**, **blanks**, and **unknowns** have the **same** blank and current:
+If **standards**, **blanks**, and **unknowns** have the **same** blank and current, current drops out.
 
-### Linear fit used to correct:
+#### Linear fit used to correct:
 
 $$Fm_s = Fm_m - Fm_{blk}\frac{Fm_{std} - Fm_m}{Fm_{std}}$$
 
@@ -790,7 +792,8 @@ It's relatively easy to produce runs with terrible current, but usually not good
 # Secondary standards
 
 * Currents > 2 μA
-* Note current dependence
+* Current dependence
+* Underestimation of error
 
 ### Data summary
 * Mean difference: `r format(mean(carb_data$fmbc_diff), digits = 1)`
@@ -888,7 +891,7 @@ photo: micadas source
 
 # Summary
 
-NOSAMS has developed a successful method for analyzing radiocarbon in carbonates with an open-split interface delivering CO<sub>2</sub> gas to a NEC MCSNICS gas-accepting cesium sputter ion source.
+**NOSAMS has developed a successful method for analyzing radiocarbon in carbonates with an open-split interface delivering CO<sub>2</sub> gas to a NEC MCSNICS gas-accepting cesium sputter ion source.**
 
 ### Goals:
 * Finish characterization of the method

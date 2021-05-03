@@ -1,8 +1,8 @@
 ---
 title: "Progress with the NOSAMS<br>Hybrid Gas Ion Source"
-author: "Brett Longworth"
+author: "Brett Longworth, Josh Burton,<br>Josh Hlavenka, and Mark Roberts"
 institute: "NOSAMS/WHOI"
-date: "2021/05/03"
+date: "May 3, 2021"
 output:
   xaringan::moon_reader:
     css: xaringan-themer.css
@@ -275,12 +275,12 @@ Constant flow of CO<sub>2</sub> to source produces constant currents, which redu
 .pull-left[
 # Closed inlet
 
-#### Flow control
+### Flow control
 * Change volume
 * Add CO<sub>2</sub>
 * Add helium
 
-#### For a given sample size
+### For a given sample size
 * High inlet volume = low inlet pressure (NEC inlet)
 * Low inlet volume = high inlet pressure (Ionplus inlet)
 

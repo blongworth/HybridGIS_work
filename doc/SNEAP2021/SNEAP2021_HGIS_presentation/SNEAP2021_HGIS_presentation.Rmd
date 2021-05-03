@@ -97,15 +97,15 @@ Plasma in target recess? Blue glow.
 ### Benefits
 
 - Skip a time-consuming reduction to graphite
-- Rapid iteration for science/development
+- Rapid iteration for science and development
 - Eliminate blank associated with graphitization
 
 ### Challenges
 
 - Ultimate precision is lower
 - Lower currents/counts (time to precision)
-- Variability in blank (current dependent)
-- Variability in sample performance
+- Variable blank (current dependent)
+- Reproducible sample performance
 ]
 
 .pull-right[
@@ -793,8 +793,8 @@ It's relatively easy to produce runs with terrible current, but usually not good
 * Note current dependence
 
 ### Data summary
-* mean difference: `r format(mean(carb_data$fmbc_diff), digits = 1)`
-* sd of difference: `r format(sd(carb_data$fmbc_diff), digits = 2)`
+* Mean difference: `r format(mean(carb_data$fmbc_diff), digits = 1)`
+* Standard deviation of difference: `r format(sd(carb_data$fmbc_diff), digits = 2)`
 
 ]
 
@@ -890,7 +890,7 @@ photo: micadas source
 
 NOSAMS has developed a successful method for analyzing radiocarbon in carbonates with an open-split interface delivering CO<sub>2</sub> gas to a NEC MCSNICS gas-accepting cesium sputter ion source.
 
-###Goals:
+### Goals:
 * Finish characterization of the method
 * Compare to graphite with test samples
 * Improve accuracy

@@ -351,85 +351,145 @@ show as agreement with consensus vs consensus value with sample names
 
 Need normalized values, BC values, Errors, and rec_num or consensus value
 
-```{r, message = FALSE}
-df <- map_dfr(list.files(here("data_analysed"), full.names = TRUE), read_csv) %>% 
-  filter(!is.na(rec_num)) %>% 
+```{r carb-data}
+carb_data <- map_dfr(list.files(here("data_analysed"), full.names = TRUE), read_csv) %>% 
+  filter(!is.na(rec_num),
+         Cur > 2) %>% 
   mutate(fm_diff = mean - fm_consensus,
          fm_sigma = sigma(mean, fm_consensus, merr),
          fmbc_diff = fm_lbc - fm_consensus,
          fmbc_sigma = sigma(fm_lbc, fm_consensus, merr))
 ```
 
+### Current independent blank
 
 
-### difference from consensus
+#### Linear fit used to correct:
 
-```{r, fig.height=5, dev='svg'}
+$$Fm_s = Fm_m - Fm_{blk}\frac{Fm_{std} - Fm_m}{Fm_{std}}$$
 
-dfc <- df %>% 
-  filter(Cur > 2)
+Mean Fm of blanks: `r carb_data %>% filter(fm_consensus < 0.1 & Cur > 2) %>% pull(mean) %>% mean() %>% format(digits = 3)`
 
-ps <- 0.3
-dw <- 0.03
-yl <- .1
-
-secs <- ggplot(dfc, aes(fm_consensus, fm_diff, color = Cur)) +
-  geom_hline(yintercept = 0) +
-  geom_smooth(method = "lm", se = FALSE) +
-  geom_pointrange(aes(ymin = fm_diff - merr, ymax = fm_diff + merr), 
-                  position = position_dodge2(width = dw),
-                  size = ps,) +
-  #geom_point() +
-  lims(x = c(-0.05, 1.1),
-       y = c(-yl, yl)) +
-  labs(title = "Difference from consensus",
-       subtitle = "Uncorrected",
-       y = "Fm difference") +
-  theme(axis.title.x = element_blank(),
-        axis.text.x = element_blank(),
-        legend.direction = "horizontal",
-        legend.position = c(.88, 1),
-        legend.justification = "bottom")
-
-secs_lbc <- ggplot(dfc, aes(fm_consensus, fmbc_diff, color = Cur)) +
-  geom_hline(yintercept = 0) +
-  geom_smooth(method = "lm", se = FALSE) +
-  #geom_hline(yintercept = mean_diff) +
-  geom_pointrange(aes(ymin = fmbc_diff - merr, ymax = fmbc_diff + merr), 
-                  position = position_dodge2(width = dw),
-                  size = ps) +
-  #geom_point() +
-  lims(x = c(-0.05, 1.1),
-       y = c(-yl, yl)) +
-  labs(subtitle = "LBC-corrected",
-       x = "Fm consensus",
-       y = "Fm difference") +
-  theme(legend.position = "None")
-
-secs / secs_lbc
-```
-### same for sigma
-
-```{r}
-ggplot(df, aes(fm_consensus, sigma)) +
-  geom_hline(yintercept = 0) +
-  geom_point() +
-  ggtitle("Sigma of LBC-corrected vs consensus")
-```
-
-### Blanks - current independent
-
-```{r}
-df %>% filter(fm_consensus < 0.1 &
+```{r blanks, fig.height=5, dev='svg'}
+carb_data %>% filter(fm_consensus < 0.1 &
               Cur > 2) %>% 
   ggplot(aes(Cur, mean)) +
   geom_errorbar(aes(ymin = mean - merr, ymax = mean + merr)) +
   geom_errorbarh(aes(xmin = Cur - Cur.sd, xmax = Cur + Cur.sd)) +
   geom_point(aes(color = wheel), size = 3) +
+  scale_color_manual("wheel", values = c("#b7bf10", "#00a9e0", "#0069b1")) +
   labs(title = "Blanks",
-       x = "Current (uA)",
+       x = "12C Current (μA)",
        y = "Fraction modern") +
-  theme(legend.position = c(0.85, 0.8),
+  theme_classic() +
+  theme(legend.position = c(0.82, 0.76),
         legend.background = element_rect(fill = "white", color = "black")) 
 ```
+
+### Secondary standards
+
+* Currents > 2 μA
+* Current dependence
+* Underestimation of error
+
+#### Data summary
+* Mean difference: `r format(mean(carb_data$fmbc_diff), digits = 1)`
+* Standard deviation of difference: `r format(sd(carb_data$fmbc_diff), digits = 2)`
+
+```{r secondaries, fig.height=6, fig.width=7.5, dev='svg'}
+
+ps <- 0.3
+dw <- 0.03
+yl <- .1
+
+secs <- ggplot(carb_data, aes(fm_consensus, fm_diff, color = Cur)) +
+  geom_hline(yintercept = 0) +
+  geom_smooth(method = "lm", se = FALSE) +
+  geom_pointrange(aes(ymin = fm_diff - merr, ymax = fm_diff + merr), 
+                  position = position_dodge2(width = dw),
+                  size = ps,) +
+  lims(x = c(-0.05, 1.1),
+       y = c(-yl, yl)) +
+  labs(title = "Difference from expected Fm",
+       subtitle = "Uncorrected",
+       colour = "Cur (μA)",
+       y = "Fm difference") +
+  theme_classic() +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        legend.direction = "horizontal",
+        legend.position = c(.80, 1),
+        legend.justification = "bottom")
+
+secs_lbc <- ggplot(carb_data, aes(fm_consensus, fmbc_diff, color = Cur)) +
+  geom_hline(yintercept = 0) +
+  geom_smooth(method = "lm", se = FALSE) +
+  geom_pointrange(aes(ymin = fmbc_diff - merr, ymax = fmbc_diff + merr), 
+                  position = position_dodge2(width = dw),
+                  size = ps) +
+  lims(x = c(-0.05, 1.1),
+       y = c(-yl, yl)) +
+  labs(subtitle = "Blank corrected",
+       x = "Fm expected",
+       y = "Fm difference") +
+  theme_classic() +
+  theme(legend.position = "None")
+
+secs / secs_lbc
+```
+
+### same for sigma
+
+```{r secsigma, fig.height=6, fig.width=7.5, dev='svg'}
+
+ps <- 0.3
+dw <- 0.03
+yl <- .1
+
+secs <- ggplot(carb_data, aes(fm_consensus, fm_sigma, color = Cur)) +
+  geom_hline(yintercept = 0) +
+  geom_smooth(method = "lm", se = FALSE) +
+  geom_point(position = position_dodge2(width = dw)) +
+  #lims(x = c(-0.05, 1.1),
+  #     y = c(-yl, yl)) +
+  labs(title = "Sigma vs. expected Fm",
+       subtitle = "Uncorrected",
+       colour = "Cur (μA)",
+       y = "Sigma") +
+  theme_classic() +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        legend.direction = "horizontal",
+        legend.position = c(.80, 1),
+        legend.justification = "bottom")
+
+secs_lbc <- ggplot(carb_data, aes(fm_consensus, fmbc_sigma, color = Cur)) +
+  geom_hline(yintercept = 0) +
+  geom_smooth(method = "lm", se = FALSE) +
+  geom_point(position = position_dodge2(width = dw)) +
+  #lims(x = c(-0.05, 1.1),
+  #     y = c(-yl, yl)) +
+  labs(subtitle = "Blank corrected",
+       x = "Fm expected",
+       y = "Sigma") +
+  theme_classic() +
+  theme(legend.position = "None")
+
+secs / secs_lbc
+```
+
+```{r}
+ggplot(carb_data, aes(fm_consensus, sigma)) +
+  geom_hline(yintercept = 0) +
+  geom_point() +
+  ggtitle("Sigma of LBC-corrected vs consensus")
+```
+
+### Data summary
+
+* Mean difference: `r format(mean(carb_data$fmbc_diff), digits = 1)`
+* Standard deviation of difference: `r format(sd(carb_data$fmbc_diff), digits = 2)`
+* Number of samples: `r length(carb_data$fmbc_diff)`
+
+
 

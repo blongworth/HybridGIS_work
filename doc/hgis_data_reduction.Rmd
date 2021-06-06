@@ -30,7 +30,9 @@ $$ \sigma_{int} = \frac{1}{\sqrt{\sum{counts}}} $$
 
 The external or statistical error is defined as:
 
-$$ \sigma_{ext} = \sqrt{\frac{}} $$
+$$ \sigma_{ext} = \frac{SE(R_{cor})}{mean(R_{cor})}$$
+
+I think this may be incorrect.
 
 ### Normalize targets using mean of standards and propagate errors
 

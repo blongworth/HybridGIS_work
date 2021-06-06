@@ -1,0 +1,54 @@
+---
+title: "Data reduction for HGIS"
+output: html_notebook
+---
+
+This document describes the procedure and functions used for reducing, normalizing, and blank correcting NOSAMS hybrid gas ion source data.
+
+
+Data reduction proceeds as follows:
+
+### Read raw file
+
+Raw files are acquisition data from the AMS system, in the same format as graphite data. A typical HGIS data acquisition for a target consists of 10 sequential runs of 90s each, giving 15 min. of acquisition time per sample.
+
+### Apply 13C correction to each run of a target
+
+14/12 ratios of each run are corrected for fractionation using 13/12 ratio measured on the AMS system. Livetime correction is done during acquisition on USAMS. The correction is done as follows:
+
+$$ {}^{14/12}C_{corr} = \frac{{}^{14/12}C_{meas}}{{}^{13/12}C_{meas}^2} $$
+
+### Flag outliers by interquartile distance
+
+Outliers are defined as points 1.5 * interquartile range above the 3rd quartile or below the 1st quartile, and are dropped from the analysis.
+
+### Determine per-target means, internal and external errors
+
+The per-target 13C-corrected raw ratio is taken as the unweighted mean of runs of the target. The internal or counting error of a target is defined as:
+
+$$ \sigma_{int} = \frac{1}{\sqrt{\sum{counts}}} $$
+
+The external or statistical error is defined as:
+
+$$ \sigma_{ext} = \sqrt{\frac{}} $$
+
+### Normalize targets using mean of standards and propagate errors
+
+Unknowns are normalized using the mean measured value of gas standards using this equation:
+
+$$ R_{norm} = \frac{R_{sample}}{R_{std}}*1.0398$$
+
+Normalization errors are propagated using this equation:
+
+$$ \sigma_{norm} = \sqrt{\frac{\sigma_{sample}^2}{R_{sample}^2} + \frac{\sigma_{std}^2}{R_{std}^2}} $$
+
+### Apply a large blank correction using the mean of blanks and propagate errors.
+
+The mean of blanks is used to apply a large blank correction to the unknowns. The error in the blanks is taken as the larger of the standard deviation of blanks or half of the mean blank Fm. The correction is done as follows:
+
+$$ R_{cor} = R_{norm} - \frac{R_{blank}(R_{std} - R_{norm})}{R_{std}} $$
+
+The error in the blank is propagated using this equation:
+
+$$ \sigma_{cor} = \sqrt{\sigma_{norm}^2 * \frac{1 + R_{blank}}{R_{std}}^2 + \sigma_{blank}^2 * \frac{R_{norm}-R_{std}}{R_{std}}^2} $$
+

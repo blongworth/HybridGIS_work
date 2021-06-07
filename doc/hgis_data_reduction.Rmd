@@ -1,6 +1,8 @@
 ---
 title: "Data reduction for HGIS"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 This document describes the procedure and functions used for reducing, normalizing, and blank correcting NOSAMS hybrid gas ion source data.
@@ -32,7 +34,6 @@ The external or statistical error is defined as:
 
 $$ \sigma_{ext} = \frac{SE(R_{cor})}{mean(R_{cor})}$$
 
-I think this may be incorrect.
 
 ### Normalize targets using mean of standards and propagate errors
 

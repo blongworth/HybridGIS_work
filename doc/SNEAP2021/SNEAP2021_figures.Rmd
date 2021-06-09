@@ -16,6 +16,7 @@ library(amstools)
 library(HybridGIS)
 library(patchwork)
 library(broom)
+library(gt)
 ```
 
 # Current vs flow
@@ -352,7 +353,7 @@ show as agreement with consensus vs consensus value with sample names
 Need normalized values, BC values, Errors, and rec_num or consensus value
 
 ```{r carb-data}
-carb_data <- map_dfr(list.files(here("data_analysed"), full.names = TRUE), read_csv) %>% 
+carb_data <- map_dfr(list.files(here("data_analysed"), pattern = "USAMS", full.names = TRUE), read_csv) %>% 
   filter(!is.na(rec_num),
          Cur > 2) %>% 
   mutate(fm_diff = mean - fm_consensus,
@@ -491,5 +492,32 @@ ggplot(carb_data, aes(fm_consensus, sigma)) +
 * Standard deviation of difference: `r format(sd(carb_data$fmbc_diff), digits = 2)`
 * Number of samples: `r length(carb_data$fmbc_diff)`
 
+### Data table
 
+```{r}
+carb_data_sum <- carb_data %>% 
+  select(-dil_factor, -sd, -exterr, -interr, -diff, -normFm, -sigma) %>% 
+  rename(norm_ratio = mean,
+         sig_norm_ratio = merr)
+write_csv(carb_data_sum, here("data_analysed/carb_data_summary.csv"))
+```
+Carb data summary by type
+
+```{r}
+carb_data_sum %>% 
+  mutate(Name = case_when(rec_num == 101730 ~ "LiveGas",
+                          rec_num == 83028 ~ "C-1",
+                          rec_num == 2138 ~ "TIRI-F",
+                          rec_num == 17185 ~ "TIRI-I",
+                          rec_num == 1082 ~ "C-2",
+                          rec_num == 38809 ~ "NOSAMS2",
+                          rec_num == 72446 ~ "DeadGas")) %>% 
+  select(rec_num, Name, norm_ratio, fm_lbc, sig_norm_ratio) %>% 
+  group_by(Name) %>% 
+  summarize(across(c(norm_ratio, fm_lbc, sig_norm_ratio), c(mean = mean, sd = sd)), N = n()) %>%
+  arrange(norm_ratio_mean) %>% 
+  gt() %>% 
+  fmt_number(columns = 2:7,
+             decimals = 4)
+```
 

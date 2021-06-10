@@ -1,0 +1,182 @@
+---
+title: "HGIS flow calcs"
+output:
+  html_document: default
+  html_notebook: default
+---
+
+
+```{r}
+library(here)
+library(HybridGIS)
+```
+
+# Calculated Flow rates
+
+To model laminar flow in a capillary, Poiseuille's equation is used.
+
+$$
+Q = \frac{\Delta P \pi R^4}{8 \mu \Delta x}
+$$
+
+Where $\Delta P$ is change in pressure (Pa ($\frac{kg}{m \cdot s^2}$)), $R$ is
+radius of pipe (m), $\mu$ is dynamic viscosity ( $P \cdot s$ ($\frac{kg}{s
+\cdot m}$)), and $\Delta x$ is the length of the pipe (m). Q is in
+$\frac{m^3}{s}$
+
+  The functions loaded above calculate flow using this equation and convert base
+units to more convenient flow in $\frac{\mu L}{min}$ and pressure in kPa.
+
+## Initial NOSAMS parameters
+
+Initial tests used a 0.050mm x 8.2m deactivated silica caplillary. For this
+capillary, parameters for Poiseuille's equation are as follows:
+
+```{r}
+r <- 2.5E-5
+u <- 1.49E-5
+x <- 8.2
+flowcalc(100, r, u, x)
+```
+
+## Parameters for published hybrid GIS systems
+
+Calculate flow for Xu et al 2006...
+
+```{r}
+flowcalc(1.500, 0.000125, u, 1.25)
+```
+Calculate flow for ETH...
+
+```{r}
+flowcalc(15.6, 3E-5, u, 2)
+flowcalc(31.3, 3E-5, u, 2)
+
+```
+Calculate flow for CAMS...
+
+```{r}
+flowcalc(42, 7.5E-5, u, 6)
+
+```
+Calculate flow for Oxford...
+
+```{r}
+flowcalc(200, 3E-5, u, 1.25)
+
+```
+
+## Parameters for next USAMS tests
+
+### Short capillary at 1 atm
+
+40um capillary
+
+```{r}
+r <- 2E-5
+u <- 1.49E-5
+x <- 3.5
+flowcalc(100, r, u, x)
+```
+```{r}
+r <- 2E-5
+u <- 1.49E-5
+x <- 2
+flowcalc(100, r, u, x)
+```
+50um capillary
+```{r}
+r <- 2.5E-5
+u <- 1.49E-5
+x <- 5
+flowcalc(101, r, u, x)
+```
+75um capillary
+```{r}
+r <- 3.75E-5
+u <- 1.49E-5
+x <- 2.8
+flowcalc(101, r, u, x)
+```
+
+```{r}
+r <- 2.5E-5
+u <- 1.49E-5
+x <- 7
+flowcalc(100, r, u, x)
+```
+```{r}
+r <- 5E-5
+u <- 1.49E-5
+x <- 3
+flowcalc(20, r, u, x)
+```
+### Low pressure 15 mbar
+
+100um capillary
+
+```{r}
+r <- 5E-5
+u <- 1.49E-5
+x <- 1.58
+flowcalc(1.5, r, u, x)
+```
+
+### Medium pressure 150mbar
+
+75um capillary
+
+```{r}
+r <- 3.75E-5
+u <- 1.49E-5
+x <- 4
+flowcalc(15, r, u, x)
+```
+
+100um capillary
+
+```{r}
+r <- 5E-5
+u <- 1.49E-5
+x <- 2.0
+flowcalc(5, r, u, x)
+```
+Medium pressure 150mbar 100um x 1.58m PEEK capillary
+```{r}
+r <- 5E-5
+u <- 1.49E-5
+x <- 1.58
+flowcalc(20, r, u, x)
+```
+
+10x dillution
+```{r}
+r <- 5E-5
+u <- 1.49E-5
+x <- 1.58
+flowcalc(15, r, u, x)
+```
+
+Theoretical flows with pressure adjusted for best current.
+
+```{r}
+r <- 5E-5
+u <- 1.49E-5
+x <- 1.58
+flowcalc(60, r, u, x)
+```
+Actual performance of "100um"" x 1.58m PEEK capillary *IF* flow is ~10uL/min. Looks like
+true diameter after crimping is around 40um.
+
+```{r}
+r <- 2.0E-5
+u <- 1.49E-5
+x <- 1.58
+flowcalc(60, r, u, x)
+```
+
+
+# CO2 quantities
+
+Calculate CO2 needed for an analysis at given supply pressure.
+

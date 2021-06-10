@@ -1,0 +1,156 @@
+---
+title: "HGIS 2021-05-28 Carbonates"
+subtitle: "Comparison of data with and without outliers"
+author: "Brett Longworth"
+date: "6/5/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE)
+```
+
+```{r}
+library(tidyverse)
+library(here)
+library(amstools)
+library(HybridGIS)
+
+options(digits = 4)
+options(scipen = 3)
+```
+
+
+Data reduction and analysis for carbonate samples run on May 28, 2021. Includes C-1, C-2, and test shell carbonates from Simon Pendleton. This version compares the effect of including or discarding outliers.
+
+
+
+```{r}
+
+#Raw AMS data results file path
+file <- here("data/USAMS052621R.txt")
+
+# Date samples run (needed to separate other experiments with this wheel/targets)
+date <- as.Date("2021-05-28")
+
+# Positions of normalizing standards
+standards <- c(5, 8, 13, 17)
+
+# Positions of blanks for blank correction
+blanks <- c(6, 9, 11)
+```
+
+- Using standards in positions `r standards` for normalization.
+- Using blanks in positions `r blanks` for blank correction.
+- Outliers are defined as points 1.5 * interquartile range above the 3rd quartile or below the 1st quartile, and are dropped from the analysis.
+
+Data reduction proceeds as follows:
+
+1. Read raw file
+1. Apply 13C correction to each run of a target
+1. Flag outliers by interquartile distance
+1. Determine per-target means, internal and external errors
+1. Normalize targets using mean of standards and propagate errors
+1. Apply a large blank correction using the mean of blanks and propagate errors.
+
+## raw results
+
+```{r}
+df <- get_hgis_data(file, date, standards)
+```
+
+#### Currents and ratios vs time.
+
+```{r}
+df %>% 
+  filter(!(Pos %in% 1:4)) %>% 
+  plot_hgis_time(normFm, ce*normFm) +
+  ggtitle("Sample ratio vs. time")
+```
+
+```{r}
+df %>% 
+  filter(!(Pos %in% 1:4)) %>% 
+  plot_hgis_time(he12C) +
+  ggtitle("Sample current vs time")
+```
+
+
+```{r}
+
+# The data without outliers
+df_sum <- sum_hgis_targets(df) %>% 
+  norm_hgis() %>% 
+  blank_cor_hgis(blanks = c(6, 9, 11)) %>% 
+  mutate(outliers_dropped = TRUE)
+
+# The data with outliers
+df_sum_ol <- sum_hgis_targets(df, remove_outliers = FALSE) %>% 
+  norm_hgis() %>% 
+  blank_cor_hgis(blanks = c(6, 9, 11)) %>% 
+  mutate(outliers_dropped = FALSE)
+
+df_all <- rbind(df_sum, df_sum_ol)
+```
+
+## Results
+
+```{r}
+df_all %>% 
+  filter(as.numeric(Pos) > 4) %>% 
+  mutate(sig_normFm = max_err * normFm) %>% 
+  select(Pos, Sample.Name, outliers_dropped, he12C, n_runs, fm_corr, sig_fm_corr) %>% 
+  arrange(Sample.Name) %>% 
+  knitr::kable()
+  # gt::gt()
+```
+
+```{r}
+df_all %>% 
+  filter(as.numeric(Pos) > 4) %>% 
+  ggplot(aes(Sample.Name, fm_corr, color = outliers_dropped)) +
+    geom_pointrange(aes(ymin = fm_corr - sig_fm_corr, ymax = fm_corr + sig_fm_corr),
+                    size = 0.1) + 
+    theme(axis.text.x = element_text(angle = 45, hjust=1)) +
+      labs(x = NULL,
+           y = "Fraction Modern")
+```
+
+## Agreement of replicates
+
+Compare results for samples with more than one replicate. 
+
+```{r}
+df_all %>% 
+  filter(as.numeric(Pos) > 4) %>% 
+   mutate(Name = str_remove(Sample.Name, "_.$")) %>% 
+    group_by(Name, outliers_dropped) %>% 
+    filter(n() > 1) %>% 
+    summarize(across(c(he12C, fm_corr, sig_fm_corr),
+                     list(mean = mean, sd = sd)),
+              N = n()) %>% 
+  knitr::kable()
+```
+
+## Agreement with consensus
+
+```{r}
+cons <- df_all %>% 
+  filter(as.numeric(Pos) > 4,
+         !is.na(fm_consensus)) %>% 
+  select(Sample.Name, outliers_dropped, fm_consensus, fm_corr, sig_fm_corr) %>% 
+  mutate(Fm_diff = fm_corr - fm_consensus,
+         sigma = amstools::sigma(fm_corr, fm_consensus, sig_fm_corr)) %>% 
+  arrange(Sample.Name)
+  
+knitr::kable(cons)
+```
+
+Mean error, difference from consensus, and sigma with and without outliers.
+
+```{r}
+cons %>% 
+  group_by(outliers_dropped) %>% 
+  summarize(across(c(sig_fm_corr, Fm_diff, sigma), mean))
+```
+

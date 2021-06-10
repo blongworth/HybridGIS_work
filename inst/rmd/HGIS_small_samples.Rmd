@@ -1,0 +1,120 @@
+---
+title: "HGIS small(er) samples"
+author: "Brett Longworth"
+date: "6/7/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, message=FALSE, warning=FALSE}
+# Load libraries and functions
+library(tidyverse)
+library(amstools)
+library(here)
+library(HybridGIS)
+```
+
+
+## 2021-06-04 Small(er) sample tests
+
+Tested 5, 10, and 15 mg of C-2 carbonate in vials backfilled with Helium.
+
+### Method
+
+1. Weigh sample into vial
+2. Evacuate and acidify as normal with gilson
+3. Backfill to 1 ATM with He-filled syringe 2h after acidification. 
+
+Allowed vacuum in vial to pull in He from syringe, then added 1 additional mL He. Should calculate volume CO2 in vial and measure He added to check that things make sense.
+
+Used same capillaries as usual, but decreased He displacement flow to 140 ul/min. Source capillary flow assumed to be around 30ul/min.
+
+### Samples
+
+```{r}
+carb_data <- tribble(~vial, ~name, ~rec_num, ~mass,
+                     1, "C-2_1", 1082, 6.03,
+                     2, "C-2_2", 1082, 11.10,
+                     3, "C-2_3", 1082, 15.52
+                     )
+
+write_csv(carb_data, here("data/carb_data_2021-06-04.csv"))
+carb_data
+```
+
+### Data
+
+```{r}
+df <- get_hgis_data(here("data/USAMS052621R.txt"), as.Date("2021-06-04")) #, standards)
+```
+
+#### Currents and ratios vs time.
+
+```{r}
+df %>% 
+  filter(!(Pos %in% 1:4)) %>% 
+  plot_hgis_time(normFm, ce*normFm) +
+  ggtitle("Sample ratio vs. time")
+```
+
+```{r}
+df %>% 
+  filter(!(Pos %in% 1:4)) %>% 
+  plot_hgis_time(he12C) +
+  ggtitle("Sample current vs time")
+```
+
+### Results
+
+Note: no blanks run, so need to use average blank if LBC needed.
+
+```{r}
+df_sum <- sum_hgis_targets(df) %>% 
+  norm_hgis()
+```
+
+
+
+```{r}
+df_sum %>% 
+  filter(as.numeric(Pos) > 4) %>% 
+  mutate(sig_normFm = max_err * normFm) %>% 
+  select(Pos, Sample.Name, he12C, n_runs, norm_ratio, sig_norm_ratio) %>% 
+  arrange(Sample.Name)
+```
+
+```{r}
+df_sum %>% 
+  filter(as.numeric(Pos) > 4) %>% 
+  ggplot(aes(Sample.Name, norm_ratio)) +
+    geom_pointrange(aes(ymin = norm_ratio - sig_norm_ratio, ymax = norm_ratio + sig_norm_ratio),
+                    size = .5) + 
+    theme(axis.text.x = element_text(angle = 45, hjust=1)) +
+      labs(x = NULL,
+           y = "Fraction Modern")
+```
+
+## Agreement of replicates
+
+Compare results for samples with more than one replicate. 
+
+```{r}
+df_sum %>% 
+  filter(as.numeric(Pos) > 4) %>% 
+  compare_replicates()
+```
+
+## Agreement with consensus
+
+```{r}
+df_sum %>% 
+  filter(as.numeric(Pos) > 4,
+         !is.na(fm_consensus)) %>% 
+  select(Sample.Name, fm_consensus, norm_ratio, sig_norm_ratio) %>% 
+  mutate(Fm_diff = norm_ratio - fm_consensus,
+         sigma = amstools::sigma(norm_ratio, fm_consensus, sig_norm_ratio)) %>% 
+  arrange(Sample.Name)
+```

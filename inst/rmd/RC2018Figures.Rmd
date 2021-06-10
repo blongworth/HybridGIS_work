@@ -1,0 +1,255 @@
+---
+title: "Figures for Radiocarbon 2018 Poster"
+output:
+  pdf_document: default
+  html_notebook: default
+  html_document: default
+---
+
+
+```{r libraries, warning=FALSE, message=FALSE}
+library(amstools)
+library(tidyverse)
+library(ggplot2)
+```
+
+
+
+
+## Calculated flow
+
+To model laminar flow in a capillary, Poiseuille's equation is used.
+
+$$
+Q = \frac{\Delta P \pi R^4}{8 \mu \Delta x}
+$$
+
+Where $\Delta P$ is change in pressure (Pa ($\frac{kg}{m \cdot s^2}$)), $R$ is
+radius of pipe (m), $\mu$ is dynamic viscosity ( $P \cdot s$ ($\frac{kg}{s
+\cdot m}$)), and $\Delta x$ is the length of the pipe (m). Q is in
+$\frac{m^3}{s}$
+
+The following functions calculate flow using this equation and convert base
+units to more convenient flow in $\frac{\mu L}{m}$ and pressure in kPa.
+
+```{r}
+# Poiseuille's; convert delta pressure in Pa to flow in m^3/s
+prestoflow <- function(dp, r, u, l) {
+  # r = radius of capillary
+  # l = length of capillary
+  # u = viscosity kg/m
+  flow <- dp * pi * r^4 / 8 / u / l
+  flow
+}
+
+# convert gauge kPa to uL/min
+flowcalc <- function(pres, ...) {
+  dppa <- pres * 1E3 #convert kPa to Pa
+  flowcms <- prestoflow(dppa, ...)
+  flowuls <- flowcms * 1E6 * 1E3
+  flowulm <- flowuls * 60
+  flowulm
+}
+```
+
+```{r}
+# Efficiency functions
+# convert L CO2 to atoms C
+lCO2toatC <- function (vol) {
+  molC <- vol * 1/22.4 # 22.4 L of gas per mole at stp
+  atC <- molC * 6.022E23
+  atC
+}
+
+
+# convert current in A to atoms C/sec
+CcurtoatC <- function(cur, cs){
+  at12C <- cur * 6.25E18 # electrons per coulomb
+  at12C <- at12C / cs # divide by charge state
+  at12C
+}
+
+
+# calculate efficiency from ml/m CO2 and uA C12
+hgis_eff <- function(ulm, uA, cs = 3) {
+  
+  # if flow is zero or less, efficiency doesn't make sense
+  ulm <- ifelse(ulm <= 0, NA, ulm)
+  
+  vol <- ulm * 1E-6 # conv to L
+  cur <- uA * 1E-6 # conv to A
+  atCin <- lCO2toatC(vol) / 60 # gives atoms/s
+  atC12out <- CcurtoatC(cur, cs)
+  atCout <- atC12out / .99 # 99% of C is 12C, we need total C
+  atC12out / atCin
+}
+```
+
+
+## USAMS032817
+
+```{r}
+data <- readResfile("/mnt/shared/USAMS/Results/2017 Results/USAMS032817R.txt") %>%
+  mungeResfile() 
+```
+
+
+### Currents
+
+For the first target, we turned up the gas supply pressure while measuring
+source current at the high energy FC. These currents are roughly equivalent to
+le12C.
+
+* TODO: Blank current subtraction
+
+Load and massage the data...
+
+```{r}
+cur <- read.delim("../Data/1sttestcurrents.csv") %>%
+  mutate(flow = flowcalc(regp, r, u, x),
+         eff = hgis_eff(flow, he12c, cs = 1)) %>% # cs 1 to estimate LE current
+  filter(t > 5) 
+```
+
+```{r}
+ggplot(cur, aes(regp, he12c)) + geom_line() + geom_point()
+ggplot(cur, aes(flow, he12c)) + geom_line() + geom_point()
+```
+
+Currents were very stable after an initial burn in of ~10m. Initial current
+started at ~12uA without gas on target and decayed (roughly) exponentially to a
+minimum around 1.2uA.
+
+```{r}
+data %>% filter(Pos %in% c(11,12)) %>%
+       	ggplot(aes(ts, he12C, color = Pos)) +
+       	geom_line() + geom_point() + ylim(c(0,8))
+```
+
+
+### Efficiency
+
+Using efficiency functions defined above. Efficiency drops with increasing flow
+as currents go up.
+
+```{r, warning = FALSE}
+ggplot(cur, aes(flow, eff)) + geom_line() + geom_point()
+```
+
+
+### Ratios
+
+Ratios for live and dead CO2 were recorded in 180 blocks of 10s each. Solid AA
+and OX-I were run with 10 blocks of 180s.
+
+
+#### Summary table
+
+```{r}
+data.s <- data %>% group_by(Pos) %>% summarize(c1412.m = mean(X14.12he),
+                                         c1412.s = sd(X14.12he),
+                                         c1412.sdr = c1412.s/c1412.m,
+                                         c1412.se = se(X14.12he),
+                                         c1412.ser = c1412.se/c1412.m,
+                                         counts = sum(CntTotGT),
+                                         interr = 1/sqrt(counts))
+knitr::kable(data.s, digits = 4)
+```
+
+
+#### Plots
+
+Boxplots of modern and dead samples. Ratios were essentially stable over time.
+Positions < 10 are solid samples run for comparison.
+
+Modern samples.
+
+```{r}
+data %>% filter(X14.12he > .4) %>%
+       	ggplot(aes(Pos, X14.12he, color = Num)) + 
+        geom_boxplot()
+```
+
+Dead gas and alpha aesar.
+
+```{r}
+data %>% filter(X14.12he < .4) %>% ggplot(aes(Pos, X14.12he, color = Num)) + 
+        geom_boxplot()
+```
+
+
+
+```{r, message = FALSE}
+data2 <- readResfile("/mnt/shared/USAMS/Results/2017 Results/USAMS040317R.txt") %>%
+  filter(Pos == 13) %>%
+  mungeResfile() 
+
+# Assign Run numbers
+counter <- 0
+Run <- c(1:190)
+for (i in 1:nrow(data2)) {
+  if (data2$Meas[i] == 1) {
+    counter <- counter + 1
+  }
+  Run[i] <- counter
+} 
+data2$Run <- Run
+
+# Load pressure data
+pres <- read.csv("../Data/USAMS040317Pressure.csv")
+pres$Run <- as.numeric(row.names(pres))
+
+# Join to run data
+data2 <- inner_join(data2, pres) %>%
+  mutate(Source = Source * 1E-7, # I think the source pressures were to the -7, but unsure...
+         flow = flowcalc(Bottle, r, u, x),
+         eff = hgis_eff(flow, he12C, cs = 1)) # cs 1 to estimate LE current
+
+# summarize
+d2.s <- data2 %>% group_by(Run, Bottle, Source, flow) %>% summarize(le12C = mean(le12C),
+                                              he12C = mean(he12C),
+                                              counts = sum(CntTotGT),
+                                              interr = 1/sqrt(counts),
+                                              C1412he = mean(X14.12he),
+                                              ferr = interr * C1412he,
+                                              cor1412he = mean(cor1412he),
+                                              eff = mean(eff))
+```
+
+
+# Current vs Flow
+
+```{r, message = FALSE, warning = FALSE}
+ggplot(d2.s, aes(Bottle, he12C)) +
+  geom_smooth() +
+  geom_point() 
+filter(d2.s, flow > 0) %>%
+  ggplot(aes(flow, le12C)) +
+  geom_smooth() +
+  geom_point() +
+  labs(x = "CO2 flow rate (uL/min)", y = "12C- current (uA)") +
+  scale_y_reverse() +
+  ylim(0,-10) +
+  xlim(0,15.5)
+```
+
+
+# Efficiency vs Flow
+
+```{r, message = FALSE, warning = FALSE}
+ggplot(d2.s, aes(flow, eff*100)) + 
+  geom_smooth() +
+  geom_point() +
+  labs(x = "CO2 flow rate (uL/min)", y = "Measurement efficiency (%)") +
+  xlim(0,15.5)
+```
+
+
+
+
+
+
+
+# Modern Performance
+
+# Blank

@@ -1,0 +1,418 @@
+---
+title: "First Hybrid GIS Tests"
+output:
+  html_document: default
+  html_notebook: default
+  pdf_document: default
+date: "03-28-2017"
+---
+
+First tests of the USAMS SNICS-134 Hybrid gas ion source. Where not specified, flows are given in $\frac{\mu L}{m}$ and pressure in kPa, and ion currents are in uA of 12C.
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(amstools)
+library(here)
+library(HybridGIS)
+
+theme_set(theme_bw())
+options(digits = 3)
+```
+
+# Flow rates
+
+
+## Calculated flow
+
+To model laminar flow in a capillary, Poiseuille's equation is used.
+
+$$
+Q = \frac{\Delta P \pi R^4}{8 \mu \Delta x}
+$$
+
+Where $\Delta P$ is change in pressure (Pa ($\frac{kg}{m \cdot s^2}$)), $R$ is
+radius of pipe (m), $\mu$ is dynamic viscosity ( $P \cdot s$ ($\frac{kg}{s
+\cdot m}$)), and $\Delta x$ is the length of the pipe (m). Q is in
+$\frac{m^3}{s}$
+
+The following functions calculate flow using this equation and convert base
+units to more convenient flow in $\frac{\mu L}{m}$ and pressure in kPa.
+
+```{r}
+# Poiseuille's; convert delta pressure in Pa to flow in m^3/s
+prestoflow <- function(dp, r, u, l) {
+  # r = radius of capillary
+  # l = length of capillary
+  # u = viscosity kg/m
+  flow <- dp * pi * r^4 / 8 / u / l
+  flow
+}
+
+# convert gauge kPa to uL/min
+flowcalc <- function(pres, ...) {
+  dppa <- pres * 1E3 #convert kPa to Pa
+  flowcms <- prestoflow(dppa, ...)
+  flowuls <- flowcms * 1E6 * 1E3
+  flowulm <- flowuls * 60
+  flowulm
+}
+```
+
+Initial tests used a 0.050mm x 8.2m deactivated silica capillary. For this
+capillary, parameters for Poiseuille's equation are as follows:
+
+```{r}
+r <- 2.5E-5
+u <- 1.49E-5
+x <- 8.2
+factor <- flowcalc(1, r, u, x)
+```
+
+$\Delta P$ is regulator pressure
+
+R is `r r*1E6` $\mu m$
+
+$\mu$ is `r u*1E6` $\mu Pa\cdot s$
+
+x is `r x`m
+
+Given these, 
+
+Q($\frac{\mu L}{m}$) = `r factor` x P (kPa)
+
+```{r}
+flow <- function(f) {
+  flowcalc(f, r, u, x)
+}
+ggplot(data = data.frame(pressure = 0, flow = 0),
+       mapping = aes(x = pressure, y = flow)) +
+  stat_function(fun = flow) +
+  xlim(0,400) +
+  ggtitle("Theoretical flow for given pressure",
+          subtitle = "8.2m x 50um capillary")
+```
+
+
+## Measured flow
+
+Kalina and I measured flow at the end of the capillary using two methods;
+direct measurement with a bubble flow meter and as a helium leak rate with the
+leak detector.
+
+
+### Bubble meter
+
+Kalina made measurements with both helium and CO2. The measurements below are
+with helium and converted to CO2 by the ratio of their viscosities.
+
+```{r}
+bflow <- read.csv(here("data/bubbleflow.csv")) %>%
+  mutate(heflow = volume/time,
+         flow = heflow * 1.49E-5/1.90E-5, # co2/He viscosity
+         pressure = pressure - 14.7, # subract 1 Atm for delta P
+         pressure = pressure * 6.8948, # convert psi to kPa
+         calcflow = flowcalc(pressure, r, u, x)) # calculate flow with Poiseuille's 
+
+ggplot(bflow, aes(pressure, flow)) + 
+  stat_function(fun = flow, color = "blue") +
+  geom_point() +
+  geom_line() +
+  xlim(0,400) + ylim(0,80) +
+  ggtitle("Flow vs pressure",
+          subtitle = "measured by gauge and bubble flow meter")
+
+ggplot(bflow, aes(calcflow, flow)) + 
+  geom_point() +
+  geom_line() +
+  ggtitle("Measured (bubble meter) vs predicted flow")
+```
+
+
+### Leak detector
+
+#### 2017-10-17?
+
+Measured leak rate using Helium leak detector. Ran capillary to KF adapter
+flange. Pressures in kPa, leak rates in $\frac{Pa\cdot m^3}{s}$. Leak detector
+switched to gross leak mode between 150 kPa and 200 kPa.
+
+```{r}
+ldflow <- read.csv(here("data/HeLeakCapillaryFlow.csv"), skip = 3)
+
+ldflow <- ldflow %>% 
+  mutate(sccm = Leakrate / 0.0016, # convert to sccm
+         co2sccm = sccm * 1.49E-5/1.90E-5, # co2/He viscosity
+         flow = co2sccm * 1E3, # convert to ul/m
+         calcflow = flowcalc(Regulator, r, u, x)) # calculate flow with poiseulle's 
+
+ggplot(ldflow, aes(Regulator, flow)) + 
+  stat_function(fun = flow, color = "blue") +
+  geom_point() +
+  geom_line() +
+  ggtitle("Flow (measured by leak detector) vs pressure")
+
+ggplot(ldflow, aes(calcflow, flow)) + 
+  geom_point() +
+  geom_line() +
+  ggtitle("Measured (by leak detector) vs predicted flow")
+
+```
+
+
+## Efficiency functions
+
+These functions convert volume of CO2 and coulombs of charge to atoms of C. The
+ratio of these is the measurement efficiency of a gas ion source system. These are used for later calculations of efficiency given flow rate and ion current.
+
+```{r}
+# convert L CO2 to atoms C
+lCO2toatC <- function (vol) {
+  molC <- vol * 1/22.4 # 22.4 L of gas per mole at stp
+  atC <- molC * 6.022E23
+  atC
+}
+
+# convert current in A to atoms C/sec
+CcurtoatC <- function(cur, cs) {
+  at12C <- cur * 6.25E18 # electrons per coulomb
+  at12C <- at12C / cs # divide by charge state
+  at12C
+}
+
+# calculate efficiency from ml/m CO2 and uA C12
+hgis_eff <- function(ulm, uA, cs = 3) {
+  
+  # if flow is zero or less, efficiency doesn't make sense
+  ulm <- ifelse(ulm <= 0, NA, ulm)
+  
+  vol <- ulm * 1E-6 # conv to L
+  cur <- uA * 1E-6 # conv to A
+  atCin <- lCO2toatC(vol) / 60 # gives atoms/s
+  atC12out <- CcurtoatC(cur, cs)
+  atCout <- atC12out / .99 # 99% of C is 12C, we need total C
+  atC12out / atCin
+}
+```
+
+
+# Test Wheels
+
+Two days of testing to date. Same wheel both days. Wheel had 5 AA, 4 OX-I, and
+10 gas targets.
+
+
+## USAMS032817
+
+
+
+### Currents
+
+For the first target, we turned up the gas supply pressure while measuring
+source current at the high energy FC. These currents are roughly equivalent to
+le12C (~30% transmission @ 3+ charge state).
+
+Load and massage the data...
+
+```{r}
+cur <- read_tsv(here("data/2017-03-28Currents.tsv")) %>%
+  mutate(flow = flowcalc(regp, r, u, x),
+         eff = hgis_eff(flow, he12c, cs = 1)) %>% # cs 1 to estimate LE current
+  filter(t > 5) 
+```
+
+```{r}
+ggplot(cur, aes(regp, he12c)) +
+  geom_line() +
+  geom_point() +
+  ggtitle("Current vs Pressure",
+          subtitle = "2017-03-28")
+
+ggplot(cur, aes(flow, he12c)) +
+  geom_line() +
+  geom_point() +
+  ggtitle("Current vs Flow",
+          subtitle = "2017-03-28")
+```
+
+```{r}
+data <- get_hgis_data(here("data/USAMS032817R.txt")) %>%
+           mutate(Num = ifelse(Pos == 11, "U", Num))
+stdrat <- mean(data$cor1412he[data$Num == "S"])
+data <- mutate(data, normFm = norm_gas(cor1412he, stdrat))
+# data <- readResfile("/mnt/shared/USAMS/Results/2017 Results/USAMS032817R.txt") %>%
+#   mungeResfile() 
+```
+
+Currents were very stable after an initial burn in of ~10m. Initial current
+started at ~12uA without gas on target and decayed (roughly) exponentially to a
+minimum around 1.2uA.
+
+```{r}
+data %>% 
+  filter(Pos %in% c(11,12)) %>%
+  ggplot(aes(ts, he12C, color = Pos)) +
+   	geom_line() + geom_point() + ylim(c(0,8))
+```
+
+
+### Efficiency
+
+Using efficiency functions defined above. Efficiency drops with increasing flow
+as currents go up.
+
+```{r, warning = FALSE}
+ggplot(cur, aes(flow, eff)) + geom_line() + geom_point()
+```
+
+
+### Ratios
+
+Ratios for live and dead CO2 were recorded in 180 blocks of 10s each. Solid AA
+and OX-I were run with 10 blocks of 180s. These results are summarized and roughly normalized to solid OX-I below.
+
+#### Summary table
+
+```{r}
+sum_hgis(data)
+```
+
+
+#### Plots
+
+Boxplots of modern and dead samples. Ratios were essentially stable over time.
+Positions < 10 are solid samples run for comparison.
+
+Modern samples.
+
+```{r}
+
+data %>% 
+  filter(X14.12he > .4,
+         Pos %in% c(7, 11)) %>%
+  mutate(type = ifelse(Pos == 7, "solid", "gas")) %>%
+       	ggplot(aes(type, X14.12he)) + 
+        geom_boxplot() +
+        labs(x = "Sample type", y = "Fraction modern")
+```
+
+Dead gas and alpha aesar.
+
+```{r}
+data %>% filter(X14.12he < .02,
+                X14.12he > 0.0005,
+                Pos %in% c(3, 12)) %>%
+  mutate(type = ifelse(Pos == 3, "solid", "gas")) %>%
+           ggplot(aes(type, X14.12he)) + 
+        geom_boxplot() +
+        labs(x = "Sample type", y = "Fraction modern")
+  
+```
+
+
+## USAMS040317
+
+The same target wheel was loaded again. Karl and I experimented with the source
+tune and target position to try and get more current. We were able to increase
+the currents by about 1/3 by moving the target closer to the immersion lens.
+Flow rates were lower for a given current. After tuning, I looked at flow vs.
+ratio and current. The gas used was the modern standard, but the flask may not
+have been fully flushed.
+
+```{r, message = FALSE}
+data <- get_hgis_data(here("data/USAMS040317R.txt")) %>% 
+  filter(Pos == 13)
+
+sum_hgis(data)
+
+# data <- readResfile(here("data/USAMS040317R.txt")) %>%
+#   filter(Pos == 13) %>%
+#   mungeResfile() 
+
+# Assign Run numbers
+counter <- 0
+Run <- c(1:190)
+for (i in 1:nrow(data)) {
+  if (data$Meas[i] == 1) {
+    counter <- counter + 1
+  }
+  Run[i] <- counter
+} 
+data$Run <- Run
+
+# Load pressure data
+pres <- read.csv(here("data/USAMS040317Pressure.csv"))
+pres$Run <- as.numeric(row.names(pres))
+
+# Join to run data
+data <- inner_join(data, pres) %>%
+  mutate(Source = Source * 1E-7, # I think the source pressures were to the -7, but unsure...
+         flow = flowcalc(Bottle, r, u, x),
+         eff = hgis_eff(flow, he12C, cs = 1)) # cs 1 to estimate LE current
+
+# summarize
+d.s <- data %>% group_by(Run, Bottle, Source, flow) %>% summarize(le12C = mean(le12C),
+                                              he12C = mean(he12C),
+                                              counts = sum(CntTotGT),
+                                              interr = 1/sqrt(counts),
+                                              C1412he = mean(X14.12he),
+                                              C1412he_sd = sd(X14.12he),
+                                              ferr = interr * C1412he,
+                                              cor1412he = mean(cor1412he),
+                                              eff = mean(eff))
+d.s
+```
+
+#### Gas flow vs source pressure
+
+```{r}
+ggplot(d.s, aes(Bottle, Source)) + 
+  geom_smooth() +
+  geom_point() 
+ggplot(d.s, aes(flow, Source)) + 
+  geom_smooth() +
+  geom_point() 
+```
+
+#### Currents
+
+```{r, message = FALSE, warning = FALSE}
+ggplot(d.s, aes(Bottle, he12C)) +
+  geom_smooth() +
+  geom_point() 
+filter(d.s, flow > 0) %>%
+  ggplot(aes(flow, le12C)) +
+  geom_smooth() +
+  geom_point() +
+  labs(x = expression(CO[2]~flow~rate~~mu~L %.% min^{-1}),
+       y = bquote('12C-  ' *mu~ 'A')) +
+  scale_y_reverse() +
+  ylim(0,-10) +
+  xlim(0,15.5)
+```
+
+
+#### Ratio vs current
+
+```{r, message = FALSE, warning = FALSE}
+ggplot(d.s, aes(he12C, C1412he)) + 
+  geom_linerange(aes(ymin = C1412he - ferr, ymax = C1412he + ferr)) +
+  geom_smooth() +
+  geom_point() 
+```
+
+
+#### Efficiency
+
+```{r, message = FALSE, warning = FALSE}
+ggplot(d.s, aes(Bottle, eff)) + 
+  geom_smooth() +
+  geom_point() 
+ggplot(d.s, aes(Source, eff)) + 
+  geom_smooth() +
+  geom_point() 
+ggplot(d.s, aes(flow, eff*100)) + 
+  geom_smooth() +
+  geom_point() +
+  labs(x = expression(CO[2]~flow~rate~~mu~L %.% min^{-1}), y = "Measurement efficiency  %") +
+  xlim(0,15.5)
+```

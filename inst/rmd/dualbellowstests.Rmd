@@ -1,0 +1,419 @@
+---
+title: "Dual Bellows Tests"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+Load libraries and functions
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(amstools)
+library(here)
+library(HybridGIS)
+
+theme_set(theme_bw())
+options(digits = 3)
+```
+
+## 2017-07-31 Test flow rates using helium leak checker
+
+Used dual bellows sample inlet block. Attached capillary to sample-mass spec outlet (valve SM). Loaded Helium at SI, measured pressure with inlet gauge. Used two PEEK capillaries- 65um and 100um ID x 158cm long.
+
+Presures in mBar, leak rate in mbar l/s.
+
+```{r}
+r <- factor(c("5E-5", "5E-5", "5E-5", "3.3E-5", "3.3E-5", "3.3E-5"))
+press <- c(18, 30, 60, 18, 60, 103)
+leakrate <- c(6.3E-7, 3.8E-6, 1.8E-5, 5.7E-7, 8.8E-6, 2.5E-5)
+data <- data.frame(r, press, leakrate) 
+
+#convert leak rate to Pa m3/s
+data <- mutate(data, 
+               leakrate = leakrate * 100 / 1000, # convert to Pa m3 s-1
+                sccm = leakrate / 0.0016, # convert to sccm
+                 co2sccm = sccm * 1.49E-5/1.90E-5, # co2/He viscosity
+                 flow = co2sccm * 1E3, # convert to ul/m
+                 press = press / 10) # convert to kPa
+               
+ggplot(data, aes(press, flow, color = r)) + 
+  geom_line() + 
+  geom_point() +
+  scale_color_discrete(name = "Diameter (um)",
+                       breaks = c("3.3E-5", "5E-5"),
+                       labels = c("65", "100")) +
+  ggtitle("Flow vs Pressure for 65um and 100um PEEK capillaries")
+```
+
+
+## 2017-10-09 Test PEEK capillaries
+
+No sign of discharge with PEEK capillaries
+Flow in 100um capillary seems low
+
+## 2017-10-10 Source flow tests
+
+Using 100um x 178mm glass capillary. Inlet to source, measured source pressure with source iso GV closed. No discharge observed for any capillary.
+
+### Source pressure vs supply pressure
+
+```{r}
+r <- 5E-5
+press <- c(10, 25, 55, 112, 205, 312, 408, 500, 607, 702, 802, 1000)
+source <- c(7.1E-8, 7.2E-8, 7.6E-8, 8.5E-8, 1.6E-7, 6.2E-7, 1.2E-6, 1.9E-6, 2.8E-6, 3.8E-6, 4.8E-6, 7.3E-6)
+data <- data.frame(r, press, source) 
+
+data <- mutate(data,
+               press = press/10, # convert to kPa
+               flow = flowcalc(press, 5E-5, 1.49E-5, 1.58)
+)
+
+ggplot(data, aes(press, source)) + geom_line() + geom_point() +
+  ggtitle("Source pressure vs inlet pressure, 100um Glass Capillary")
+```
+
+
+Calculated flow vs source pressure. Something fishy here.
+
+```{r}
+ggplot(data, aes(flow, source)) + geom_line() + geom_point() +
+  ggtitle("Source pressure vs CO2 flow, 100um Glass Capillary")
+```
+
+If the diameter of the capillary is adjusted to 50um, things look more realistic...
+
+```{r}
+data <- mutate(data, flow = flowcalc(press, 2.5E-5, 1.49E-5, 1.58))
+ggplot(data, aes(flow, source)) + geom_line() + geom_point() +
+  ggtitle("Source pressure vs CO2 flow, if capillary is 50um id")
+```
+
+
+## 2017-10-16 2017-10-17 - Leak rates of PEEK capillaries with leak checker
+
+Black PEEK capillary, 100um x 158mm
+Connected between helium regulator and leak detector.
+
+```{r}
+r <- 5E-5
+press <- c(0, 35, 50, 75, 100, 140, 159, 190, 222, 20, 8, 0)
+
+#press <- press/10 # convert to kPa
+leakrate <- c(3.6E-11, 7.2E-7, 1.5E-6, 3.1E-6, 5.1E-6, 9.4E-6, 1.2E-5, 1.5E-5, 2.2E-5, 2.2E-7, 1.5E-8,1.4E-9)
+  
+data <- data.frame(r, press, leakrate) 
+
+data <- mutate(data,
+                sccm = leakrate / 0.0016, # convert to sccm
+                 co2sccm = sccm * 1.49E-5/1.90E-5, # co2/He viscosity
+                 flow = co2sccm * 1E3, # convert to ul/m
+                 press = press / 10,
+                 calflow = flowcalc(press, 5E-5, 1.49E-5, 1.58),
+                 corcalflow = flowcalc(press, 2.5E-5, 1.49E-5, 1.58) ) # convert to kPa
+
+ggplot(data, aes(press, flow)) + 
+  geom_line() + 
+  geom_point() +
+  ggtitle("Flow vs Pressure for 100um PEEK capillary")
+```
+
+Looks like calculated flows don't match up with measured. Is diameter of capillary wrong? Using a diameter of 50um in poiselle's gives better numbers...
+
+```{r}
+ggplot(data, aes(flow, calflow)) + geom_line() + geom_point() +
+  ggtitle("Predicted vs actual flow, 100um PEEK Capillary")
+
+ggplot(data, aes(flow, corcalflow)) + geom_line() + geom_point() +
+  ggtitle("Predicted vs actual flow, if diameter = 50um")
+```
+
+### 2017-10-20 Glass capillary
+
+Leak checker test of 100um x 178mm glass capillary.
+
+```{r}
+r <- 5E-5
+press <- c(0, 32, 64, 80, 110, 121, 150, 15, 10, 4)
+leakrate <- c(2E-9, 1.1E-6, 2.8E-6, 3.7E-6, 6.1E-6, 7.5E-6, 1.1E-5, 4.5E-7, 2.7E-7, 8.5E-8)
+  
+data <- data.frame(r, press, leakrate) 
+
+data <- mutate(data,
+                sccm = leakrate / 0.0016, # convert to sccm
+                 co2sccm = sccm * 1.49E-5/1.90E-5, # co2/He viscosity
+                 flow = co2sccm * 1E3, # convert to ul/m
+                 press = press / 10, # convert to kPa
+                 calflow = flowcalc(press, 5E-5, 1.49E-5, 1.78))
+
+ggplot(data, aes(press, flow)) + 
+  geom_line() + 
+  geom_point() + 
+  ggtitle("100um Glass Capillary, flow vs pressure")
+ggplot(data, aes(calflow, flow)) + 
+  geom_line() + 
+  geom_point() + 
+  ggtitle("100um Glass Capillary, measured vs predicted flow")
+```
+
+## 2017-11-14 Beam tests
+
+Used black PEEK capillary. 
+```{r}
+lpdata <- read.csv(here("data/14Nov2017LPtest.csv"), skip = 4) %>%
+  mutate(supply = supply / 10,
+         source = source * 1E-7,
+         flow = flowcalc(supply, 2E-5, 1.49E-5, 1.58))
+         
+ggplot(lpdata, aes(supply, current)) + 
+  geom_smooth() + geom_point() +
+  labs(x = "Inlet pressure (kPa)", y = "C12 Current")
+ggplot(lpdata, aes(supply, source)) + 
+  geom_smooth() + geom_point() +
+  labs(x = "Inlet pressure (kPa)", y = "Source pressure (Pa)")
+ggplot(lpdata, aes(flow, source)) + 
+  geom_smooth() + geom_point() +
+  labs(x = "Flow (ul/min)", y = "Source pressure (Pa)")
+ggplot(lpdata, aes(flow, current)) + geom_smooth() + geom_point() +
+  labs(x = "Flow (ul/min)", y = "Source current (uA)")
+ggplot(lpdata, aes(source, current)) + geom_smooth(span = 1) + geom_point() +
+  labs(x = "Source pressure (Torr)", y = "Source current (uA)")
+         
+```
+
+## 2018-04-25 Testing bellows compression
+
+Wired up stepper drives. Tested currents and flows with black PEEK capillary
+(nominally 100um id). Source works fine after cleaning clog from delivery tube
+at last source cleaning. Ran scan of inlet pressures, saw best currents at
+~600mbar. Reduced pressure to 300mbar, closed SF, used bellows to return flow
+to optimum.
+
+Using 100um x 178cm black PEEK capillary.
+
+inletp in mbar, sourcep in Torr, current in uA.
+
+```{r}
+# load data
+beldat <- read_csv(here("data/bellowsApr2518.csv"))
+beldat
+```
+
+```{r}
+belopen <- beldat %>% filter(bellows == 0)
+
+ggplot(belopen, aes(inletp, sourcep)) + 
+    geom_point() + 
+    geom_line()
+```
+
+Inlet pressure/source pressure relationship is about the same as last time. Still way more than calculated inlet pressure for a given source pressure. Capillary pinching at the swagelok connection or bad calculations?
+
+Based on later alignment testing, flows for good current are reduced by about 3x with better alignment of delivery arm with target.
+
+```{r}
+ggplot(belopen, aes(sourcep, c12cur)) +
+  geom_line() + geom_point() +
+  labs(x = "Source pressure (Torr)", y = "Source current (uA)")
+```
+
+Looks like we have about the same source pressure/current optima as before.
+
+```{r}
+
+bellows <- beldat %>% filter(is.na(inletp) | inletp == 300)
+
+
+ggplot(bellows, aes(bellows, c12cur)) +
+  geom_smooth(method = "lm") + geom_point() +
+  labs(x = "Bellows position (0-120k)", y = "Source current (uA)")
+```
+
+As expected, source pressure and current follow bellows position, such that bellows position is proportional to inlet pressure.
+
+## 2018-05-23 Bellows with test samples
+
+Initially tried 2m x 100um glass capillary. There were two sparks with two different capillaries. Both sparks broke capillary at what is presumably spark exit point. Later open split tests with glass capillaries did not have sparking issue. Three differences with open split: 
+
+1. Pressure. Open split should be at higher pressure along cap length.
+2. Open split capillary is terminated in grounded SS bulkhead connector at cage.
+3. A teflon jacket was added to the capillary inside the cage.
+
+### Load data from tests & runs
+
+Ran OX-I's and OX-II's from bellows end archive tubes. All ~100umol. 
+
+3 gas samples:
+OX-I GS-9394 Pos 15
+OX-II GS-10051 Pos 17
+C-1 HY-31410 Pos 18
+
+pos 8 is ox-i graphite
+
+```{r}
+data <- get_hgis_data(here("data/USAMS052318RHIGS.txt")) %>% 
+                  mutate(Num = ifelse(Pos == 15, "S", "U"))
+stdrat <- mean(data$cor1412he[data$Num == "S" & data$outlier == FALSE])
+data <- mutate(data, normFm = norm_gas(cor1412he, stdrat))
+  
+plot_hgis_time(data)
+```
+
+The C-1 has some burn in that should be trimmed.
+
+```{r}
+data <- filter(data, !(Pos == 18 & normFm > 0.06))
+sum_hgis(data)
+```
+
+```{r}
+plot_hgis(data)
+```
+
+
+## 2018-05-30 Helium Dilution tests
+
+Cleaned and reloaded sample wheel:
+2x ceylon, 2x ox-I, 8 gas cathodes. USAMS053018R.txt
+
+Using Black PEEK capillary, 158mm x 100um.
+
+Added needle valve for UHP helium to inlet. Using turbopump instead of cryo. Base pressures are about 1E-6 initially, 6E-7 after a few hours, and 4E-7 overnight. Cryo base pressures are around 1E-7.
+
+Procedure:
+
+1. Admit sample to inlet, measure pressure.
+2. Freeze sample to CF.
+3. Admit He to inlet to give desired dilution
+4. Close SF
+5. Warm sample
+6. Adjust bellows for best current
+7. Run sample
+
+
+### Flow tests
+
+Evacuate inlet. Add He and check source pressure vs. inlet pressure. Inlet pressure in mbar, source pressure in Torr.
+
+```{r}
+# data from He pressure test
+he_press_test <- tribble(~inletp, ~sourcep,
+                         0, 6.77,
+                         52, 6.77,
+                         102, 6.8,
+                         202, 7,
+                         303, 7.4,
+                         400, 8,
+                         516, 8.9,
+                         603, 9.7,
+                         705, 11,
+                         806, 12,
+                         905, 13) %>% 
+  mutate(sourcep = sourcep * 1E-7)
+
+ggplot(he_press_test, aes(inletp, sourcep)) + 
+    geom_point() + 
+    geom_line() +
+  ggtitle("Source vs inlet pressure, Helium")
+```
+
+### Dillution test, modern tank gas and OX-II breakseal
+
+23 mbar CO2 frozen in inlet. Added 400 mbar He. Source pressure 8E-7, C12 .4uA. Compress to give source pressure of 4.8E-6, C12 of .6uA. Currents too low.
+
+100mbar CO2 in inlet-SI frozen, 972mbar helium added. Source pressure 9E-6, 12C current 7.5uA. Made a 30m run on position 5 with this sample.
+
+OX-II breakseal (GS-10016) run on position 6. 83.82umol CO2, 83mbar in inlet-SI. Froze sample and added 1035mbar helium. Base source pressure 1E-6, rose to 7E-6 with sample. Initial current 7.5uA 12C.
+
+
+Load data from tests & runs
+
+```{r}
+data <- get_hgis_data(here("data/USAMS053018R.txt"), as.Date("2018-05-30")) %>% 
+           mutate(Pos = ifelse(Sample.Name == "OX-II", 6, Pos),
+                  pos_name = paste(Pos, Sample.Name, sep = " - "),
+                  dil_factor = case_when(Pos == 5 ~ 972/100,
+                                         Pos == 6 ~ 1035/83),
+                  Num = ifelse(Pos == 5, "S", "U"))
+stdrat <- mean(data$cor1412he[data$Num == "S"])
+
+data <- mutate(data, normFm = norm_gas(cor1412he, stdrat))
+plot_hgis_time(data)
+```
+
+
+```{r}
+data %>% 
+  filter(outlier == FALSE) %>% 
+sum_hgis()
+```
+
+```{r}
+ data %>% 
+    mutate(Fm = ifelse(normFm > .15, "modern", "dead"),
+           Name = factor(pos_name, levels = unique(pos_name[order(Fm, dil_factor)])),
+           Fm = ordered(Fm, levels = c("modern", "dead")),
+           dil_factor = factor(dil_factor)) %>%  
+    ggplot(aes(Name, normFm, fill = dil_factor)) +
+      geom_boxplot() +
+      geom_hline(data = data.frame(yint=1,Fm=ordered("modern", levels = c("modern", "dead"))),
+                 aes(yintercept = yint)) + 
+      geom_hline(data = data.frame(yint=0,Fm=ordered("dead", levels = c("modern", "dead"))), 
+                 aes(yintercept = yint)) + 
+      theme(axis.text.x = element_text(angle = 45, hjust=1)) +
+      labs(x = NULL,
+           y = "Fraction Modern") +
+      facet_grid(Fm~., scales = "free_y")
+```
+
+
+## 2018-06-06 diagnosing flow problems
+
+Lowered arm by a full turn, moved actuator clevis down by one turn. Some additional alignment testing: Move arm, test current, repeat. Best flow/current- 9uA at source pressure of 7E-7 Torr.
+
+Reterminated black PEEK capillary.
+
+Calc for best flow:
+
+
+```{r}
+r <- 5E-5
+u <- 1.49E-5
+x <- 1.58
+flowcalc(20, r, u, x)
+```
+
+12C current vs source pressure before and after delivery arm realignment.
+
+```{r}
+flowdat <- read.csv(here("data/DIflowJun618.csv"))
+ggplot(flowdat, aes(source, current, color = Alignment)) +
+  geom_line() + geom_point() +
+  labs(x = "Source pressure (Torr)", y = "Source current (uA)")
+str(flowdat)
+```
+
+Data from runs is in USAMS060618R.txt. Not 100% certain which samples are in which positions. Data look like 3 modern tank gas.
+
+```{r}
+data <- get_hgis_data(here("data/USAMS060618R.txt")) %>% 
+  filter(Pos != 1,                           #remove spurious pos1 runs
+         !(Pos == 3 & X13.12he > 0.011)) %>%     #remove solid OX-I fliers
+                  mutate(Num = ifelse(Pos == 5, "S", "U"))
+
+# Get mean ratio for solid OX-I and normalize data
+stdrat <- mean(data$cor1412he[data$Num == "S" & data$outlier == FALSE])
+data <- mutate(data, normFm = norm_gas(cor1412he, stdrat))
+                  
+plot_hgis_time(data)
+```
+
+```{r}
+sum_hgis(data)
+```
+
+```{r}
+plot_hgis(data)
+```
+

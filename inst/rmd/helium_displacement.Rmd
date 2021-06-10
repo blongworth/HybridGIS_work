@@ -1,0 +1,115 @@
+---
+title: "Helium displacement"
+output:
+  html_document:
+    df_print: paged
+---
+
+Calculate concentration of CO2 in a vial/effluent when introducing helium as a displacement gas.
+
+```{r, message=FALSE}
+library(tidyverse)
+library(HybridGIS)
+```
+
+I think this can be solved with ODE:
+
+Change in volume of helium over time...
+
+$$ C^\prime(t) = r - \frac{r}{V}C(t) $$
+
+Add some math...
+
+$$ C(t) = V(1-e^{-\frac{r}{V}t}) $$
+
+The fraction of CO2 in the effluent should be:
+
+$$ C(t) = e^{-\frac{r}{V}t} $$
+
+Put this into functions. Main function moved to HGISFunctions.R and documented there. 
+
+Function definition:
+
+```{r}
+concCO2
+```
+
+Helper function to calculate fraction/flow of helium:
+
+```{r}
+concHe <- function(t, ...) {
+  1 - concCO2(t)
+}
+```
+
+Plotted as fraction of CO2 and helium
+
+```{r}
+data.frame(x = 0:400) %>% 
+  ggplot(aes(x)) +
+  stat_function(fun=concCO2, aes(color = "CO2")) +
+  stat_function(fun=concHe, aes(color = "Helium")) +
+  scale_color_manual("Gas", values = c("green", "blue")) +
+  labs(title = "Concentration of CO2 and Helium in vial over time",
+       subtitle = "7mL vial, 100uL/min helium",
+       x = "Time (min)",
+       y = "Concentration (fractional)")
+```
+
+OK, what's the rate of flow of CO2 over time, in the effluent, and in a capillary taking Q/t ul/m?
+
+If the vial is 7mL, flowing at 20ul/m and sampling 10ul/m with the open split, CO2 ul/m looks like:
+
+```{r}
+data.frame(x = 0:400) %>% 
+  ggplot(aes(x)) +
+  stat_function(fun=function(x) concCO2(x, r = 20, flow = 10), aes(color = "CO2")) +
+  stat_function(fun=function(x) 10 - concCO2(x, r = 20, flow = 10), aes(color = "Helium")) +
+  scale_color_manual("Gas", values = c("green", "blue")) +
+  labs(title = "Flow of CO2 to source over time",
+       subtitle = "7mL vial, 20uL/min helium, 10uL/min to source",
+       x = "Time (min)",
+       y = "Flow (uL/min)")
+```
+
+Takes about 250 min to drop from 10 to 5 uL/min CO2.
+
+## High dillution 
+
+Model case of small amount of CO2 in He in vial. Requires higher capillary flow to source to maintain ~5uL/min CO2 to source in helium. This also requires higher displacement flow to maintain split ratio.
+
+Flows are 200uL/min of displacement helium, and 100uL/min delivered to source. Aiming for 5uL/min CO2 to source.
+
+Full plot starting at 100% CO2 in 7mL vial. Working on adding initial CO2 concentration in vial to `concCO2()`, but for now, use different start time to same effect.
+
+```{r}
+data.frame(x = 0:400) %>% 
+  ggplot(aes(x)) +
+  stat_function(fun=function(x) concCO2(x, r = 200, flow = 100), aes(color = "CO2")) +
+  stat_function(fun=function(x) 100 - concCO2(x, r = 200, flow = 100), aes(color = "Helium")) +
+  scale_color_manual("Gas", values = c("green", "blue")) +
+  labs(title = "Flow of CO2 to source over time",
+       subtitle = "7mL vial, 0.2mL/min helium, 100uL/min to source",
+       x = "Time (min)",
+       y = "Flow (uL/min)")
+```
+
+Zooming in on flows around 5uL/min CO2 to source in 100uL/min He...
+
+```{r}
+data.frame(x = 75:150) %>% 
+  ggplot(aes(x)) +
+  stat_function(fun=function(x) concCO2(x, r = 200, flow = 100), aes(color = "CO2")) +
+  labs(title = "Flow of CO2 to source over time",
+       subtitle = "7mL vial, 0.2mL/min helium, 100uL/min to source",
+       x = "Time (min)",
+       y = "Flow (uL/min)") +
+  scale_color_manual("Gas", values = c("green", "blue")) +
+  xlim(50, 450) +
+  ylim(0, 10)
+```
+
+Takes about 50 min to drop from 10 to 5 uL/min CO2.
+
+Dilution results in higher rate of change of CO2 entering source.
+

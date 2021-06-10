@@ -53,5 +53,5 @@ $$ R_{cor} = R_{norm} - \frac{R_{blank}(R_{std} - R_{norm})}{R_{std}} $$
 
 The error in the blank is propagated using this equation:
 
-$$ \sigma_{cor} = \sqrt{\sigma_{norm}^2 * \frac{1 + R_{blank}}{R_{std}}^2 + \sigma_{blank}^2 * \frac{R_{norm}-R_{std}}{R_{std}}^2} $$
+$$ \sigma_{cor} = \sqrt{\sigma_{norm}^2 * \left(\frac{1 + R_{blank}}{R_{std}}\right)^2 + \sigma_{blank}^2 * \left(\frac{R_{norm}-R_{std}}{R_{std}}\right)^2} $$
 

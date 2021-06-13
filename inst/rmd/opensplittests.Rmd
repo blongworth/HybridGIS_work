@@ -2018,7 +2018,7 @@ Used same capillaries as usual, but decreased He displacement flow to 140 ul/min
 ### Samples
 
 ```{r}
-carb_data <- tribble(~, ~name, ~rec_num, ~mass,
+carb_data <- tribble(~number, ~name, ~rec_num, ~mass,
                      1, "C-2_1", 1082, 6.03,
                      2, "C-2_2", 1082, 11.10,
                      3, "C-2_3", 1082, 15.52
@@ -2143,22 +2143,22 @@ carb_data
 ```{r}
 df <- process_hgis_results(here("data/USAMS061121R.txt"), as.Date("2021-06-11")) #, standards)
 
-insert_raw(df)
+#insert_raw(df)
 ```
 
 #### Currents and ratios vs time.
 
 ```{r}
 df %>% 
-  filter(!(Pos %in% 1:4)) %>% 
-  plot_hgis_time(normFm, ce*normFm) +
+  filter(pos > 2) %>% 
+  plot_hgis_time(norm_ratio, sig_norm_ratio, outlier = !.$ok_calc) +
   ggtitle("Sample ratio vs. time")
 ```
 
 ```{r}
 df %>% 
-  filter(!(Pos %in% 1:4)) %>% 
-  plot_hgis_time(he12C) +
+  filter(pos > 2) %>% 
+  plot_hgis_time(he12C, outlier = !.$ok_calc) +
   ggtitle("Sample current vs time")
 ```
 
@@ -2171,17 +2171,17 @@ df_sum <- sum_hgis_targets(df) %>%
   norm_hgis() %>% 
   blank_cor_hgis()
 
-insert_results(df_sum)
+#insert_results(df_sum)
 ```
 
 
 
 ```{r}
 df_sum %>% 
-  filter(as.numeric(Pos) > 4) %>% 
-  mutate(sig_normFm = max_err * normFm) %>% 
-  select(Pos, Sample.Name, he12C, n_runs, norm_ratio, sig_norm_ratio) %>% 
-  arrange(Sample.Name)
+  filter(pos > 2) %>% 
+  mutate(he12C = he12C*1E6) %>% 
+  select(Positon = pos, `Sample Name` = sample_name, `12C Current (uA)` = he12C, n_runs, fm_corr, sig_fm_corr) %>% 
+  arrange(`Sample Name`)
 ```
 
 ```{r}
@@ -2195,7 +2195,7 @@ Compare results for samples with more than one replicate.
 
 ```{r}
 df_sum %>% 
-  filter(as.numeric(Pos) > 4) %>% 
+  filter(pos > 2) %>% 
   compare_replicates()
 ```
 
@@ -2203,13 +2203,13 @@ df_sum %>%
 
 ```{r}
 cons <- df_sum %>% 
-  filter(as.numeric(Pos) > 4,
+  filter(pos > 2,
          !is.na(fm_consensus)) %>% 
-  select(Sample.Name, fm_consensus, fm_corr, sig_fm_corr) %>% 
-  mutate(Fm_diff = fm_corr - fm_consensus,
+  select(sample_name, fm_consensus, fm_corr, sig_fm_corr) %>% 
+  mutate(fm_diff = fm_corr - fm_consensus,
          sigma = amstools::sigma(fm_corr, fm_consensus, sig_fm_corr)) %>% 
-  arrange(Sample.Name)
-  
+  arrange(sample_name)
+cons  
 knitr::kable(cons)
 ```
   

@@ -10,21 +10,21 @@ This document describes the procedure and functions used for reducing, normalizi
 
 Data reduction proceeds as follows:
 
-### Read raw file
+## Read raw file
 
 Raw files are acquisition data from the AMS system, in the same format as graphite data. A typical HGIS data acquisition for a target consists of 10 sequential runs of 90s each, giving 15 min. of acquisition time per sample.
 
-### Apply 13C correction to each run of a target
+## Apply 13C correction to each run of a target
 
 14/12 ratios of each run are corrected for fractionation using 13/12 ratio measured on the AMS system. Livetime correction is done during acquisition on USAMS. The correction is done as follows:
 
 $$ {}^{14/12}C_{corr} = \frac{{}^{14/12}C_{meas}}{{}^{13/12}C_{meas}^2} $$
 
-### Flag outliers by interquartile distance
+## Flag outliers by interquartile distance
 
-Outliers are defined as points 1.5 * interquartile range above the 3rd quartile or below the 1st quartile, and are dropped from the analysis.
+Outliers are defined as points 1.5 * interquartile range above the 3rd quartile or below the 1st quartile. 25% of values are expected to lie below the first quartile and 25% above the 3rd quartile. Interquartile range (IQR) is the difference between the 3rd and 1st quartile. Outliers are not currently dropped from the analysis.
 
-### Determine per-target means, internal and external errors
+## Determine per-target means, internal and external errors
 
 The per-target 13C-corrected raw ratio is taken as the unweighted mean of runs of the target. The internal or counting error of a target is defined as:
 
@@ -35,17 +35,18 @@ The external or statistical error is defined as:
 $$ \sigma_{ext} = \frac{SE(R_{cor})}{mean(R_{cor})}$$
 
 
-### Normalize targets using mean of standards and propagate errors
+## Normalize targets using mean of standards and propagate errors
 
 Unknowns are normalized using the mean measured value of gas standards using this equation:
 
-$$ R_{norm} = \frac{R_{sample}}{R_{std}}*1.0398$$
+$$ R_{norm} = \frac{R_{sample}\cdot R_{exp}}{R_{std}}$$
 
-Normalization errors are propagated using this equation:
+If the expected ratio ($R_{exp}$) of the standard is taken as a measured value with an error, rather than a constant or assigned ratio, normalization errors are propagated using this equation:
 
-$$ \sigma_{norm} = \sqrt{\frac{\sigma_{sample}^2}{R_{sample}^2} + \frac{\sigma_{std}^2}{R_{std}^2}} $$
+$$ \sigma_{norm} = \sqrt{\frac{\sigma_{sample}^2}{R_{sample}^2} + \frac{\sigma_{std}^2}{R_{std}^2} +
+\frac{\sigma_{exp}^2}{R_{exp}^2}} $$
 
-### Apply a large blank correction using the mean of blanks and propagate errors.
+## Apply a large blank correction using the mean of blanks and propagate errors.
 
 The mean of blanks is used to apply a large blank correction to the unknowns. The error in the blanks is taken as the larger of the standard deviation of blanks or half of the mean blank Fm. The correction is done as follows:
 

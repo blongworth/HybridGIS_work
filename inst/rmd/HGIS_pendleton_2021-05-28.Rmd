@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(message = FALSE, echo = FALSE)
 ```
 
 ```{r}
@@ -41,7 +41,8 @@ blanks <- c(6, 9, 11)
 
 - Using standards in positions `r standards` for normalization.
 - Using blanks in positions `r blanks` for blank correction.
-- Outliers are defined as points 1.5 * interquartile range above the 3rd quartile or below the 1st quartile, and are dropped from the analysis.
+- Outliers are defined as points 1.5 * interquartile range above the 3rd quartile or below the 1st quartile.
+- Outliers are NOT dropped from the analysis.
 
 Data reduction proceeds as follows:
 
@@ -50,12 +51,12 @@ Data reduction proceeds as follows:
 1. Flag outliers by interquartile distance
 1. Determine per-target means, internal and external errors
 1. Normalize targets using mean of standards and propagate errors
-1. Apply a large blank correction using the mean of blanks and propagate errors.
+1. Apply a large blank correction using the mean of blanks and propagate errors
 
 ## raw results
 
 ```{r}
-df <- get_hgis_data(file, date, standards)
+df <- process_hgis_results(file, date, standards)
 write_csv(df, here("data_analysed/HGIS_2021-05-28_raw.csv"))
 write.xlsx(df, here("data_analysed/HGIS_2021-05-28_raw.xlsx"))
 ```
@@ -64,21 +65,24 @@ write.xlsx(df, here("data_analysed/HGIS_2021-05-28_raw.xlsx"))
 
 ```{r}
 df %>% 
-  filter(!(Pos %in% 1:4)) %>% 
-  plot_hgis_time(normFm, ce*normFm) +
-  ggtitle("Sample ratio vs. time")
+  filter(!(pos %in% 1:4)) %>% 
+  plot_hgis_time(norm_ratio, sig_norm_ratio, outlier = !.$ok_calc) +
+  labs(title = "Sample ratio vs. time",
+       y = "Fraction modern")
 ```
 
 ```{r}
 df %>% 
-  filter(!(Pos %in% 1:4)) %>% 
-  plot_hgis_time(he12C) +
-  ggtitle("Sample current vs time")
+  filter(!(pos %in% 1:4)) %>% 
+  plot_hgis_time(he12C * 1E6, outlier = !.$ok_calc) +
+  labs(title = "Sample current vs time",
+       x = "Time (s)",
+       y = "Current (uA)")
 ```
 
 
 ```{r}
-df_sum <- sum_hgis_targets(df) %>% 
+df_sum <- sum_hgis_targets(df, remove_outliers = FALSE) %>% 
   norm_hgis() %>% 
   blank_cor_hgis(blanks = c(6, 9, 11))
 
@@ -90,17 +94,17 @@ write.xlsx(df_sum, here("data_analysed/HGIS_2021-05-28_results.xlsx"))
 
 ```{r}
 df_sum %>% 
-  filter(as.numeric(Pos) > 4) %>% 
-  mutate(sig_normFm = max_err * normFm) %>% 
-  select(Pos, Sample.Name, he12C, n_runs, fm_corr, sig_fm_corr) %>% 
-  arrange(Sample.Name) %>% 
+  filter(as.numeric(pos) > 4) %>% 
+  mutate(he12C = he12C * 1E6) %>% 
+  select(Pos = pos, Name = sample_name, `Current (uA)` = he12C, `N runs` = n_runs, Fm = fm_corr, `Fm error` = sig_fm_corr) %>% 
+  arrange(Name) %>% 
   knitr::kable()
   # gt::gt()
 ```
 
 ```{r}
 df_sum %>% 
-  filter(as.numeric(Pos) > 4) %>% 
+  filter(as.numeric(pos) > 4) %>% 
 plot_hgis_summary()
 ```
 
@@ -110,8 +114,11 @@ Compare results for samples with more than one replicate.
 
 ```{r}
 df_sum %>% 
-  filter(as.numeric(Pos) > 4) %>% 
+  filter(as.numeric(pos) > 4) %>% 
   compare_replicates() %>% 
+  select(Name, `Mean current (uA)` = he12C_mean, 
+         `SD of current` = he12C_sd, `Mean Fm` = fm_corr_mean, 
+         `SD of Fm` = fm_corr_sd, `Mean sample error` = sig_fm_corr_mean) %>% 
   knitr::kable()
 ```
 
@@ -119,12 +126,20 @@ df_sum %>%
 
 ```{r}
 cons <- df_sum %>% 
-  filter(as.numeric(Pos) > 4,
+  filter(as.numeric(pos) > 4,
          !is.na(fm_consensus)) %>% 
-  select(Sample.Name, fm_consensus, fm_corr, sig_fm_corr) %>% 
+  select(sample_name, fm_consensus, fm_corr, sig_fm_corr) %>% 
   mutate(Fm_diff = fm_corr - fm_consensus,
          sigma = amstools::sigma(fm_corr, fm_consensus, sig_fm_corr)) %>% 
-  arrange(Sample.Name)
+  arrange(sample_name) %>% 
+  select(Name = sample_name, 
+         #`Mean current (uA)` = he12C_mean, 
+         #`SD of current` = he12C_sd, 
+         `Consensus Fm` = fm_consensus,
+         Fm = fm_corr, 
+         `Fm error` = sig_fm_corr,
+         `Difference` = Fm_diff,
+         Sigma = sigma)
   
 knitr::kable(cons)
 ```

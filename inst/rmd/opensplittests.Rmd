@@ -1377,7 +1377,7 @@ ds <- data %>%
                                  rec_num == 72446 ~ 0.0013,
                                  TRUE ~ fm_consensus))
 
-ds[-(1:4),-3]
+ds[-(1:4),-4]
 ```
 
 ```{r}
@@ -2134,7 +2134,7 @@ carb_data <- tribble(~name,         ~rec_num, ~carbonate_mass, ~helium_added,
                      )
 
 write_csv(carb_data, here("data/carb_data_2021-06-04.csv"))
-insert_samples(carb_data)
+#insert_samples(carb_data)
 carb_data
 ```
 

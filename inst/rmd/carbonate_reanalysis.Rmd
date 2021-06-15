@@ -32,5 +32,13 @@ results_df <- map_dfr(results, 2)
 ```
 
 ```{r}
+results_df %>% 
+  filter(!is.na(rec_num)) %>% 
+  select(sample_name, rec_num, wheel_id, sample_type, fm_consensus, fm_corr, sig_fm_corr) %>% 
+  arrange(rec_num, sample_name)
+```
+
+```{r}
+compare_replicates(results_df)
 ```
 

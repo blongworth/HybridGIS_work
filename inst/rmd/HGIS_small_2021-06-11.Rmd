@@ -1,0 +1,132 @@
+---
+title: "HGIS 2021-06-11 Carbonates"
+author: "Brett Longworth"
+date: "6/14/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE, echo = FALSE)
+```
+
+```{r}
+library(tidyverse)
+library(here)
+library(openxlsx)
+library(amstools)
+library(HybridGIS)
+
+options(digits = 4)
+options(scipen = 3)
+```
+
+
+Data reduction and analysis for carbonate samples run on June 11, 2021. Test run of smaller samples. All samples ~8mg carbonate. Includes C-1, C-2, and NOSAMS2.
+
+Outliers are defined as points 1.5 * interquartile range above the 3rd quartile or below the 1st quartile.
+
+Data reduction proceeds as follows:
+
+1. Read raw file
+1. Apply 13C correction to each run of a target
+1. Flag outliers by interquartile distance. Outliers are flagged, but NOT removed from the analysis.
+1. Determine per-target means, internal and external errors
+1. Normalize targets using mean of standards and propagate errors
+1. Apply a large blank correction using the mean of blanks and propagate errors.
+
+## raw results
+
+```{r}
+df <- process_hgis_results(here("data/USAMS061121R.txt"))
+write_csv(df, here("data_analysed/HGIS_2021-06-11_raw.csv"))
+write.xlsx(df, here("data_analysed/HGIS_2021-06-11_raw.xlsx"))
+```
+
+#### Currents and ratios vs time.
+
+```{r}
+df %>% 
+  filter(pos > 2) %>% 
+  plot_hgis_time(norm_ratio, sig_norm_ratio, outlier = !.$ok_calc) +
+  labs(title = "Sample ratio vs. time",
+       y = "Fraction modern")
+```
+
+```{r}
+df %>% 
+  filter(pos > 2) %>% 
+  plot_hgis_time(he12C * 1E6, outlier = !.$ok_calc) +
+  labs(title = "Sample current vs time",
+       x = "Time (s)",
+       y = "Current (uA)")
+```
+
+
+```{r}
+df_sum <- sum_hgis_targets(df, remove_outliers = FALSE) %>% 
+  norm_hgis() %>% 
+  blank_cor_hgis()
+
+write_csv(df_sum, here("data_analysed/HGIS_2021-06-11_results.csv"))
+write.xlsx(df_sum, here("data_analysed/HGIS_2021-06-11_results.xlsx"))
+```
+
+## Results
+
+Fm and Fm error are blank corrected Fm and error, respectively.
+
+```{r}
+df_sum %>% 
+  filter(pos > 2) %>% 
+  mutate(he12C = he12C * 1E6) %>% 
+  select(Pos = pos, Name = sample_name, `Current (uA)` = he12C, `N runs` = n_runs, Fm = fm_corr, `Fm error` = sig_fm_corr) %>% 
+  arrange(Name) %>% 
+  knitr::kable()
+  # gt::gt()
+```
+
+```{r}
+df_sum %>% 
+  filter(pos > 2) %>% 
+plot_hgis_summary()
+```
+
+## Agreement of replicates
+
+Compare results for samples with more than one replicate. 
+
+```{r}
+df_sum %>% 
+  filter(pos > 2) %>% 
+  compare_replicates() %>% 
+  select(Name, `Mean current (uA)` = he12C_mean, 
+         `SD of current` = he12C_sd, `Mean Fm` = fm_corr_mean, 
+         `SD of Fm` = fm_corr_sd, `Mean sample error` = sig_fm_corr_mean) %>% 
+  knitr::kable()
+```
+
+## Agreement with consensus
+
+Comparison to expected Fm for sample types with a consensus value.
+
+```{r}
+cons <- df_sum %>% 
+  filter(pos > 2,
+         !is.na(fm_consensus)) %>% 
+  select(sample_name, fm_consensus, fm_corr, sig_fm_corr) %>% 
+  mutate(Fm_diff = fm_corr - fm_consensus,
+         sigma = amstools::sigma(fm_corr, fm_consensus, sig_fm_corr)) %>% 
+  arrange(sample_name) %>% 
+  select(Name = sample_name, 
+         #`Mean current (uA)` = he12C_mean, 
+         #`SD of current` = he12C_sd, 
+         `Consensus Fm` = fm_consensus,
+         Fm = fm_corr, 
+         `Fm error` = sig_fm_corr,
+         `Difference` = Fm_diff,
+         Sigma = sigma)
+  
+knitr::kable(cons)
+```
+
+

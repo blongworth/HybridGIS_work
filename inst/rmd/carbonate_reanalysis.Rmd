@@ -23,22 +23,27 @@ library(HybridGIS)
 wheels <- c("020521", "030421", "040121", "041521", "051421", "052621", "061121")
 files <- here("data", paste0("USAMS", wheels, "R.txt"))
 dates <- as.Date(c("2021-02-05", "2021-03-05", "2021-04-09", "2021-04-16", "2021-05-14", "2021-05-28", "2021-06-11"))
-stds <- list(c(5,8), NULL, c(26,37), NULL, c(25,26,36,37), NULL, NULL)
+stds <- list(c(5,8), NULL, c(26,37), NULL, c(10,15,65,70), NULL, NULL)
 blanks <- list(7, c(7,8), c(28,29,30), c(27,28,29), c(20,35,50), NULL, NULL)
 
-results <- pmap(list(files, dates, stds, blanks), reduce_hgis)
+results <- pmap(list(files, dates, stds, blanks), reduce_hgis, remove_outliers = FALSE)
 raw_df <- map_dfr(results, 1)
 results_df <- map_dfr(results, 2)
 ```
 
 ```{r}
 results_df %>% 
-  filter(!is.na(rec_num)) %>% 
-  select(sample_name, rec_num, wheel_id, sample_type, fm_consensus, fm_corr, sig_fm_corr) %>% 
-  arrange(rec_num, sample_name)
+  filter(!is.na(rec_num),
+         sample_type == "B") %>% 
+  select(sample_name, rec_num, wheel, sample_type, fm_consensus, fm_corr, sig_fm_corr) %>% 
+  arrange(pos)
 ```
 
 ```{r}
-compare_replicates(results_df)
+results_df %>% 
+  filter(!is.na(rec_num),
+         !is.na(sig_fm_corr)) %>% 
+  compare_replicates() %>% 
+  arrange(rec_num)
 ```
 

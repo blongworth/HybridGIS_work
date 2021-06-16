@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(message = FALSE, echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
 ```
 
 ```{r}
@@ -57,8 +57,8 @@ Data reduction proceeds as follows:
 
 ```{r}
 df <- process_hgis_results(file, date, standards)
-write_csv(df, here("data_analysed/HGIS_2021-05-28_raw.csv"))
-write.xlsx(df, here("data_analysed/HGIS_2021-05-28_raw.xlsx"))
+#write_csv(df, here("data_analysed/HGIS_2021-05-28_raw.csv"))
+#write.xlsx(df, here("data_analysed/HGIS_2021-05-28_raw.xlsx"))
 ```
 
 #### Currents and ratios vs time.
@@ -86,8 +86,8 @@ df_sum <- sum_hgis_targets(df, remove_outliers = FALSE) %>%
   norm_hgis() %>% 
   blank_cor_hgis(blanks = c(6, 9, 11))
 
-write_csv(df_sum, here("data_analysed/HGIS_2021-05-28_results.csv"))
-write.xlsx(df_sum, here("data_analysed/HGIS_2021-05-28_results.xlsx"))
+# write_csv(df_sum, here("data_analysed/HGIS_2021-05-28_results.csv"))
+# write.xlsx(df_sum, here("data_analysed/HGIS_2021-05-28_results.xlsx"))
 ```
 
 ## Results
@@ -96,7 +96,8 @@ write.xlsx(df_sum, here("data_analysed/HGIS_2021-05-28_results.xlsx"))
 df_sum %>% 
   filter(as.numeric(pos) > 4) %>% 
   mutate(he12C = he12C * 1E6) %>% 
-  select(Pos = pos, Name = sample_name, `Current (uA)` = he12C, `N runs` = n_runs, Fm = fm_corr, `Fm error` = sig_fm_corr) %>% 
+  select(Pos = pos, Name = sample_name, `Current (uA)` = he12C, 
+         `N runs` = n_runs, Fm = fm_corr, `Fm error` = sig_fm_corr) %>% 
   arrange(Name) %>% 
   knitr::kable()
   # gt::gt()
@@ -142,6 +143,55 @@ cons <- df_sum %>%
          Sigma = sigma)
   
 knitr::kable(cons)
+```
+
+
+## Agreement with graphite
+
+Agreement of Haiti core samples. Graphite samples were pretreated with HCl to leach 30% of the sample. HGIS samples not pretreated.
+
+Load Simon's data and compare
+
+```{r}
+haiti <- filter(df_sum, str_detect(sample_name, "HATC1")) %>% 
+  mutate(rec_num = case_when(pos == 14 ~ 171989,
+                             pos == 15 ~ 171995,
+                             pos == 16 ~ 171999))
+
+graphite_results <- getRecOS(c(171999,171995,171989)) %>% 
+  select(rec_num, fm_corr = f_modern, sig_fm_corr = f_ext_error)
+
+combined_results <- haiti %>% 
+  select(sample_name, rec_num, fm_corr, sig_fm_corr) %>% 
+  left_join(graphite_results,
+            by = "rec_num", 
+            suffix = c("_hgis", "_graphite")) %>% 
+  mutate(fm_diff = fm_corr_graphite - fm_corr_hgis,
+         fm_mean = mean(c(fm_corr_hgis, fm_corr_graphite))) %>% 
+  pivot_longer(c(fm_corr_graphite, sig_fm_corr_graphite, 
+                 fm_corr_hgis, sig_fm_corr_hgis), 
+               names_to = c(".value", "method"),
+               names_pattern = "(.*)_(.*)") %>% 
+  mutate(fm_diff = fm_corr - fm_mean)
+  
+combined_results %>% 
+  select(sample_name, rec_num, method, fm_corr, sig_fm_corr) %>% 
+knitr::kable()
+```
+
+Difference plot
+
+```{r}
+combined_results %>% 
+  ggplot(aes(fm_corr, fm_diff, color = method, shape = method)) +
+  geom_hline(yintercept = 0) +
+  geom_pointrange(aes(ymin = fm_diff - sig_fm_corr, 
+                      ymax = fm_diff + sig_fm_corr)) +
+                  #position = position_dodge2(width = 0.05, padding = 0.1)) +
+  ylim(-0.02, 0.02) +
+  labs(title = "Haiti Core Graphite vs HGIS",
+       x = "Fraction modern",
+       y = "Fm - mean Fm") + theme_classic()
 ```
 
 

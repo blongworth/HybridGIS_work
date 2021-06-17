@@ -25,10 +25,29 @@ files <- here("data", paste0("USAMS", wheels, "R.txt"))
 dates <- as.Date(c("2021-02-05", "2021-03-05", "2021-04-09", "2021-04-16", "2021-05-14", "2021-05-28", "2021-06-11"))
 stds <- list(c(5,8), NULL, c(26,37), NULL, c(10,15,65,70), NULL, NULL)
 blanks <- list(7, c(7,8), c(28,29,30), c(27,28,29), c(20,35,50), NULL, NULL)
+outliers <- list(NULL, tibble(pos = c(6, 8, 8, 8), meas = c(18, 1, 2, 3)),
+                 tibble(pos = c(28,29), meas=c(1, 1)),
+                 NULL,
+                 tibble(pos=10, meas=1),
+                 tibble(pos=c(8,9,13), meas=c(6,1,1)),
+                 tibble(pos=c(4,5,5,6,7,8,15), meas=c(1,1,4,10,3,3,2)))
+                 
 
-results <- pmap(list(files, dates, stds, blanks), reduce_hgis, remove_outliers = FALSE)
+results <- pmap(list(files, dates, stds, blanks, outliers), reduce_hgis)
 raw_df <- map_dfr(results, 1)
 results_df <- map_dfr(results, 2)
+```
+
+Plot raw data
+
+```{r}
+map(results, 1) %>% 
+  map(plot_hgis_time, y_var = norm_ratio, outlier = ok_calc)
+```
+
+```{r}
+map(results, 1) %>% 
+  map(plot_hgis_time, y_var = he12C, outlier = ok_calc)
 ```
 
 ```{r}
@@ -44,6 +63,34 @@ results_df %>%
   filter(!is.na(rec_num),
          !is.na(sig_fm_corr)) %>% 
   compare_replicates() %>% 
-  arrange(rec_num)
+  arrange(rec_num) %>% 
+  select(Name, N)
 ```
 
+```{r}
+cons_df <- compare_consensus(results_df)
+
+cons_df %>% 
+  select(wheel, pos, sample_name, fm_consensus, fm_corr, sig_fm_corr, Fm_diff, sigma) %>% 
+  arrange(desc(Fm_diff))
+```
+  
+```{r}
+cons_df %>% 
+  filter(wheel != "USAMS020521") %>% 
+plot_hgis_consensus()
+```
+  
+```{r}
+cons_df %>% 
+  filter(wheel != "USAMS020521") %>% 
+  group_by(Name, fm_consensus) %>% 
+  summarize(across(c(fm_corr, sig_fm_corr, Fm_diff, sigma), list(mean = mean, sd = sd)))
+```
+
+```{r}
+cons_df %>% 
+  ungroup() %>% 
+  filter(wheel != "USAMS020521") %>% 
+  summarize(across(c(sig_fm_corr, Fm_diff, sigma), list(mean = mean, sd = sd)))
+```

@@ -80,13 +80,41 @@ df %>%
        y = "Current (uA)")
 ```
 
+### Manual outlier flagging 
 
 ```{r}
-df_sum <- sum_hgis_targets(df, remove_outliers = FALSE) %>% 
+outliers <- tribble(~pos, ~meas,
+                    8, 6,
+                    9, 1,
+                    13, 1)
+df_clean <- flag_outliers(df, outliers)
+```
+
+```{r}
+df_clean %>% 
+  filter(!(pos %in% 1:4)) %>% 
+  plot_hgis_time(norm_ratio, sig_norm_ratio, outlier = !.$ok_calc) +
+  labs(title = "Sample ratio vs. time",
+       y = "Fraction modern")
+```
+
+```{r}
+df_clean %>% 
+  filter(!(pos %in% 1:4)) %>% 
+  plot_hgis_time(he12C * 1E6, outlier = !.$ok_calc) +
+  labs(title = "Sample current vs time",
+       x = "Time (s)",
+       y = "Current (uA)")
+```
+
+## Data Reduction
+
+```{r}
+df_sum <- sum_hgis_targets(df_clean) %>% 
   norm_hgis() %>% 
   blank_cor_hgis(blanks = c(6, 9, 11))
 
-# write_csv(df_sum, here("data_analysed/HGIS_2021-05-28_results.csv"))
+write_csv(df_sum, here("data_analysed/HGIS_2021-05-28_results.csv"))
 # write.xlsx(df_sum, here("data_analysed/HGIS_2021-05-28_results.xlsx"))
 ```
 
@@ -186,8 +214,9 @@ combined_results %>%
   ggplot(aes(fm_corr, fm_diff, color = method, shape = method)) +
   geom_hline(yintercept = 0) +
   geom_pointrange(aes(ymin = fm_diff - sig_fm_corr, 
-                      ymax = fm_diff + sig_fm_corr)) +
-                  #position = position_dodge2(width = 0.05, padding = 0.1)) +
+                      ymax = fm_diff + sig_fm_corr),
+                  size = 1,
+                  position = position_dodge2(width = 0.02)) +
   ylim(-0.02, 0.02) +
   labs(title = "Haiti Core Graphite vs HGIS",
        x = "Fraction modern",

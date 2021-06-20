@@ -1,0 +1,184 @@
+---
+title: "HGIS Carbonate Results"
+subtitle: "NOSAMS Data Meeting"
+author: 
+  - "Brett Longworth"
+date: '2021-06-22'
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    nature:
+      slideNumberFormat: "%current%"
+      highlightStyle: github
+      highlightLines: true
+      ratio: 16:9
+      countIncrementalSlides: true
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  fig.width=9, fig.height=3.5, fig.retina=3,
+  out.width = "100%",
+  cache = FALSE,
+  echo = FALSE,
+  message = FALSE, 
+  warning = FALSE,
+  fig.show = TRUE,
+  hiline = TRUE
+)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_duo_accent(
+  primary_color = "#1381B0",
+  secondary_color = "#FF961C",
+  inverse_header_color = "#FFFFFF"
+)
+```
+
+```{r}
+library(tidyverse)
+library(HybridGIS)
+library(here)
+library(gt)
+
+options(digits = 3)
+options(scipen = 4)
+options(decimals = 4)
+theme_set(theme_classic())
+```
+
+## Method
+
+.pull-left[
+1. Acidify
+  - ~30mg Carbonate produces 6mL CO<sub>2</sub> @ ~1ATM
+1. Displace gas to open split with 100 uL/min He.
+1. Introduce mixture to source @ 30 uL/min
+1. Acquire data: 90s x 10 measurements.
+
+
+- Standard: live gas in vials
+- Blank: C-1 or TIRI-F in vials
+]
+
+.pull-right[![HGIS Figure](images/HGIS_open_split_drawing.svg)]
+---
+
+## Data reduction
+
+1. Correct for fractionation using online <sup>13</sup>C.
+1. Determine per-sample mean and error.
+1. Normalize to mean of Gas standard.
+1. Blank correct: LBC using mean of carbonate blanks
+
+- Errors propagated at each step. 
+- Per-sample error agrees well with variability of replicates.
+
+Data reduction done using an R package maintained on github:
+
+https://github.com/blongworth/hgis
+
+
+---
+
+## Results: Agreement with Consensus
+
+```{r}
+# Read data. Don't use first carbonate test or smaller samples.
+results_df <- read_csv(here("data_analysed/carb_all_results.csv"))
+cons_df <- results_df %>% 
+  filter(!is.na(sig_fm_corr),
+         wheel != "USAMS061121") %>% 
+  mutate(he12C = he12C * 1E6) %>% 
+  compare_consensus()
+```
+
+```{r}
+plot_hgis_consensus(cons_df) +
+  scale_color_continuous(name = "12C- (μA)")
+```
+---
+
+.left-column[
+## Results: Method precision and accuracy
+]
+
+.right-column[
+```{r}
+cons_df_sum <- cons_df %>% 
+  group_by(Name, fm_consensus) %>% 
+  summarize(across(c(fm_corr, sig_fm_corr, Fm_diff, sigma),
+                   list(mean = mean, sd = sd)),
+            N = n()) %>% 
+  ungroup()
+
+cons_df_sum %>% 
+  arrange(fm_consensus) %>% 
+  select(Name, `Consensus Fm` = fm_consensus,
+         `Mean Fm` = fm_corr_mean,
+         `Mean Fm error` = sig_fm_corr_mean,
+         `SD of measurements` = fm_corr_sd,
+         N) %>% 
+gt() %>% 
+  tab_header(title = "Summary statistics by sample type") %>% 
+  fmt_number(3:5, decimals = 4)
+```
+<br>
+<br>
+
+```{r}
+cons_df %>% 
+  filter(Name %in% c("TIRI-I", "C-2", "NOSAMS2")) %>% 
+  ungroup() %>% 
+  summarize(across(c(sig_fm_corr, Fm_diff, sigma),
+                   list(mean = mean, sd = sd)),
+            N = n()) %>% 
+  select(`Mean Fm difference` = Fm_diff_mean,
+         `SD of mean difference` = Fm_diff_sd,
+         `Mean Fm error` = sig_fm_corr_mean,
+         `Mean Sigma` = sigma_mean,
+         `SD of Sigma` = sigma_sd,
+         N
+         ) %>%  
+  #pivot_longer(everything()) %>% 
+  gt() %>% 
+  tab_header(title = "Summary statisics for reference materials",
+             subtitle = "TIRI-I, C-2, and NOSAMS2") %>% 
+  fmt_number(3:5, decimals = 4)
+```
+]
+
+---
+
+## Results: By sample type
+
+```{r}
+ggplot(cons_df, aes(x = Fm_diff, y = fm_corr, color = he12C)) +
+  geom_hline(aes(yintercept = fm_consensus), color = "lightblue") +
+  geom_hline(data = cons_df_sum, aes(yintercept = fm_corr_mean), color = "darkgray") +
+  geom_hline(data = cons_df_sum, aes(yintercept = fm_corr_mean + fm_corr_sd), 
+             color = "grey", linetype = "dashed") +
+  geom_hline(data = cons_df_sum, aes(yintercept = fm_corr_mean - fm_corr_sd),
+             color = "grey", linetype = "dashed") +
+  
+  #geom_boxplot(outlier.shape = NA) +
+  geom_pointrange(aes(ymin = fm_corr - sig_fm_corr, 
+                      ymax = fm_corr + sig_fm_corr), 
+                  size = .2) +
+  labs(subtitle = "Reference and normalization standards",
+       y = "Fraction modern (Fm)") +
+  facet_wrap(facets = vars(Name), scales = "free") +
+  theme_bw() +
+  scale_x_continuous(breaks = NULL) +
+  xlab(NULL) +
+  scale_color_continuous(name = "12C- (μA)") +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+```
+
+

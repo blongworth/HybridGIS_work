@@ -24,6 +24,8 @@ options(scipen = 4)
 
 
 ```{r}
+# TODO: Handle case of only one blank
+
 wheels <- c("020521", "030421", "040121", "041521", "051421", "052621", "061121", "061821")
 files <- here("data", paste0("USAMS", wheels, "R.txt"))
 dates <- as.Date(c("2021-02-05", "2021-03-05", "2021-04-09", "2021-04-16", "2021-05-14", "2021-05-28", "2021-06-11", "2021-06-18"))
@@ -41,6 +43,9 @@ outliers <- list(NULL, tibble(pos = c(6, 8, 8, 8), meas = c(18, 1, 2, 3)),
 results <- pmap(list(files, dates, stds, blanks, outliers), reduce_hgis)
 raw_df <- map_dfr(results, 1)
 results_df <- map_dfr(results, 2)
+
+write_csv(raw_df, here("data_analysed/carb_all_raw.csv"))
+write_csv(results_df, here("data_analysed/carb_all_results.csv"))
 ```
 
 Plot raw data

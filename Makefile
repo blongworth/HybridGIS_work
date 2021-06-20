@@ -20,7 +20,8 @@ FILES = 2017\ Results/USAMS032817R.txt \
 				USAMS041521R.txt \
 				USAMS051421R.txt \
 				USAMS052621R.txt \
-				USAMS061121R.txt
+				USAMS061121R.txt \
+				USAMS061821R.txt
 
 all: data
 

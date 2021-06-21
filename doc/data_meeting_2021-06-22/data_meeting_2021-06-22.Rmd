@@ -54,7 +54,8 @@ theme_set(theme_classic())
 
 .pull-left[
 1. Acidify
-  - ~30mg Carbonate produces 6mL CO<sub>2</sub> @ ~1ATM
+  - ~30mg Carbonate 
+  - produces 6mL CO<sub>2</sub> @ ~1ATM
 1. Displace gas to open split with 100 uL/min He.
 1. Introduce mixture to source @ 30 uL/min
 1. Acquire data: 90s x 10 measurements.

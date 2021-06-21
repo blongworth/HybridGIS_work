@@ -40,6 +40,7 @@ style_duo_accent(
 
 ```{r}
 library(tidyverse)
+library(amstools)
 library(HybridGIS)
 library(here)
 library(gt)
@@ -182,4 +183,41 @@ ggplot(cons_df, aes(x = Fm_diff, y = fm_corr, color = he12C)) +
   )
 ```
 
+---
+
+## Pendleton Haiti Core Carbonates
+
+
+```{r}
+haiti <- filter(results_df, str_detect(sample_name, "HATC1")) %>% 
+  mutate(rec_num = case_when(pos == 14 ~ 171989,
+                             pos == 15 ~ 171995,
+                             pos == 16 ~ 171999))
+
+graphite_results <- getRecOS(c(171999,171995,171989)) %>% 
+  select(rec_num, fm_corr = f_modern, sig_fm_corr = f_ext_error)
+
+combined_results <- haiti %>% 
+  select(sample_name, rec_num, fm_corr, sig_fm_corr) %>% 
+  left_join(graphite_results,
+            by = "rec_num", 
+            suffix = c("_hgis", "_graphite")) %>% 
+  mutate(fm_mean = (fm_corr_hgis + fm_corr_graphite)/2) %>% 
+  pivot_longer(c(fm_corr_graphite, sig_fm_corr_graphite, 
+                 fm_corr_hgis, sig_fm_corr_hgis), 
+               names_to = c(".value", "method"),
+               names_pattern = "(.*)_(.*)") %>% 
+  mutate(fm_diff = fm_corr - fm_mean)
+  
+combined_results %>% 
+  ggplot(aes(fm_corr, fm_diff, color = method, shape = method)) +
+  geom_hline(yintercept = 0) +
+  geom_pointrange(aes(ymin = fm_diff - sig_fm_corr, 
+                      ymax = fm_diff + sig_fm_corr),
+                  size = 1,
+                  position = position_dodge2(width = 0.02)) +
+  labs(title = "Haiti Core Graphite vs HGIS",
+       x = "Fraction modern",
+       y = "Fm - mean Fm") + theme_classic()
+```
 

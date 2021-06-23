@@ -4,6 +4,7 @@
 RDIR = .
 DATA_DIR = $(RDIR)/data
 SRC_DIR = $(RDIR)/R
+#RES_DIR = H:/USAMS/Results
 RES_DIR = /mnt/shared/USAMS/Results
 FILES = 2017\ Results/USAMS032817R.txt \
 				2017\ Results/USAMS040317R.txt \

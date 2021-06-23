@@ -92,8 +92,7 @@ https://github.com/blongworth/hgis
 # Read data. Don't use first carbonate test or smaller samples.
 results_df <- read_csv(here("data_analysed/carb_all_results.csv"))
 cons_df <- results_df %>% 
-  filter(!is.na(sig_fm_corr),
-         wheel != "USAMS061121") %>% 
+  filter(!(wheel %in% c("USAMS020521", "USAMS061121", "USAMS061821"))) %>% 
   mutate(he12C = he12C * 1E6) %>% 
   compare_consensus()
 ```

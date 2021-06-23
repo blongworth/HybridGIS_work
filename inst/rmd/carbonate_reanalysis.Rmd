@@ -81,9 +81,9 @@ results_df %>%
 cons_df <- compare_consensus(results_df)
 
 cons_df %>% 
-  select(wheel, pos, sample_name, fm_consensus, fm_corr, sig_fm_corr, Fm_diff, sigma) %>% 
-  filter(wheel == "USAMS061821")
-  arrange(desc(Fm_diff))
+  select(wheel, pos, sample_name, fm_consensus, fm_corr, sig_fm_corr, fm_diff, sigma) %>% 
+  filter(wheel == "USAMS061821") %>% 
+  arrange(desc(fm_diff))
 ```
   
 ```{r}
@@ -96,12 +96,12 @@ plot_hgis_consensus()
 cons_df %>% 
   filter(wheel != "USAMS020521") %>% 
   group_by(Name, fm_consensus) %>% 
-  summarize(across(c(fm_corr, sig_fm_corr, Fm_diff, sigma), list(mean = mean, sd = sd)))
+  summarize(across(c(fm_corr, sig_fm_corr, fm_diff, sigma), list(mean = mean, sd = sd)))
 ```
 
 ```{r}
 cons_df %>% 
   ungroup() %>% 
   filter(wheel != "USAMS020521") %>% 
-  summarize(across(c(sig_fm_corr, Fm_diff, sigma), list(mean = mean, sd = sd)))
+  summarize(across(c(sig_fm_corr, fm_diff, sigma), list(mean = mean, sd = sd)))
 ```

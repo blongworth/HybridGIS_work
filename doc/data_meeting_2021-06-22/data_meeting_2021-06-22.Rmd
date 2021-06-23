@@ -112,7 +112,7 @@ plot_hgis_consensus(cons_df) +
 ```{r}
 cons_df_sum <- cons_df %>% 
   group_by(Name, fm_consensus) %>% 
-  summarize(across(c(fm_corr, sig_fm_corr, Fm_diff, sigma),
+  summarize(across(c(fm_corr, sig_fm_corr, fm_diff, sigma),
                    list(mean = mean, sd = sd)),
             N = n()) %>% 
   ungroup()
@@ -135,11 +135,11 @@ gt() %>%
 cons_df %>% 
   filter(Name %in% c("TIRI-I", "C-2", "NOSAMS2")) %>% 
   ungroup() %>% 
-  summarize(across(c(sig_fm_corr, Fm_diff, sigma),
+  summarize(across(c(sig_fm_corr, fm_diff, sigma),
                    list(mean = mean, sd = sd)),
             N = n()) %>% 
-  select(`Mean Fm difference` = Fm_diff_mean,
-         `SD of mean difference` = Fm_diff_sd,
+  select(`Mean Fm difference` = fm_diff_mean,
+         `SD of mean difference` = fm_diff_sd,
          `Mean Fm error` = sig_fm_corr_mean,
          `Mean Sigma` = sigma_mean,
          `SD of Sigma` = sigma_sd,
@@ -158,7 +158,7 @@ cons_df %>%
 ## Results: By sample type
 
 ```{r}
-ggplot(cons_df, aes(x = Fm_diff, y = fm_corr, color = he12C)) +
+ggplot(cons_df, aes(x = fm_diff, y = fm_corr, color = he12C)) +
   geom_hline(aes(yintercept = fm_consensus), color = "lightblue") +
   geom_hline(data = cons_df_sum, aes(yintercept = fm_corr_mean), color = "darkgray") +
   geom_hline(data = cons_df_sum, aes(yintercept = fm_corr_mean + fm_corr_sd), 

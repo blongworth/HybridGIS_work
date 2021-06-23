@@ -1,0 +1,63 @@
+---
+title: "Small(er) Samples"
+author: "Brett Longworth"
+date: "6/23/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(here)
+library(amstools)
+library(HybridGIS)
+
+options(digits = 3)
+options(scipen = 4)
+
+df <- read_csv(here("data_analysed/carb_all_results.csv")) %>% 
+  compare_consensus() %>% 
+  mutate(c12ua = he12C * 1E6)
+samples <- read_csv(here("data/carb_data.csv")) %>% 
+  select(wheel, pos, mass, he_added)
+
+df <- left_join(df, samples, by = c("wheel", "pos")) %>% 
+  filter(wheel != "USAMS020521")
+```
+
+
+```{r}
+df %>% 
+ggplot(aes(mass, c12ua, color = as.factor(rec_num))) +
+  geom_point()
+```
+
+```{r}
+df %>% 
+ggplot(aes(mass, fm_diff, color = wheel)) +
+  geom_point()
+```
+
+```{r}
+df %>% 
+ggplot(aes(mass, fm_diff, color = as.factor(rec_num))) +
+  geom_point()
+```
+
+```{r}
+df %>% 
+ggplot(aes(c12ua, abs(fm_diff))) +
+  geom_smooth() +
+  geom_point(aes(color = wheel))
+```
+
+
+```{r}
+df %>% 
+  filter(sample_type == "S") %>% 
+ggplot(aes(c12ua, abs(fm_diff))) +
+  geom_point(aes(color = wheel))
+```

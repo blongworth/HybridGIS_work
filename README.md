@@ -6,17 +6,16 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-The HybridGIS project contains functions, analysis scripts and data for
-the NOSAMS hybrid gas ion source.
+The HybridGIS project contains analysis scripts and data for the NOSAMS
+hybrid gas ion source.
 
-## Installation
+## Setting up
 
-You can install the development version from
-[GitHub](https://github.com/) with:
+This project uses the amstools and hgis packages, both available from
+github. They may be installed as follows:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("blongworth/hgis")
+remotes::install_github(c("blongworth/amstools", "blongworth/hgis"))
 ```
 
 Running `make` will download the NOSAMS results files if a connection to
@@ -28,11 +27,13 @@ analysis scripts as well.
 
 ## Functions
 
-Loading the package loads functions for flow calculation, efficiency,
-data import, data reduction and plotting.
+The `amstools` package provides general functions for ams data retrieval
+and reduction, and the `hgis` package has functions for data reduction,
+flow calculation, efficiency, data import and plotting of HGIS data.
 
 ``` r
-library(HybridGIS)
+library(amstools)
+library(hgis)
 ```
 
 # Project Summary

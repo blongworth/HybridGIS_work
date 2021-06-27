@@ -122,6 +122,18 @@ cd9 <- tribble(~pos, ~name, ~rec_num, ~mass, ~he_added,
                      ) %>% 
   mutate(wheel = "USAMS061821")
 
+cd10 <- tribble(~pos, ~name, ~rec_num, ~mass, ~he_added,
+                     23, "C-1_2", 83028, 8.78, 5.2,
+                     27, "C-1_3", 83028, 16.32, 3.2,
+                     24, "TIRI-I_1", 17185, 5.40, 5.8,
+                     28, "TIRI-I_2", 17185, 8.46, 5.2,
+                     31, "TIRI-I_3", 17185, 16.39, 3.2,
+                     25, "NOSAMS2_1", 38809, 5.32, 5.8,
+                     29, "NOSAMS2_2", 38809, 15.57, 3.6,
+                     32, "NOSAMS2_3", 38809, 9.32, 5.2
+                     ) %>% 
+  mutate(wheel = "USAMS061821")
+
 carb_data <- bind_rows(cd1, cd2, cd3, cd4, cd5, cd6, cd7, cd8, cd9) %>% 
   select(wheel, pos, name, rec_num, mass, he_added)
 

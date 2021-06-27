@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(here)
 library(amstools)
-library(HybridGIS)
+library(hgis)
 
 options(digits = 3)
 options(scipen = 4)
@@ -23,7 +23,6 @@ df <- read_csv(here("data_analysed/carb_all_results.csv")) %>%
   mutate(c12ua = he12C * 1E6)
 samples <- read_csv(here("data/carb_data.csv")) %>% 
   select(wheel, pos, mass, he_added)
-
 df <- left_join(df, samples, by = c("wheel", "pos")) %>% 
   filter(wheel != "USAMS020521")
 ```
@@ -31,6 +30,13 @@ df <- left_join(df, samples, by = c("wheel", "pos")) %>%
 
 ```{r}
 df %>% 
+ggplot(aes(mass, c12ua, color = as.factor(rec_num))) +
+  geom_point()
+```
+
+```{r}
+df %>% 
+  filter(wheel == "USAMS062521") %>% 
 ggplot(aes(mass, c12ua, color = as.factor(rec_num))) +
   geom_point()
 ```

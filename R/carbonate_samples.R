@@ -132,9 +132,10 @@ cd10 <- tribble(~pos, ~name, ~rec_num, ~mass, ~he_added,
                      29, "NOSAMS2_2", 38809, 15.57, 3.6,
                      32, "NOSAMS2_3", 38809, 9.32, 5.2
                      ) %>% 
-  mutate(wheel = "USAMS061821")
+  mutate(wheel = "USAMS062521")
 
-carb_data <- bind_rows(cd1, cd2, cd3, cd4, cd5, cd6, cd7, cd8, cd9) %>% 
+
+carb_data <- bind_rows(cd1, cd2, cd3, cd4, cd5, cd6, cd7, cd8, cd9, cd10) %>% 
   select(wheel, pos, name, rec_num, mass, he_added)
 
 write_csv(carb_data, here("data/carb_data.csv"))

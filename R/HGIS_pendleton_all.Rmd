@@ -1,0 +1,210 @@
+---
+title: "HGIS Pendleton Carbonates"
+author: "Brett Longworth"
+date: "2021-07-05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE)
+```
+
+```{r}
+library(tidyverse)
+library(here)
+library(openxlsx)
+library(amstools)
+library(HybridGIS)
+
+options(digits = 4)
+options(scipen = 3)
+```
+
+
+Data analysis for Haiti core carbonates from Simon Pendleton. Data reduction is handled by `carbonate_samples.R` using the method and functions from the `hgis` package.
+
+- Using standards in positions `r standards` for normalization.
+- Using blanks in positions `r blanks` for blank correction.
+- Outliers are defined as points 1.5 * interquartile range above the 3rd quartile or below the 1st quartile.
+- Outliers are NOT dropped from the analysis.
+
+Data reduction proceeds as follows:
+
+1. Read raw file
+1. Apply 13C correction to each run of a target
+1. Flag outliers by interquartile distance
+1. Determine per-target means, internal and external errors
+1. Normalize targets using mean of standards and propagate errors
+1. Apply a large blank correction using the mean of blanks and propagate errors
+
+## Load results
+
+```{r}
+df <- readRDS(here("data_analysed/carb_all.Rdata"))
+#write_csv(df, here("data_analysed/HGIS_2021-05-28_raw.csv"))
+#write.xlsx(df, here("data_analysed/HGIS_2021-05-28_raw.xlsx"))
+```
+
+#### Currents and ratios vs time.
+
+```{r}
+df %>% 
+  filter(!(pos %in% 1:4)) %>% 
+  plot_hgis_time(norm_ratio, sig_norm_ratio, outlier = !.$ok_calc) +
+  labs(title = "Sample ratio vs. time",
+       y = "Fraction modern")
+```
+
+```{r}
+df %>% 
+  filter(!(pos %in% 1:4)) %>% 
+  plot_hgis_time(he12C * 1E6, outlier = !.$ok_calc) +
+  labs(title = "Sample current vs time",
+       x = "Time (s)",
+       y = "Current (uA)")
+```
+
+### Manual outlier flagging 
+
+```{r}
+outliers <- tribble(~pos, ~meas,
+                    8, 6,
+                    9, 1,
+                    13, 1)
+df_clean <- flag_outliers(df, outliers)
+```
+
+```{r}
+df_clean %>% 
+  filter(!(pos %in% 1:4)) %>% 
+  plot_hgis_time(norm_ratio, sig_norm_ratio, outlier = !.$ok_calc) +
+  labs(title = "Sample ratio vs. time",
+       y = "Fraction modern")
+```
+
+```{r}
+df_clean %>% 
+  filter(!(pos %in% 1:4)) %>% 
+  plot_hgis_time(he12C * 1E6, outlier = !.$ok_calc) +
+  labs(title = "Sample current vs time",
+       x = "Time (s)",
+       y = "Current (uA)")
+```
+
+## Data Reduction
+
+```{r}
+df_sum <- sum_hgis_targets(df_clean) %>% 
+  norm_hgis() %>% 
+  blank_cor_hgis(blanks = c(6, 9, 11))
+
+write_csv(df_sum, here("data_analysed/HGIS_2021-05-28_results.csv"))
+# write.xlsx(df_sum, here("data_analysed/HGIS_2021-05-28_results.xlsx"))
+```
+
+## Results
+
+```{r}
+df_sum %>% 
+  filter(as.numeric(pos) > 4) %>% 
+  mutate(he12C = he12C * 1E6) %>% 
+  select(Pos = pos, Name = sample_name, `Current (uA)` = he12C, 
+         `N runs` = n_runs, Fm = fm_corr, `Fm error` = sig_fm_corr) %>% 
+  arrange(Name) %>% 
+  knitr::kable()
+  # gt::gt()
+```
+
+```{r}
+df_sum %>% 
+  filter(as.numeric(pos) > 4) %>% 
+plot_hgis_summary()
+```
+
+## Agreement of replicates
+
+Compare results for samples with more than one replicate. 
+
+```{r}
+df_sum %>% 
+  filter(as.numeric(pos) > 4) %>% 
+  compare_replicates() %>% 
+  select(Name, `Mean current (uA)` = he12C_mean, 
+         `SD of current` = he12C_sd, `Mean Fm` = fm_corr_mean, 
+         `SD of Fm` = fm_corr_sd, `Mean sample error` = sig_fm_corr_mean) %>% 
+  knitr::kable()
+```
+
+## Agreement with consensus
+
+```{r}
+cons <- df_sum %>% 
+  filter(as.numeric(pos) > 4,
+         !is.na(fm_consensus)) %>% 
+  select(sample_name, fm_consensus, fm_corr, sig_fm_corr) %>% 
+  mutate(Fm_diff = fm_corr - fm_consensus,
+         sigma = amstools::sigma(fm_corr, fm_consensus, sig_fm_corr)) %>% 
+  arrange(sample_name) %>% 
+  select(Name = sample_name, 
+         #`Mean current (uA)` = he12C_mean, 
+         #`SD of current` = he12C_sd, 
+         `Consensus Fm` = fm_consensus,
+         Fm = fm_corr, 
+         `Fm error` = sig_fm_corr,
+         `Difference` = Fm_diff,
+         Sigma = sigma)
+  
+knitr::kable(cons)
+```
+
+
+## Agreement with graphite
+
+Agreement of Haiti core samples. Graphite samples were pretreated with HCl to leach 30% of the sample. HGIS samples not pretreated.
+
+Load Simon's data and compare
+
+```{r}
+haiti <- filter(df_sum, str_detect(sample_name, "HATC1")) %>% 
+  mutate(rec_num = case_when(pos == 14 ~ 171989,
+                             pos == 15 ~ 171995,
+                             pos == 16 ~ 171999))
+
+graphite_results <- getRecOS(c(171999,171995,171989)) %>% 
+  select(rec_num, fm_corr = f_modern, sig_fm_corr = f_ext_error)
+
+combined_results <- haiti %>% 
+  select(sample_name, rec_num, fm_corr, sig_fm_corr) %>% 
+  left_join(graphite_results,
+            by = "rec_num", 
+            suffix = c("_hgis", "_graphite")) %>% 
+  mutate(fm_diff = fm_corr_graphite - fm_corr_hgis,
+         fm_mean = mean(c(fm_corr_hgis, fm_corr_graphite))) %>% 
+  pivot_longer(c(fm_corr_graphite, sig_fm_corr_graphite, 
+                 fm_corr_hgis, sig_fm_corr_hgis), 
+               names_to = c(".value", "method"),
+               names_pattern = "(.*)_(.*)") %>% 
+  mutate(fm_diff = fm_corr - fm_mean)
+  
+combined_results %>% 
+  select(sample_name, rec_num, method, fm_corr, sig_fm_corr) %>% 
+knitr::kable()
+```
+
+Difference plot
+
+```{r}
+combined_results %>% 
+  ggplot(aes(fm_corr, fm_diff, color = method, shape = method)) +
+  geom_hline(yintercept = 0) +
+  geom_pointrange(aes(ymin = fm_diff - sig_fm_corr, 
+                      ymax = fm_diff + sig_fm_corr),
+                  size = 1,
+                  position = position_dodge2(width = 0.02)) +
+  ylim(-0.02, 0.02) +
+  labs(title = "Haiti Core Graphite vs HGIS",
+       x = "Fraction modern",
+       y = "Fm - mean Fm") + theme_classic()
+```
+
+

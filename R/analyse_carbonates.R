@@ -26,10 +26,13 @@ outliers <- list(NULL, tibble(pos = c(6, 8, 8, 8), meas = c(18, 1, 2, 3)),
                  NULL,
                  NULL)
                  
-
+#carb_metadata <- tibble(files, dates, stds, blanks, outliers)
+#write_csv(carb_metadata, here("data/carb_metadata.csv"))
 results <- pmap(list(files, dates, stds, blanks, outliers), reduce_hgis)
 raw_df <- map_dfr(results, 1)
 results_df <- map_dfr(results, 2)
+
+saveRDS(results, here("data_analysed/carb_all.Rdata"))
 
 write_csv(raw_df, here("data_analysed/carb_all_raw.csv"))
 write_csv(results_df, here("data_analysed/carb_all_results.csv"))

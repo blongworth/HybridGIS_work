@@ -14,7 +14,7 @@ library(tidyverse)
 library(here)
 library(openxlsx)
 library(amstools)
-library(HybridGIS)
+library(hgis)
 
 options(digits = 4)
 options(scipen = 3)
@@ -23,8 +23,8 @@ options(scipen = 3)
 
 Data analysis for Haiti core carbonates from Simon Pendleton. Data reduction is handled by `carbonate_samples.R` using the method and functions from the `hgis` package.
 
-- Using standards in positions `r standards` for normalization.
-- Using blanks in positions `r blanks` for blank correction.
+- Using standards in positions XXX for normalization.
+- Using blanks in positions XXX for blank correction.
 - Outliers are defined as points 1.5 * interquartile range above the 3rd quartile or below the 1st quartile.
 - Outliers are NOT dropped from the analysis.
 
@@ -40,73 +40,43 @@ Data reduction proceeds as follows:
 ## Load results
 
 ```{r}
-df <- readRDS(here("data_analysed/carb_all.Rdata"))
-#write_csv(df, here("data_analysed/HGIS_2021-05-28_raw.csv"))
-#write.xlsx(df, here("data_analysed/HGIS_2021-05-28_raw.xlsx"))
+data <- readRDS(here("data_analysed/carb_all.Rdata"))
+sample_data <- read_csv(here("data/carb_data.csv")) #%>% 
+  #select(wheel, pos, mass, he_added)
+
+raw <- map_dfr(data, 1) %>%  
+  filter(wheel %in% c("USAMS052621", "USAMS062921"),
+         pos > 4)
+
+results <- map_dfr(data, 2) %>% 
+  filter(wheel %in% c("USAMS052621", "USAMS062921"),
+         pos > 4) %>% 
+  left_join(sample_data, by = c("wheel", "pos")) %>% 
+  mutate(rec_num = ifelse(is.na(rec_num.y), rec_num.x, rec_num.y)) %>% 
+  select(-rec_num.x, -rec_num.y)
 ```
 
 #### Currents and ratios vs time.
 
 ```{r}
-df %>% 
-  filter(!(pos %in% 1:4)) %>% 
-  plot_hgis_time(norm_ratio, sig_norm_ratio, outlier = !.$ok_calc) +
+raw %>% 
+  plot_hgis_time(norm_ratio, outlier = ok_calc) +
   labs(title = "Sample ratio vs. time",
        y = "Fraction modern")
 ```
 
 ```{r}
-df %>% 
-  filter(!(pos %in% 1:4)) %>% 
+raw %>% 
   plot_hgis_time(he12C * 1E6, outlier = !.$ok_calc) +
   labs(title = "Sample current vs time",
        x = "Time (s)",
        y = "Current (uA)")
-```
-
-### Manual outlier flagging 
-
-```{r}
-outliers <- tribble(~pos, ~meas,
-                    8, 6,
-                    9, 1,
-                    13, 1)
-df_clean <- flag_outliers(df, outliers)
-```
-
-```{r}
-df_clean %>% 
-  filter(!(pos %in% 1:4)) %>% 
-  plot_hgis_time(norm_ratio, sig_norm_ratio, outlier = !.$ok_calc) +
-  labs(title = "Sample ratio vs. time",
-       y = "Fraction modern")
-```
-
-```{r}
-df_clean %>% 
-  filter(!(pos %in% 1:4)) %>% 
-  plot_hgis_time(he12C * 1E6, outlier = !.$ok_calc) +
-  labs(title = "Sample current vs time",
-       x = "Time (s)",
-       y = "Current (uA)")
-```
-
-## Data Reduction
-
-```{r}
-df_sum <- sum_hgis_targets(df_clean) %>% 
-  norm_hgis() %>% 
-  blank_cor_hgis(blanks = c(6, 9, 11))
-
-write_csv(df_sum, here("data_analysed/HGIS_2021-05-28_results.csv"))
-# write.xlsx(df_sum, here("data_analysed/HGIS_2021-05-28_results.xlsx"))
 ```
 
 ## Results
 
 ```{r}
-df_sum %>% 
-  filter(as.numeric(pos) > 4) %>% 
+results %>% 
   mutate(he12C = he12C * 1E6) %>% 
   select(Pos = pos, Name = sample_name, `Current (uA)` = he12C, 
          `N runs` = n_runs, Fm = fm_corr, `Fm error` = sig_fm_corr) %>% 
@@ -116,9 +86,7 @@ df_sum %>%
 ```
 
 ```{r}
-df_sum %>% 
-  filter(as.numeric(pos) > 4) %>% 
-plot_hgis_summary()
+plot_hgis_summary(results)
 ```
 
 ## Agreement of replicates
@@ -126,8 +94,7 @@ plot_hgis_summary()
 Compare results for samples with more than one replicate. 
 
 ```{r}
-df_sum %>% 
-  filter(as.numeric(pos) > 4) %>% 
+results %>% 
   compare_replicates() %>% 
   select(Name, `Mean current (uA)` = he12C_mean, 
          `SD of current` = he12C_sd, `Mean Fm` = fm_corr_mean, 
@@ -138,9 +105,8 @@ df_sum %>%
 ## Agreement with consensus
 
 ```{r}
-cons <- df_sum %>% 
-  filter(as.numeric(pos) > 4,
-         !is.na(fm_consensus)) %>% 
+cons <- results %>% 
+  filter(!is.na(fm_consensus)) %>% 
   select(sample_name, fm_consensus, fm_corr, sig_fm_corr) %>% 
   mutate(Fm_diff = fm_corr - fm_consensus,
          sigma = amstools::sigma(fm_corr, fm_consensus, sig_fm_corr)) %>% 
@@ -165,17 +131,12 @@ Agreement of Haiti core samples. Graphite samples were pretreated with HCl to le
 Load Simon's data and compare
 
 ```{r}
-haiti <- filter(df_sum, str_detect(sample_name, "HATC1")) %>% 
-  mutate(rec_num = case_when(pos == 14 ~ 171989,
-                             pos == 15 ~ 171995,
-                             pos == 16 ~ 171999))
-
-graphite_results <- getRecOS(c(171999,171995,171989)) %>% 
+graphite_results <- getRecOS(results$rec_num) %>% 
   select(rec_num, fm_corr = f_modern, sig_fm_corr = f_ext_error)
 
-combined_results <- haiti %>% 
+combined_results <- results %>% 
   select(sample_name, rec_num, fm_corr, sig_fm_corr) %>% 
-  left_join(graphite_results,
+  inner_join(graphite_results,
             by = "rec_num", 
             suffix = c("_hgis", "_graphite")) %>% 
   mutate(fm_diff = fm_corr_graphite - fm_corr_hgis,
@@ -188,6 +149,7 @@ combined_results <- haiti %>%
   
 combined_results %>% 
   select(sample_name, rec_num, method, fm_corr, sig_fm_corr) %>% 
+  arrange(rec_num) %>% 
 knitr::kable()
 ```
 

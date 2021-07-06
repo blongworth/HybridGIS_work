@@ -24,7 +24,7 @@ outliers <- list(NULL, tibble(pos = c(6, 8, 8, 8), meas = c(18, 1, 2, 3)),
                  tibble(pos=c(4,5,5,6,7,8,15), meas=c(1,1,4,10,3,3,2)),
                  NULL,
                  NULL,
-                 NULL)
+                 tibble(pos=c(16), meas=c(6)))
                  
 #carb_metadata <- tibble(files, dates, stds, blanks, outliers)
 #write_csv(carb_metadata, here("data/carb_metadata.csv"))

@@ -60,13 +60,17 @@ results <- map_dfr(data, 2) %>%
 
 ```{r}
 raw %>% 
-  plot_hgis_time(norm_ratio, outlier = ok_calc) +
+  filter(str_starts(sample_name, "Live")) %>% 
+  group_by(pos) %>% 
+  mutate(outlier = ifelse(is.na(removeOutliers(norm_ratio)), TRUE, FALSE)) %>%
+  plot_hgis_time(norm_ratio, outlier = outlier) +
   labs(title = "Sample ratio vs. time",
        y = "Fraction modern")
 ```
 
 ```{r}
 raw %>% 
+  filter(str_starts(sample_name, "Live")) %>% 
   plot_hgis_time(he12C * 1E6, outlier = !.$ok_calc) +
   labs(title = "Sample current vs time",
        x = "Time (s)",
@@ -135,7 +139,7 @@ graphite_results <- getRecOS(results$rec_num) %>%
   select(rec_num, fm_corr = f_modern, sig_fm_corr = f_ext_error)
 
 combined_results <- results %>% 
-  select(sample_name, rec_num, fm_corr, sig_fm_corr) %>% 
+  select(wheel, sample_name, rec_num, fm_corr, sig_fm_corr) %>% 
   inner_join(graphite_results,
             by = "rec_num", 
             suffix = c("_hgis", "_graphite")) %>% 
@@ -152,6 +156,13 @@ combined_results %>%
   arrange(rec_num) %>% 
 knitr::kable()
 ```
+```{r}
+combined_results %>% 
+  filter(wheel == "USAMS062921", method == 'hgis') %>% 
+  select(sample_name, rec_num, fm_corr, sig_fm_corr, fm_diff) %>% 
+  pull(fm_diff) %>% 
+  mean()
+```
 
 Difference plot
 
@@ -163,10 +174,15 @@ combined_results %>%
                       ymax = fm_diff + sig_fm_corr),
                   size = 1,
                   position = position_dodge2(width = 0.02)) +
-  ylim(-0.02, 0.02) +
+  #ylim(-0.02, 0.02) +
   labs(title = "Haiti Core Graphite vs HGIS",
        x = "Fraction modern",
        y = "Fm - mean Fm") + theme_classic()
 ```
 
+```{r}
+combined_results %>% 
+  filter(fm_diff > 0.02)
+```
 
+Sample 6:7_39-40 had an issue during prep. Vial was found to be at ~1 ATM during backfilling with helium. This means the vial had a leaky seal and would have entrained atmosphere during prep.

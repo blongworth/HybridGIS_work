@@ -248,4 +248,18 @@ combined_results %>%
   write_csv(here("Bacon_runs/haiti_hgis/haiti_hgis.csv"))
 ```
 
+Trying Bchron here instead. Use is a bit friendlier in Rmarkdown.
+
+```{r}
+library(Bchron)
+
+cal_sub <- combined_results %>% 
+  filter(rc_age > 0) %>% 
+  mutate(id = paste(sample_name, "-", method)) %>% 
+  select(id, depth, rc_age, sig_rc_age)
+
+cal_dates <- with(cal_sub,
+  BchronCalibrate(rc_age, sig_rc_age, positions = depth, ids = id))
+plot(cal_dates)
+```
 

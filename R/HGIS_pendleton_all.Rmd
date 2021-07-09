@@ -15,24 +15,22 @@ library(here)
 library(openxlsx)
 library(amstools)
 library(hgis)
+library(rbacon)
 
 options(digits = 4)
 options(scipen = 3)
 ```
 
 
-Data analysis for Haiti core carbonates from Simon Pendleton. Data reduction is handled by `carbonate_samples.R` using the method and functions from the `hgis` package.
+Data analysis for Haiti core carbonates from Simon Pendleton. Data reduction is handled by the `analyse_carbonates.R` script in the `HybridGIS_work` project using the method and functions from the `hgis` package.
 
-- Using standards in positions XXX for normalization.
-- Using blanks in positions XXX for blank correction.
-- Outliers are defined as points 1.5 * interquartile range above the 3rd quartile or below the 1st quartile.
-- Outliers are NOT dropped from the analysis.
+- Data are normalized using a CO2 tank standard in sample vials.
+- Method blank correction uses carbonate C-1 in vials and assumes that all samples have the same blank, including standards.
 
 Data reduction proceeds as follows:
 
 1. Read raw file
 1. Apply 13C correction to each run of a target
-1. Flag outliers by interquartile distance
 1. Determine per-target means, internal and external errors
 1. Normalize targets using mean of standards and propagate errors
 1. Apply a large blank correction using the mean of blanks and propagate errors
@@ -40,37 +38,40 @@ Data reduction proceeds as follows:
 ## Load results
 
 ```{r}
+# Read raw and reduced data as produced by analyse_carbonates.R
 data <- readRDS(here("data_analysed/carb_all.Rdata"))
-sample_data <- read_csv(here("data/carb_data.csv")) #%>% 
-  #select(wheel, pos, mass, he_added)
 
+# Read sample data
+sample_data <- read_csv(here("data/carb_data.csv"))
+
+# Select relevant raw data
 raw <- map_dfr(data, 1) %>%  
   filter(wheel %in% c("USAMS052621", "USAMS062921"),
          pos > 4)
 
+# Select relevant reduced data, join with sample data
 results <- map_dfr(data, 2) %>% 
   filter(wheel %in% c("USAMS052621", "USAMS062921"),
          pos > 4) %>% 
   left_join(sample_data, by = c("wheel", "pos")) %>% 
   mutate(rec_num = ifelse(is.na(rec_num.y), rec_num.x, rec_num.y)) %>% 
   select(-rec_num.x, -rec_num.y)
+
+#write results to excel
+#write.xlsx(results, here("data_analysed/haiti_carbonates.xlsx"))
 ```
 
-#### Currents and ratios vs time.
+### Currents and ratios vs time.
 
-```{r}
+```{r, fig.height=10, fig.width = 10}
 raw %>% 
-  filter(str_starts(sample_name, "Live")) %>% 
-  group_by(pos) %>% 
-  mutate(outlier = ifelse(is.na(removeOutliers(norm_ratio)), TRUE, FALSE)) %>%
-  plot_hgis_time(norm_ratio, outlier = outlier) +
+  plot_hgis_time(norm_ratio, outlier = !.$ok_calc) +
   labs(title = "Sample ratio vs. time",
        y = "Fraction modern")
 ```
 
-```{r}
+```{r, fig.height=10, fig.width = 10}
 raw %>% 
-  filter(str_starts(sample_name, "Live")) %>% 
   plot_hgis_time(he12C * 1E6, outlier = !.$ok_calc) +
   labs(title = "Sample current vs time",
        x = "Time (s)",
@@ -86,11 +87,6 @@ results %>%
          `N runs` = n_runs, Fm = fm_corr, `Fm error` = sig_fm_corr) %>% 
   arrange(Name) %>% 
   knitr::kable()
-  # gt::gt()
-```
-
-```{r}
-plot_hgis_summary(results)
 ```
 
 ## Agreement of replicates
@@ -135,36 +131,35 @@ Agreement of Haiti core samples. Graphite samples were pretreated with HCl to le
 Load Simon's data and compare
 
 ```{r}
+names <- results %>% 
+  ungroup() %>% 
+  filter(wheel == "USAMS062921") %>% 
+  select(rec_num, sample_name)
+
 graphite_results <- getRecOS(results$rec_num) %>% 
-  select(rec_num, fm_corr = f_modern, sig_fm_corr = f_ext_error)
+  filter(!is.na(reported)) %>% 
+  select(rec_num, fm_corr = f_modern, sig_fm_corr = f_ext_error) %>% 
+  mutate(method = "graphite") %>% 
+  left_join(names, by = "rec_num")
 
 combined_results <- results %>% 
-  select(wheel, sample_name, rec_num, fm_corr, sig_fm_corr) %>% 
-  inner_join(graphite_results,
-            by = "rec_num", 
-            suffix = c("_hgis", "_graphite")) %>% 
-  mutate(fm_diff = fm_corr_graphite - fm_corr_hgis,
-         fm_mean = mean(c(fm_corr_hgis, fm_corr_graphite))) %>% 
-  pivot_longer(c(fm_corr_graphite, sig_fm_corr_graphite, 
-                 fm_corr_hgis, sig_fm_corr_hgis), 
-               names_to = c(".value", "method"),
-               names_pattern = "(.*)_(.*)") %>% 
-  mutate(fm_diff = fm_corr - fm_mean)
-  
+  filter(str_starts(sample_name, "HATC") | str_starts(sample_name, "\\d")) %>% 
+  mutate(method = "hgis") %>% 
+  select(wheel, sample_name, method, rec_num, fm_corr, sig_fm_corr) %>% 
+  bind_rows(graphite_results) %>% 
+  group_by(rec_num) %>% 
+  mutate(fm_mean = mean(fm_corr),
+         fm_diff = fm_corr - fm_mean) %>% 
+  left_join(rename(names, Name = sample_name), by = "rec_num") %>% 
+  ungroup()
+
 combined_results %>% 
   select(sample_name, rec_num, method, fm_corr, sig_fm_corr) %>% 
   arrange(rec_num) %>% 
 knitr::kable()
 ```
-```{r}
-combined_results %>% 
-  filter(wheel == "USAMS062921", method == 'hgis') %>% 
-  select(sample_name, rec_num, fm_corr, sig_fm_corr, fm_diff) %>% 
-  pull(fm_diff) %>% 
-  mean()
-```
 
-Difference plot
+### Difference plot
 
 ```{r}
 combined_results %>% 
@@ -172,8 +167,8 @@ combined_results %>%
   geom_hline(yintercept = 0) +
   geom_pointrange(aes(ymin = fm_diff - sig_fm_corr, 
                       ymax = fm_diff + sig_fm_corr),
-                  size = 1,
-                  position = position_dodge2(width = 0.02)) +
+                  size = 1) +#,
+                  #position = position_dodge2(width = 0.02)) +
   #ylim(-0.02, 0.02) +
   labs(title = "Haiti Core Graphite vs HGIS",
        x = "Fraction modern",
@@ -182,7 +177,75 @@ combined_results %>%
 
 ```{r}
 combined_results %>% 
-  filter(fm_diff > 0.02)
+  ggplot(aes(rec_num, fm_corr, color = method, shape = method)) +
+  geom_pointrange(aes(ymin = fm_corr - sig_fm_corr, 
+                      ymax = fm_corr + sig_fm_corr),
+                  size = .5,
+                  position=position_dodge(width = .5)) +#,
+                  #position = position_dodge2(width = 0.02)) +
+  #ylim(-0.02, 0.02) +
+  labs(title = "Haiti Core Graphite vs HGIS",
+       y = "Fraction modern") +
+  theme_classic() +
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank()) +
+  facet_wrap("Name", scales = "free")
 ```
 
-Sample 6:7_39-40 had an issue during prep. Vial was found to be at ~1 ATM during backfilling with helium. This means the vial had a leaky seal and would have entrained atmosphere during prep.
+### Outlier
+
+```{r}
+combined_results %>% 
+  filter(abs(fm_diff) > 0.02) %>% 
+  select(sample_name, method, fm_corr, sig_fm_corr)
+```
+
+Sample 6:7_39-40 had an issue during prep. Vial was found to be at ~1 ATM during backfilling with helium. This means the vial had a leaky seal and would have entrained atmosphere (Fm ~0.9) during prep. This is the likely cause of a HGIS Fm 5.2% higher than graphite.
+
+## Age vs depth
+
+Add depth data and radiocarbon age
+
+```{r}
+depth <- read_csv(here("data/haiti_depth.csv"))
+
+combined_results <- left_join(combined_results, depth, by = "rec_num") %>% 
+  mutate(rc_age = -8033 * log(fm_corr),
+         sig_rc_age = rc_age - -8033 * log(fm_corr + sig_fm_corr))
+```
+
+Fm depth plot
+
+```{r}
+combined_results %>% 
+  filter(sample_name != "6:7_39-40") %>% 
+ggplot(aes(depth, rc_age, color = method)) +
+  geom_pointrange(aes(ymin = rc_age - sig_rc_age, 
+                      ymax = rc_age + sig_rc_age),
+                  size = 0.5) +
+  geom_smooth() +
+  ggtitle("Age vs depth for graphite and HGIS")
+```
+
+Mmmm.... Bacon
+
+```{r}
+# Bacon data format
+# graphite
+combined_results %>% 
+  filter(method == "graphite",
+         rc_age > 0) %>% 
+  select(labID = Name, age = rc_age, error = sig_rc_age, depth) %>% 
+  write_csv(here("Bacon_runs/haiti_graphite/haiti_graphite.csv"))
+
+# hgis
+combined_results %>% 
+  filter(method == "hgis",
+         sample_name != "6:7_39-40",
+         !str_starts(sample_name, "HATC"),
+         rc_age > 0) %>% 
+  select(labID = Name, age = rc_age, error = sig_rc_age, depth) %>% 
+  write_csv(here("Bacon_runs/haiti_hgis/haiti_hgis.csv"))
+```
+
+

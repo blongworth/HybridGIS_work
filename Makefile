@@ -1,6 +1,6 @@
 # Makefile for HGIS project
 
-
+.PHONY: all data
 RDIR = .
 DATA_DIR = $(RDIR)/data
 SRC_DIR = $(RDIR)/R

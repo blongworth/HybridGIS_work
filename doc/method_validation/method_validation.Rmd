@@ -1,0 +1,84 @@
+---
+title: "Error propagation error"
+output: html_notebook
+---
+
+Trying to find the source of differences between MR's excel error prop and mine in R.
+
+```{r}
+library(tidyverse)
+library(hgis)
+library(readxl)
+library(here)
+library(errors)
+```
+
+
+Load results from R data reduction
+```{r}
+results <- readRDS(here("data_analysed/carb_all.Rdata"))
+df <- map_dfr(results[10], 2)
+View(df)
+```
+
+
+Load MR's results. I think we'd have to grab individual cells to do this.
+
+```{r}
+dfm <- read_excel(here("doc/method_validation/HGIS\ Results.xlsx"))
+```
+
+
+Compare raw ratios and errors
+
+Looking at the data, the difference is in the 2 methods for calculating the error in the Fm of normalizing standards. 
+
+MR's method:
+
+```{r}
+stds <- df %>% 
+  ungroup() %>% 
+  filter(sample_type == "S") %>% 
+  select(pos, corr_14_12, int_err, ext_err, max_err)
+
+stds
+```
+
+
+
+```{r}
+summarize(stds, ratio_std = mean(corr_14_12),
+            sig_ratio_std = sqrt(sum(max_err^2))/n())
+```
+
+BL's method
+
+```{r}
+summarize(stds, ratio_std = mean(corr_14_12),
+            sig_ratio_std = amstools::se(corr_14_12))
+```
+
+Propagated error of averaging using the `errors` package.
+
+```{r}
+stds <- stds %>% 
+  mutate(corr_14_12_err = set_errors(corr_14_12, max_err)) 
+
+ratio_std <- stds%>% 
+  summarize(ratio_std = mean(corr_14_12_err)) %>% 
+  pull(ratio_std)
+```
+
+Trying to get Fm using errors package propagation
+
+```{r}
+fm_std <- set_errors(1.03098, 0.0006)
+
+df <- df %>% 
+  mutate(corr_14_12_err = set_errors(corr_14_12, max_err),
+         norm_ratio_err = norm_gas(corr_14_12_err, ratio_std, fm_std))
+
+df %>% select(pos, sample_name, norm_ratio, sig_norm_ratio, norm_ratio_err)
+  
+```
+

@@ -1,0 +1,39 @@
+---
+title: "Normalization Error"
+author: "Brett Longworth"
+date: "7/14/2021"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Mark's method
+
+Unknowns are normalized to the mean ratio of standards and then converted to Fm using the Fm of the normalizing standard:
+
+$$ R_{norm} = \frac{R_{sample}}{R_{std}}$$
+
+$$Fm_{sample} = R_{sample}\cdot Fm_{std}$$
+
+With error propagation in 2 steps:
+
+$$ \sigma_{R_{norm}} = R_{norm} \sqrt{\frac{\sigma_{sample}^2}{R_{sample}^2} + \frac{\sigma_{std}^2}{R_{std}^2}}$$
+
+
+
+$$ \sigma_{Fm_{sample}} = Fm_{sample} \sqrt{\frac{\sigma_{R_{norm}}^2}{R_{norm}^2} + \frac{\sigma_{Fm_{std}}^2}{Fm_{std}^2}} $$ 
+
+## Normalize targets using mean of standards and propagate errors
+
+Unknowns are normalized using the mean measured value of gas standards using this equation:
+
+$$ Fm_{sample} = \frac{R_{sample}\cdot Fm_{std}}{R_{std}}$$
+
+If the expected fraction modern ($Fm_{std}$) of the standard is taken as a measured value with an error, rather than a constant or assigned ratio, normalization errors are propagated using this equation:
+
+$$ \sigma_{Fm_{sample}} = Fm_{sample} \sqrt{\frac{\sigma_{sample}^2}{R_{sample}^2} + \frac{\sigma_{std}^2}{R_{std}^2} +
+\frac{\sigma_{Fm_{std}}^2}{Fm_{std}^2}} $$

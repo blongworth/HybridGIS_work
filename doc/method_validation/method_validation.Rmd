@@ -1,6 +1,8 @@
 ---
 title: "Error propagation error"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 Trying to find the source of differences between MR's excel error prop and mine in R.
@@ -11,6 +13,7 @@ library(hgis)
 library(readxl)
 library(here)
 library(errors)
+library(janitor)
 ```
 
 
@@ -18,14 +21,17 @@ Load results from R data reduction
 ```{r}
 results <- readRDS(here("data_analysed/carb_all.Rdata"))
 df <- map_dfr(results[10], 2)
-View(df)
 ```
 
 
-Load MR's results. I think we'd have to grab individual cells to do this.
+Load MR's results. 
 
 ```{r}
-dfm <- read_excel(here("doc/method_validation/HGIS\ Results.xlsx"))
+dfm <- read_excel(here("doc/method_validation/HGIS\ Results.xlsx"), skip = 2) %>% 
+  select(pos = Pos, sample_name = `Sample Name`, sample_type = Type, 
+         norm_ratio = Fm...5, sig_norm_ratio = dFm...6,
+         fm_corr = Fm...11, sig_fm_corr = dFm...12) %>% 
+  remove_empty("rows")
 ```
 
 
@@ -48,7 +54,8 @@ stds
 
 ```{r}
 summarize(stds, ratio_std = mean(corr_14_12),
-            sig_ratio_std = sqrt(sum(max_err^2))/n())
+            sig_ratio_std = sqrt(sum(max_err^2))/n(),
+          se_ratio_std = amstools::se(corr_14_12))
 ```
 
 BL's method
@@ -74,11 +81,35 @@ Trying to get Fm using errors package propagation
 ```{r}
 fm_std <- set_errors(1.03098, 0.0006)
 
-df <- df %>% 
+dfe <- df %>% 
   mutate(corr_14_12_err = set_errors(corr_14_12, max_err),
          norm_ratio_err = norm_gas(corr_14_12_err, ratio_std, fm_std))
 
-df %>% select(pos, sample_name, norm_ratio, sig_norm_ratio, norm_ratio_err)
+dfe %>% select(pos, sample_name, norm_ratio, sig_norm_ratio, norm_ratio_err)
   
 ```
 
+# Compare data
+
+Compare data after applying new normalizing standard error propagation...
+
+### Norm Ratio
+
+```{r}
+df %>% 
+  select(pos, sample_name, norm_ratio, sig_norm_ratio) %>% 
+  inner_join(select(dfm, pos, norm_ratio, sig_norm_ratio), by = "pos", suffix = c(".bl", ".mr")) %>% 
+  mutate(norm_ratio_diff = norm_ratio.bl - norm_ratio.mr,
+         sig_norm_ratio_diff = sig_norm_ratio.bl - sig_norm_ratio.mr)
+```
+
+
+### Blank corrected Fm
+
+```{r}
+df %>% 
+  select(pos, sample_name, fm_corr, sig_fm_corr) %>% 
+  inner_join(select(dfm, pos, fm_corr, sig_fm_corr), by = "pos", suffix = c(".bl", ".mr")) %>% 
+  mutate(fm_diff = fm_corr.bl - fm_corr.mr,
+         sig_fm_diff = sig_fm_corr.bl - sig_fm_corr.mr)
+```

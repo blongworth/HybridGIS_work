@@ -1,0 +1,21 @@
+---
+title: "Measurement of CO2 from carbonate minerals using a hybrid sputter gas ion source with an open split interface"
+author:
+- Brett Longworth
+- Josh Burton
+- Simon Pendleton
+- Josh Hlavenka
+- Mark Roberts
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+### National Ocean Sciences AMS Facility, Woods Hole Oceanographic Institution, Woods Hole, MA, USA
+
+We have developed a method for radiocarbon measurement of carbonate minerals as CO~2~ gas via a hybrid sputter gas ion source. Our method uses a carrier gas to displace CO~2~ from sample vials to an open split, where a capillary samples the mixture for delivery directly to a hybrid sputter gas ion source (HGIS). This method skips the gas transfer and quantification steps used in a closed inlet HGIS system, simplifying sample measurement. Results from measurements of consensus standards and samples from a marine core show that the method agrees well with traditional AMS measurement of the same samples, and that the method error is less than 1.5%. We discuss advantanges and disadvantanges of continuous flow sample introduction. 

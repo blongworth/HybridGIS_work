@@ -1,5 +1,5 @@
 ---
-title: "Measurement of CO2 from carbonate minerals using a hybrid sputter gas ion source with an open split interface"
+title: "Radiocarbon measurement of CO~2~ from carbonate minerals using a gas ion source with an open split interface"
 author:
 - Brett Longworth
 - Josh Burton
@@ -21,13 +21,15 @@ knitr::opts_chunk$set(echo = FALSE)
 ### National Ocean Sciences AMS Facility, Woods Hole Oceanographic Institution, Woods Hole, MA, USA
 
 We have developed a method for measurement of radiocarbon in carbonate minerals
-as CO~2~ gas via a NEC MCSNICS hybrid sputter gas ion source. Our method uses a
-carrier gas to displace CO~2~ from sample vials to an open split, where a
-capillary samples the mixture for delivery directly to a hybrid sputter gas ion
-source (HGIS).  This method skips the gas transfer and quantification steps
-used in a closed inlet HGIS system, simplifying sample measurement. Results
-from measurements of consensus standards (TIRI-I, IAEA C2, and an internal
-modern shell standard), and samples from a marine core show that the method
-agrees well with traditional AMS measurement of the same samples, and that the
-method error is less than 1.5%. We discuss advantanges and disadvantanges of
-continuous flow sample introduction. 
+as CO~2~ gas via a NEC MCSNICS hybrid sputter gas ion source (HGIS). The method
+uses helium as a carrier gas to displace CO~2~ from sample vials to an open
+split, where a glass capillary samples the mixture for delivery directly to the
+HGIS. This method skips the gas transfer and quantification steps used in a
+closed inlet HGIS system, simplifying sample measurement. Samples larger than 10
+mg carbonate can currently be measured. Results from measurements of consensus
+standards (TIRI-I, IAEA C2, and an internal modern shell standard), and samples
+from a marine core (40-115 pMC) show that the method agrees well with
+traditional AMS measurement of the same samples as graphite, and that the method
+error is less than 1.5 pMC. We discuss advantages and disadvantages of
+continuous flow sample introduction, and the effect of reduced precision on
+calibrated age-depth models produced using gas-source data.

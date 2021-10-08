@@ -19,6 +19,7 @@ library(rbacon)
 
 options(digits = 4)
 options(scipen = 3)
+theme_set(theme_classic())
 ```
 
 
@@ -224,6 +225,9 @@ ggplot(aes(depth, rc_age, color = method)) +
                       ymax = rc_age + sig_rc_age),
                   size = 0.5) +
   geom_smooth() +
+  coord_flip() +
+  scale_y_reverse() +
+  scale_x_reverse() +
   ggtitle("Age vs depth for graphite and HGIS")
 ```
 

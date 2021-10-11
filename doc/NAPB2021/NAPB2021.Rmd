@@ -27,6 +27,7 @@ library(hgis)
 library(here)
 library(gt)
 library(Bchron)
+library(gghighlight)
 
 options(digits = 3)
 options(scipen = 4)
@@ -268,29 +269,69 @@ Sample 6:7_39-40 had an issue during prep. Vial was found to be at ~1 ATM during
 ## Difference plot
 
 ```{r}
-outlier_df <- combined_results %>% 
-  filter(abs(fm_diff) > 0.02)
-  
-combined_results %>% 
-  ggplot() +
+ggplot(combined_results) +
   geom_hline(yintercept = 0) +
   geom_pointrange(aes(fm_corr, fm_diff, color = method, shape = method,
                       ymin = fm_diff - sig_fm_corr, 
                       ymax = fm_diff + sig_fm_corr),
-                  size = 1) +#,
-  #gghighlight::gghighlight(abs(fm_diff > 0.02)) +
-  geom_pointrange(data = outlier_df,
-                  aes(fm_corr, fm_diff, shape = method, color = method,
-                      ymin = fm_diff - sig_fm_corr,
-                      ymax = fm_diff + sig_fm_corr),
-                  color = "grey",
-                  size = 1) +#,
-                  #position = position_dodge2(width = 0.02)) +
-  #ylim(-0.02, 0.02) +
+                  size = 1) +
   labs(title = "Haiti Core Graphite vs HGIS",
        x = "Fraction modern",
-       y = "Fm - mean Fm") + 
-  theme(legend.position = "none")
+       y = "Fm - mean Fm")
+```
+
+No outliers
+
+```{r}
+combined_results %>% 
+  filter(abs(fm_diff) < 0.02) %>% 
+ggplot() +
+  geom_hline(yintercept = 0) +
+  geom_pointrange(aes(fm_corr, fm_diff, color = method, shape = method,
+                      ymin = fm_diff - sig_fm_corr, 
+                      ymax = fm_diff + sig_fm_corr),
+                  size = 1) +
+  labs(title = "Haiti Core Graphite vs HGIS",
+       x = "Fraction modern",
+       y = "Fm - mean Fm")
+```
+
+Highlight outliers
+
+```{r}
+ggplot(combined_results) +
+  geom_hline(yintercept = 0) +
+  geom_pointrange(aes(fm_corr, fm_diff, color = method, shape = method,
+                      ymin = fm_diff - sig_fm_corr, 
+                      ymax = fm_diff + sig_fm_corr),
+                  size = 1) +
+  gghighlight(abs(fm_diff) > 0.02,
+              #unhighlighted_params = list(colour = NULL),
+              keep_scales = TRUE) +
+  labs(title = "Haiti Core Graphite vs HGIS",
+       x = "Fraction modern",
+       y = "Fm - mean Fm")
+```
+
+All in one.
+
+```{r}
+outlier_df <- combined_results %>% 
+  filter(abs(fm_diff) > 0.02)
+  
+ggplot(combined_results) +
+  geom_hline(yintercept = 0) +
+  geom_pointrange(aes(fm_corr, fm_diff, color = method, shape = method,
+                      ymin = fm_diff - sig_fm_corr, 
+                      ymax = fm_diff + sig_fm_corr),
+                  size = 1,
+                  color = "grey") +#,
+  gghighlight(abs(fm_diff) > 0.02,
+              unhighlighted_params = list(colour = NULL),
+              keep_scales = TRUE) +
+  labs(title = "Haiti Core Graphite vs HGIS",
+       x = "Fraction modern",
+       y = "Fm - mean Fm")
 ```
 
 ## Fm depth plot

@@ -24,14 +24,19 @@ df <- read_csv(here("data_analysed/carb_all_results.csv")) %>%
 samples <- read_csv(here("data/carb_data.csv")) %>% 
   select(wheel, pos, mass, he_added)
 df <- left_join(df, samples, by = c("wheel", "pos")) %>% 
-  filter(wheel != "USAMS020521")
+  filter(wheel != "USAMS020521",
+         !is.na(mass))
 ```
 
+### Size and Current
+
+Until we get below 10mg of carbonate, any size-current relationship is mostly obscured by other factors.
 
 ```{r}
 df %>% 
-ggplot(aes(mass, c12ua, color = as.factor(rec_num))) +
-  geom_point()
+ggplot(aes(mass, c12ua, color = Name)) +
+  geom_point() +
+  ggtitle()
 ```
 
 ```{r}

@@ -1,0 +1,515 @@
+---
+title: "Radiocarbon measurement of CO~2~ from carbonate minerals using a gas ion source with an open split interface"
+author:
+- Brett Longworth
+- Josh Burton
+- Simon Pendleton
+- Josh Hlavenka
+- Sydney Moser
+- Mark Roberts
+- Mark Kurz
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  fig.width=6, fig.height=3, fig.retina=3,
+  out.width = "100%",
+  cache = FALSE,
+  echo = FALSE,
+  message = FALSE, 
+  warning = FALSE,
+  fig.show = TRUE,
+  hiline = TRUE
+)
+```
+
+```{r}
+library(tidyverse)
+library(amstools)
+library(hgis)
+library(here)
+library(gt)
+library(Bchron)
+library(gghighlight)
+library(patchwork)
+
+options(digits = 3)
+options(scipen = 4)
+options(decimals = 4)
+theme_set(theme_classic())
+```
+
+Text and figures for AMS-15 poster.
+
+# Abstract
+
+We have developed a method for measurement of radiocarbon in carbonate minerals
+as CO~2~ gas via a NEC MCSNICS hybrid sputter gas ion source (HGIS). The method
+uses helium as a carrier gas to displace CO~2~ from sample vials to an open
+split, where a glass capillary samples the mixture for delivery directly to the
+HGIS. This method skips the gas transfer and quantification steps used in a
+closed inlet HGIS system, simplifying sample measurement. Samples larger than 10
+mg carbonate can currently be measured. Results from measurements of consensus
+standards (TIRI-I, IAEA C2, and an internal modern shell standard), and samples
+from a marine core (40-115 pMC) show that the method agrees well with
+traditional AMS measurement of the same samples as graphite, and that the method
+error is less than 1.5 pMC. We discuss advantages and disadvantages of
+continuous flow sample introduction, and the effect of reduced precision on
+calibrated age-depth models produced using gas-source data.
+
+# Introduction
+
+
+
+# Method
+
+1. Acidify
+  - ~30mg Carbonate 
+  - produces 6mL CO<sub>2</sub> @ ~1ATM
+1. Displace gas to open split with 100 uL/min He.
+1. Introduce mixture to source @ 30 uL/min
+1. Acquire data: 90s x 10 measurements.
+
+
+- Standard: live gas in vials
+- Blank: C-1 or TIRI-F in vials
+
+![HGIS Figure](images/HGIS_open_split_drawing.svg)
+
+## Data reduction
+
+1. Correct for fractionation using online <sup>13</sup>C.
+1. Determine per-sample mean and error.
+1. Normalize to mean of Gas standard.
+1. Blank correct: LBC using mean of carbonate blanks
+
+- Errors propagated at each step. 
+- Per-sample error agrees well with variability of replicates.
+
+Data reduction done using an R package maintained on github:
+
+https://github.com/blongworth/hgis
+
+# Results
+
+Data used for current, blanks, consensus
+
+```{r}
+# Read data. Don't use first carbonate test, smaller samples, or gas standards.
+results_df <- read_csv(here("data_analysed/carb_all_results.csv"))
+
+cons_df <- results_df %>% 
+  filter(!(wheel %in% c("USAMS020521", "USAMS061121", "USAMS061821"))) %>% 
+  mutate(he12C = he12C * 1E6) %>% 
+  compare_consensus() %>% 
+  filter(!str_detect(Name, "Gas"))
+```
+## Initial measurements
+
+### Flow vs current
+
+```{r cur-time-os, fig.height=7, dev='svg'}
+data <- get_hgis_data(here("data/USAMS040121R.txt"), as.Date("2021-04-02")) %>% 
+  filter(Pos == 5) %>% 
+  mutate(time = cum_acqtime/60,
+         co2flow = concCO2(time, r = 244) * 30) #30ul/min
+
+# flow vs time subplot
+flow_time <- data.frame(x = 0:125) %>% 
+  ggplot(aes(x)) +
+  stat_function(fun=function(x) concCO2(x, r = 244) * 30, aes(color = "CO2"), size = 1.5) +
+  stat_function(fun=function(x) 30 - (concCO2(x, r = 244) * 30), aes(color = "Helium"), size = 1.5) +
+  scale_color_manual("Gas", values = c("#00b7bd", "#b7bf10")) +
+  labs(title = "Gas flows to source",
+       subtitle = "7mL vial, 244μL/min helium, 30μL/min to source",
+       y = "Gas flow (μL/min)") +
+  theme_classic() +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        legend.position = c(0.87, 0.65),
+        legend.background = element_rect(fill = "white", color = "black")) 
+
+# current vs time subplot
+cur_time <- ggplot(data, aes(time, he12C)) +
+  geom_smooth(span = .4, se=FALSE, color = "#00b7bd") +
+  geom_point(size = 3, color = "#0069b1") +
+  xlim(0, 125) +
+  labs(title = "Ion current",
+       x = "Time (min)",
+       y = "12C current (μA)") +
+  theme_classic()
+
+flow_time / cur_time
+```
+
+```{r cur-flow-os, fig.height=6, dev='svg'}
+ggplot(data, aes(co2flow, he12C)) +
+  geom_smooth(span = .3, se=FALSE, color = "#00b7bd") +
+  geom_point(size = 3, color = "#0069b1") +
+  labs(title = "Vial dilution current",
+       subtitle = "250μL/min displacement, 30μl/min delivery",
+       x = bquote('CO'[2]~'Flow (μl/min)'), 
+       y = "12C current (μA)") +
+  theme_classic()
+```
+
+compare to first tests
+
+Note that our flat-topped current curve allows variable flow of the vial system. MICADAS has a more pronounced peak so this may not work as well. (Check papers for peak shape)
+
+Also note current dependent ratio (blank) as a complicating factor
+
+Lead into blank on next slide
+
+
+### Blanks and blank correction
+
+
+# Current independent blank
+
+If **standards**, **blanks**, and **unknowns** have the **same** blank and current, current drops out.
+
+#### Linear fit used to correct:
+
+$$Fm_s = Fm_m - Fm_{blk}\frac{Fm_{std} - Fm_m}{Fm_{std}}$$
+
+#### Mean Fm of blanks: `r cons_df %>% filter(fm_consensus < 0.1 & he12C > 2) %>% pull(norm_ratio) %>% mean() %>% format(digits = 3)`
+
+
+
+```{r blanks, fig.height=5, dev='svg'}
+cons_df %>% 
+  filter(fm_consensus < 0.1) %>% 
+  ggplot(aes(he12C, norm_ratio)) +
+  geom_errorbar(aes(ymin = norm_ratio - sig_norm_ratio, ymax = norm_ratio  + sig_norm_ratio)) +
+  geom_errorbarh(aes(xmin = he12C - sig_he12C, xmax = he12C  + sig_he12C)) +
+  geom_point(aes(color = wheel), size = 3) +
+  #scale_color_manual("wheel", values = c("#b7bf10", "#00a9e0", "#0069b1")) +
+  labs(title = "Blanks",
+       x = "12C Current (μA)",
+       y = "Fraction modern") +
+  theme_classic() +
+  theme(legend.position = c(0.82, 0.76),
+        legend.background = element_rect(fill = "white", color = "black")) 
+```
+
+## Results: Consensus standards
+
+
+## Results: Method precision and accuracy
+
+```{r}
+cons_df_sum <- cons_df %>% 
+  group_by(Name, fm_consensus) %>% 
+  summarize(across(c(fm_corr, sig_fm_corr, fm_diff, sigma),
+                   list(mean = mean, sd = sd)),
+            N = n()) %>% 
+  ungroup()
+
+cons_df_sum %>% 
+  arrange(fm_consensus) %>% 
+  select(Name, `Consensus Fm` = fm_consensus,
+         `Mean Fm` = fm_corr_mean,
+         `Mean Fm error` = sig_fm_corr_mean,
+         `SD of measurements` = fm_corr_sd,
+         N) %>% 
+gt() %>% 
+  tab_header(title = "Summary statistics by sample type") %>% 
+  fmt_number(3:5, decimals = 4)
+```
+
+```{r}
+cons_df %>% 
+  filter(Name %in% c("TIRI-I", "C-2", "NOSAMS2")) %>% 
+  ungroup() %>% 
+  summarize(across(c(sig_fm_corr, fm_diff, sigma),
+                   list(mean = mean, sd = sd)),
+            N = n()) %>% 
+  select(`Mean Fm difference` = fm_diff_mean,
+         `SD of mean difference` = fm_diff_sd,
+         `Mean Fm error` = sig_fm_corr_mean,
+         `Mean Sigma` = sigma_mean,
+         `SD of Sigma` = sigma_sd,
+         N
+         ) %>%  
+  gt() %>% 
+  tab_header(title = "Summary statisics for reference materials",
+             subtitle = "TIRI-I, C-2, and NOSAMS2") %>% 
+  fmt_number(3:5, decimals = 4)
+```
+
+```{r}
+mean_diff <- mean(cons_df$fm_diff)
+sd_diff <- sd(cons_df$fm_diff)
+
+cons_df %>% 
+ggplot(aes(fm_consensus, fm_diff, color = Name)) + 
+  geom_hline(yintercept = 0) +
+  geom_hline(yintercept = mean_diff, color = "blue") +
+  geom_hline(yintercept = mean_diff + sd_diff, color = "lightblue") +
+  geom_hline(yintercept = mean_diff - sd_diff, color = "lightblue") +
+  geom_smooth(method = "lm",  se = FALSE) + 
+  geom_pointrange(aes(ymin = fm_diff - sig_fm_corr, 
+                      ymax = fm_diff + sig_fm_corr), 
+                  position = position_dodge2(width = 0.1), 
+                  size = 0.2) + 
+  labs(subtitle = "Blank corrected", x = "Fm expected (points jittered for clarity)", 
+       y = "Fm difference (cons - measured)")
+```
+
+## Results: Method precision and accuracy
+
+```{r}
+cons_df_sum <- cons_df %>% 
+  group_by(Name, fm_consensus) %>% 
+  summarize(across(c(fm_corr, sig_fm_corr, fm_diff, sigma),
+                   list(mean = mean, sd = sd)),
+            N = n()) %>% 
+  ungroup()
+
+cons_df_sum %>% 
+  arrange(fm_consensus) %>% 
+  select(Name, `Consensus Fm` = fm_consensus,
+         `Mean Fm` = fm_corr_mean,
+         `Mean Fm error` = sig_fm_corr_mean,
+         `SD of measurements` = fm_corr_sd,
+         N) %>% 
+gt() %>% 
+  tab_header(title = "Summary statistics by sample type") %>% 
+  fmt_number(3:5, decimals = 4)
+```
+
+```{r}
+cons_df %>% 
+  filter(Name %in% c("TIRI-I", "C-2", "NOSAMS2")) %>% 
+  ungroup() %>% 
+  summarize(across(c(sig_fm_corr, fm_diff, sigma),
+                   list(mean = mean, sd = sd)),
+            N = n()) %>% 
+  select(`Mean Fm difference` = fm_diff_mean,
+         `SD of mean difference` = fm_diff_sd,
+         `Mean Fm error` = sig_fm_corr_mean,
+         `Mean Sigma` = sigma_mean,
+         `SD of Sigma` = sigma_sd,
+         N
+         ) %>%  
+  gt() %>% 
+  tab_header(title = "Summary statisics for reference materials",
+             subtitle = "TIRI-I, C-2, and NOSAMS2") %>% 
+  fmt_number(3:5, decimals = 4)
+```
+
+
+## Results: By sample type
+
+```{r}
+ggplot(cons_df, aes(x = fm_diff, y = fm_corr, color = he12C)) +
+  geom_hline(aes(yintercept = fm_consensus), color = "lightblue") +
+  geom_hline(data = cons_df_sum, aes(yintercept = fm_corr_mean), color = "darkgray") +
+  geom_hline(data = cons_df_sum, aes(yintercept = fm_corr_mean + fm_corr_sd), 
+             color = "grey", linetype = "dashed") +
+  geom_hline(data = cons_df_sum, aes(yintercept = fm_corr_mean - fm_corr_sd),
+             color = "grey", linetype = "dashed") +
+  
+  geom_pointrange(aes(ymin = fm_corr - sig_fm_corr, 
+                      ymax = fm_corr + sig_fm_corr), 
+                  size = .2) +
+  labs(subtitle = "Reference and normalization standards",
+       y = "Fraction modern (Fm)") +
+  facet_wrap(facets = vars(Name), scales = "free") +
+  theme_bw() +
+  scale_x_continuous(breaks = NULL) +
+  xlab(NULL) +
+  scale_color_continuous(name = "12C- (μA)") +
+  theme(
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+```
+
+## Pendleton Haiti Core Carbonates
+
+### Read data, pull graphite results and sample depth, combine
+
+```{r}
+# Read raw and reduced data as produced by analyse_carbonates.R
+data <- readRDS(here("data_analysed/carb_all.Rdata"))
+
+# Read sample data
+sample_data <- read_csv(here("data/carb_data.csv"))
+
+# Select relevant reduced data, join with sample data
+results <- map_dfr(data, 2) %>% 
+  filter(wheel %in% c("USAMS052621", "USAMS062921"),
+         pos > 4) %>% 
+  left_join(sample_data, by = c("wheel", "pos")) %>% 
+  mutate(rec_num = ifelse(is.na(rec_num.y), rec_num.x, rec_num.y)) %>% 
+  select(-rec_num.x, -rec_num.y)
+
+names <- results %>% 
+  ungroup() %>% 
+  filter(wheel == "USAMS062921") %>% 
+  select(rec_num, sample_name)
+
+graphite_results <- getRecOS(results$rec_num) %>% 
+  filter(!is.na(reported)) %>% 
+  select(rec_num, fm_corr = f_modern, sig_fm_corr = f_ext_error) %>% 
+  mutate(method = "graphite") %>% 
+  left_join(names, by = "rec_num")
+
+combined_results <- results %>% 
+  filter(str_starts(sample_name, "HATC") | str_starts(sample_name, "\\d")) %>% 
+  mutate(method = "hgis") %>% 
+  select(wheel, sample_name, method, rec_num, fm_corr, sig_fm_corr) %>% 
+  bind_rows(graphite_results) %>% 
+  group_by(rec_num) %>% 
+  mutate(fm_mean = mean(fm_corr),
+         fm_diff = fm_corr - fm_mean) %>% 
+  left_join(rename(names, Name = sample_name), by = "rec_num") %>% 
+  ungroup()
+
+depth <- read_csv(here("data/haiti_depth.csv"))
+
+combined_results <- left_join(combined_results, depth, by = "rec_num") %>% 
+  mutate(rc_age = -8033 * log(fm_corr),
+         sig_rc_age = rc_age - -8033 * log(fm_corr + sig_fm_corr))
+```
+
+### Outlier
+
+```{r}
+combined_results %>% 
+  filter(abs(fm_diff) > 0.02) %>% 
+  select(sample_name, method, fm_corr, sig_fm_corr)
+```
+
+Sample 6:7_39-40 had an issue during prep. Vial was found to be at ~1 ATM during backfilling with helium. This means the vial had a leaky seal and would have entrained atmosphere (Fm ~0.9) during prep. This is the likely cause of a HGIS Fm 5.2% higher than graphite.
+
+## Difference plot
+
+```{r}
+ggplot(combined_results) +
+  geom_hline(yintercept = 0) +
+  geom_pointrange(aes(fm_corr, fm_diff, color = method, shape = method,
+                      ymin = fm_diff - sig_fm_corr, 
+                      ymax = fm_diff + sig_fm_corr),
+                  size = 1) +
+  labs(title = "Haiti Core Graphite vs HGIS",
+       x = "Fraction modern",
+       y = "Fm - mean Fm")
+```
+
+No outliers
+
+```{r}
+combined_results %>% 
+  filter(abs(fm_diff) < 0.02) %>% 
+ggplot() +
+  geom_hline(yintercept = 0) +
+  geom_pointrange(aes(fm_corr, fm_diff, color = method, shape = method,
+                      ymin = fm_diff - sig_fm_corr, 
+                      ymax = fm_diff + sig_fm_corr),
+                  size = 1) +
+  labs(title = "Haiti Core Graphite vs HGIS",
+       x = "Fraction modern",
+       y = "Fm - mean Fm")
+```
+
+Highlight outliers
+
+```{r}
+ggplot(combined_results) +
+  geom_hline(yintercept = 0) +
+  geom_pointrange(aes(fm_corr, fm_diff, color = method, shape = method,
+                      ymin = fm_diff - sig_fm_corr, 
+                      ymax = fm_diff + sig_fm_corr),
+                  size = 1) +
+  gghighlight(abs(fm_diff) > 0.02,
+              #unhighlighted_params = list(colour = NULL),
+              keep_scales = TRUE) +
+  labs(title = "Haiti Core Graphite vs HGIS",
+       x = "Fraction modern",
+       y = "Fm - mean Fm")
+```
+
+All in one.
+
+```{r}
+outlier_df <- combined_results %>% 
+  filter(abs(fm_diff) > 0.02)
+  
+ggplot(combined_results) +
+  geom_hline(yintercept = 0) +
+  geom_pointrange(aes(fm_corr, fm_diff, color = method, shape = method,
+                      ymin = fm_diff - sig_fm_corr, 
+                      ymax = fm_diff + sig_fm_corr),
+                  size = 1,
+                  color = "grey") +#,
+  gghighlight(abs(fm_diff) > 0.02,
+              unhighlighted_params = list(colour = NULL),
+              keep_scales = TRUE) +
+  labs(title = "Haiti Core Graphite vs HGIS",
+       x = "Fraction modern",
+       y = "Fm - mean Fm")
+```
+
+## Fm depth plot
+
+```{r}
+combined_results %>% 
+  filter(sample_name != "6:7_39-40") %>% 
+ggplot(aes(depth, rc_age, color = method)) +
+  geom_pointrange(aes(ymin = rc_age - sig_rc_age, 
+                      ymax = rc_age + sig_rc_age),
+                  size = 0.5) +
+  geom_smooth(alpha = .2) +
+  coord_flip() +
+  scale_y_reverse() +
+  scale_x_reverse() +
+  labs(title = "Age vs depth for graphite and HGIS",
+       y = "Radiocarbon years (BP)",
+       x = "Core depth (cm)")
+```
+
+## BChron model
+
+```{r}
+
+cal_sub <- combined_results %>% 
+  filter(sample_name != "6:7_39-40") %>% 
+  filter(!str_starts(sample_name, "HATC")) %>% 
+  filter(rc_age > 0) %>% 
+  mutate(id = paste(sample_name, "-", method)) %>% 
+  select(id, depth, rc_age, sig_rc_age, method)
+
+cal_dates <- with(cal_sub,
+  BchronCalibrate(rc_age, sig_rc_age, positions = depth, ids = id))
+
+cal_dates_gr <- cal_sub %>% 
+  filter(method == "graphite") %>% 
+  with(
+  BchronCalibrate(rc_age, sig_rc_age, positions = depth, ids = id))
+
+cal_dates_gas <- cal_sub %>% 
+  filter(method == "hgis") %>%
+  with(
+  BchronCalibrate(rc_age, sig_rc_age, positions = depth, ids = id))
+
+```
+
+```{r}
+plot(cal_dates)
+```
+
+```{r}
+plot(cal_dates_gr)
+```
+
+```{r}
+plot(cal_dates_gas)
+```

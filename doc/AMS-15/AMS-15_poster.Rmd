@@ -392,7 +392,7 @@ Sample 6:7_39-40 had an issue during prep. Vial was found to be at ~1 ATM during
 
 ## Difference plot
 
-```{r}
+```{r, eval = FALSE}
 ggplot(combined_results) +
   geom_hline(yintercept = 0) +
   geom_pointrange(aes(fm_corr, fm_diff, color = method, shape = method,
@@ -404,25 +404,25 @@ ggplot(combined_results) +
        y = "Fm - mean Fm")
 ```
 
-No outliers
 
 ```{r}
+# No outliers
 combined_results %>% 
   filter(abs(fm_diff) < 0.02) %>% 
 ggplot() +
   geom_hline(yintercept = 0) +
-  geom_pointrange(aes(fm_corr, fm_diff, color = method, shape = method,
+  geom_pointrange(aes(depth, fm_diff, color = method, shape = method,
                       ymin = fm_diff - sig_fm_corr, 
                       ymax = fm_diff + sig_fm_corr),
-                  size = 1) +
+                  position = "jitter") +
   labs(title = "Haiti Core Graphite vs HGIS",
-       x = "Fraction modern",
+       x = "Core depth (cm)",
        y = "Fm - mean Fm")
 ```
 
-Highlight outliers
 
-```{r}
+```{r, eval=FALSE}
+# Highlight outliers
 ggplot(combined_results) +
   geom_hline(yintercept = 0) +
   geom_pointrange(aes(fm_corr, fm_diff, color = method, shape = method,
@@ -437,9 +437,10 @@ ggplot(combined_results) +
        y = "Fm - mean Fm")
 ```
 
-All in one.
 
-```{r}
+```{r eval=FALSE}
+#All in one. 
+
 outlier_df <- combined_results %>% 
   filter(abs(fm_diff) > 0.02)
   

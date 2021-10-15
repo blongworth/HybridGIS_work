@@ -68,12 +68,20 @@ calibrated age-depth models produced using gas-source data.
 
 # Method
 
+![HGIS Photo](images/gas_control.jpg)
+
+Our method uses an open split and glass capillary to control gas flow to the ion source. Compared to closed inlet systems which regulate introduction of a CO2/Helium mixture to the ion source by regulating sample pressure, our method is simpler and faster, but does not maintain a constant flow of CO2 to the source. We compensate for this by limiting CO2 flow to a range that produces relatively constant C- ion current and stable ratios.
+
+![HGIS Figure](images/HGIS_open_split_drawing.svg)
+
 ### Sample Preparation
 
 1. 10-30mg Carbonate in septa-sealed 7mL vials
   - produces 2-6mL CO<sub>2</sub> @ ~1ATM
 1. Evacuate and Acidify with 1 mL H3PO4 using automated Gilson prep bench
 1. Add helium to 1 ATM
+
+![HGIS Photo](images/gilson.png)
 
 ### Measurement
 
@@ -84,28 +92,23 @@ calibrated age-depth models produced using gas-source data.
 - Normalizing standards: live tank gas in vials
 - Blanks: C-1 or TIRI-F in vials
 
-![HGIS Figure](images/HGIS_open_split_drawing.svg)
 
-![HGIS Photo](images/gas_control.jpg)
-![HGIS Photo](images/gilson.png)
 
 ## Data reduction
+
+Normalization to standard, blank correction, and estimation of measurement error are done with the following steps:
 
 1. Correct for fractionation using online AMS <sup>13</sup>C measurement.
 1. Determine per-sample mean and error (repeatabilty and counting error).
 1. Normalize to mean of Gas standard.
 1. Blank correct: Blank subtraction using mean of carbonate blanks
 
-- Errors propagated at each step. 
-- Per-sample error agrees well with variability of replicates.
+Errors from normalization and blank correction are propagated at each step. The per-sample error agrees well with variability of replicates, and measurement of known-value standards shows that the method has no significant bias.
 
-Data reduction done using an R package maintained on github:
-
-https://github.com/blongworth/hgis
+Data reduction is done using an R package maintained on github (https://github.com/blongworth/hgis).
 
 # Results
 
-Data used for current, blanks, consensus
 
 ```{r}
 # Read data. Don't use first carbonate test, smaller samples, or gas standards.
@@ -117,7 +120,6 @@ cons_df <- results_df %>%
   compare_consensus() %>% 
   filter(!str_detect(Name, "Gas"))
 ```
-## Initial measurements
 
 ### Flow vs current
 
@@ -168,25 +170,10 @@ ggplot(data, aes(co2flow, he12C)) +
   theme_classic()
 ```
 
-compare to first tests
-
-Note that our flat-topped current curve allows variable flow of the vial system. MICADAS has a more pronounced peak so this may not work as well. (Check papers for peak shape)
-
-Also note current dependent ratio (blank) as a complicating factor
-
-Lead into blank on next slide
-
 
 ### Blanks and blank correction
 
-#### Current dependent blank
-
 Measurements of live and dead gas over a range of C- currents show that there is a current-dependent component to the blank. We believe this is due to a combination of a constant amount of contaminant CO2 and a "target blank" current. This current dependent blank follows the constant contamination model and can be represented with a current balance between the sample and the constant blank. 
-
-
-#### Current independent blank
-
-If **standards**, **blanks**, and **unknowns** have the **same** blank and current, current drops out.
 
 While this current-dependent blank is important to consider for samples producing varying ion current, we simplified our assessment of blank by keeping sample currents as constant as possible for blanks, normalizing standards, and unknowns, which allows a simpler correction depending only on the Fm of the blank, standard, and unknown.
 
@@ -194,10 +181,7 @@ This leads to the following model for blank correction:
 
 $$Fm_s = Fm_m - Fm_{blk}\frac{Fm_{std} - Fm_m}{Fm_{std}}$$
 
-Data from the measurement of consensus standards over a range of fraction modern shows that this simple correction is effective for removing blank contribution without bias.
-
-#### Mean Fm of blanks: `r cons_df %>% filter(fm_consensus < 0.1 & he12C > 2) %>% pull(norm_ratio) %>% mean() %>% format(digits = 3)`
-
+Data from the measurement of consensus standards over a range of fraction modern shows that this simple correction is effective for removing blank contribution without bias. Our mean measured fraction modern of C-1 and TIRI-F carbonate blanks is `r cons_df %>% filter(fm_consensus < 0.1 & he12C > 2) %>% pull(norm_ratio) %>% mean() %>% format(digits = 3)`.
 
 
 ```{r blanks, fig.height=5, dev='svg'}
@@ -215,8 +199,6 @@ cons_df %>%
   theme(legend.position = c(0.82, 0.76),
         legend.background = element_rect(fill = "white", color = "black")) 
 ```
-
-## Results: Consensus standards
 
 
 ## Results: Method precision and accuracy
@@ -280,7 +262,6 @@ ggplot(aes(fm_consensus, fm_diff, color = Name)) +
        y = "Fm difference (cons - measured)")
 ```
 
-## Results: Method precision and accuracy
 
 ```{r}
 cons_df_sum <- cons_df %>% 
@@ -323,36 +304,9 @@ cons_df %>%
 ```
 
 
-## Results: By sample type
+## Marine Sediment Core Carbonates
 
-```{r}
-ggplot(cons_df, aes(x = fm_diff, y = fm_corr, color = he12C)) +
-  geom_hline(aes(yintercept = fm_consensus), color = "lightblue") +
-  geom_hline(data = cons_df_sum, aes(yintercept = fm_corr_mean), color = "darkgray") +
-  geom_hline(data = cons_df_sum, aes(yintercept = fm_corr_mean + fm_corr_sd), 
-             color = "grey", linetype = "dashed") +
-  geom_hline(data = cons_df_sum, aes(yintercept = fm_corr_mean - fm_corr_sd),
-             color = "grey", linetype = "dashed") +
-  
-  geom_pointrange(aes(ymin = fm_corr - sig_fm_corr, 
-                      ymax = fm_corr + sig_fm_corr), 
-                  size = .2) +
-  labs(subtitle = "Reference and normalization standards",
-       y = "Fraction modern (Fm)") +
-  facet_wrap(facets = vars(Name), scales = "free") +
-  theme_bw() +
-  scale_x_continuous(breaks = NULL) +
-  xlab(NULL) +
-  scale_color_continuous(name = "12C- (μA)") +
-  theme(
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank()
-  )
-```
-
-## Pendleton Haiti Core Carbonates
-
-### Read data, pull graphite results and sample depth, combine
+To further test the method and a potential application, we measured 15 shell and coral macrofossils from a subtropical coastal marine sediment core using our gas method compared to the same samples measured using the traditional graphite method. We found the measurements to be in good agreement, with no significant bias and errors averaging XXX compared with XXX for graphite measurements.
 
 ```{r}
 # Read raw and reduced data as produced by analyse_carbonates.R
@@ -400,17 +354,6 @@ combined_results <- left_join(combined_results, depth, by = "rec_num") %>%
          sig_rc_age = rc_age - -8033 * log(fm_corr + sig_fm_corr))
 ```
 
-### Outlier
-
-```{r}
-combined_results %>% 
-  filter(abs(fm_diff) > 0.02) %>% 
-  select(sample_name, method, fm_corr, sig_fm_corr, fm_diff)
-```
-
-Sample 6:7_39-40 had an issue during prep. Vial was found to be at ~1 ATM during backfilling with helium. This means the vial had a leaky seal and would have entrained atmosphere (Fm ~0.9) during prep. This is the likely cause of a HGIS Fm 5.2% higher than graphite.
-
-## Difference plot
 
 ```{r, eval = FALSE}
 ggplot(combined_results) +
@@ -429,7 +372,7 @@ ggplot(combined_results) +
 ```{r}
 # No outliers, vs depth
 combined_results %>% 
-  filter(abs(fm_diff) < 0.02) %>% 
+  filter(abs(fm_diff_mean) < 0.02) %>% 
 ggplot() +
   geom_hline(yintercept = 0) +
   geom_pointrange(aes(depth, fm_diff, color = method, shape = method,
@@ -442,10 +385,10 @@ ggplot() +
        y = "Fm - mean Fm")
 ```
 
-```{r}
+```{r, eval = FALSE}
 # No outliers, vs mean_fm
 combined_results %>% 
-  filter(abs(fm_diff) < 0.02) %>% 
+  filter(abs(fm_diff_mean) < 0.02) %>% 
 ggplot() +
   geom_hline(yintercept = 0) +
   geom_pointrange(aes(fm_mean, fm_diff, color = method, shape = method,
@@ -553,4 +496,15 @@ plot(cal_dates_gr)
 
 ```{r}
 plot(cal_dates_gas)
+```
+
+### Outlier
+
+Sample 6:7_39-40 had an issue during prep. Vial was found to be at ~1 ATM during backfilling with helium. This means the vial had a leaky seal and would have entrained atmosphere (Fm ~0.9) during prep. This is the likely cause of a HGIS Fm 5.2% higher than graphite. This sample was dropped from the comparison. Not sure whether to mention this on poster.
+
+
+```{r}
+combined_results %>% 
+  filter(abs(fm_diff) > 0.02) %>% 
+  select(sample_name, method, fm_corr, sig_fm_corr, fm_diff)
 ```

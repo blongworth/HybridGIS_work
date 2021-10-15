@@ -68,25 +68,33 @@ calibrated age-depth models produced using gas-source data.
 
 # Method
 
-1. Acidify
-  - ~30mg Carbonate 
-  - produces 6mL CO<sub>2</sub> @ ~1ATM
+### Sample Preparation
+
+1. 10-30mg Carbonate in septa-sealed 7mL vials
+  - produces 2-6mL CO<sub>2</sub> @ ~1ATM
+1. Evacuate and Acidify with 1 mL H3PO4 using automated Gilson prep bench
+1. Add helium to 1 ATM
+
+### Measurement
+
 1. Displace gas to open split with 100 uL/min He.
 1. Introduce mixture to source @ 30 uL/min
 1. Acquire data: 90s x 10 measurements.
 
-
-- Standard: live gas in vials
-- Blank: C-1 or TIRI-F in vials
+- Normalizing standards: live tank gas in vials
+- Blanks: C-1 or TIRI-F in vials
 
 ![HGIS Figure](images/HGIS_open_split_drawing.svg)
 
+![HGIS Photo](images/gas_control.jpg)
+![HGIS Photo](images/gilson.png)
+
 ## Data reduction
 
-1. Correct for fractionation using online <sup>13</sup>C.
-1. Determine per-sample mean and error.
+1. Correct for fractionation using online AMS <sup>13</sup>C measurement.
+1. Determine per-sample mean and error (repeatabilty and counting error).
 1. Normalize to mean of Gas standard.
-1. Blank correct: LBC using mean of carbonate blanks
+1. Blank correct: Blank subtraction using mean of carbonate blanks
 
 - Errors propagated at each step. 
 - Per-sample error agrees well with variability of replicates.
@@ -112,6 +120,8 @@ cons_df <- results_df %>%
 ## Initial measurements
 
 ### Flow vs current
+
+Introducing sample through an open split using helium displacement results in a decreasing flow of CO2 to the source over time. Measured ratio can depend on sample current, so CO2 flow rate must be kept in a range where ion currents are relatively constant with changing flow. We evaluated C- current over a range of CO2 flows and found that a range of flows produce a "flat top" in current. Less CO2 will starve the source of available material to dissociate and ionize, and too much CO2 also suppresses ionization.
 
 ```{r cur-time-os, fig.height=7, dev='svg'}
 data <- get_hgis_data(here("data/USAMS040121R.txt"), as.Date("2021-04-02")) %>% 
@@ -169,14 +179,22 @@ Lead into blank on next slide
 
 ### Blanks and blank correction
 
+#### Current dependent blank
 
-# Current independent blank
+Measurements of live and dead gas over a range of C- currents show that there is a current-dependent component to the blank. We believe this is due to a combination of a constant amount of contaminant CO2 and a "target blank" current. This current dependent blank follows the constant contamination model and can be represented with a current balance between the sample and the constant blank. 
+
+
+#### Current independent blank
 
 If **standards**, **blanks**, and **unknowns** have the **same** blank and current, current drops out.
 
-#### Linear fit used to correct:
+While this current-dependent blank is important to consider for samples producing varying ion current, we simplified our assessment of blank by keeping sample currents as constant as possible for blanks, normalizing standards, and unknowns, which allows a simpler correction depending only on the Fm of the blank, standard, and unknown.
+
+This leads to the following model for blank correction:
 
 $$Fm_s = Fm_m - Fm_{blk}\frac{Fm_{std} - Fm_m}{Fm_{std}}$$
+
+Data from the measurement of consensus standards over a range of fraction modern shows that this simple correction is effective for removing blank contribution without bias.
 
 #### Mean Fm of blanks: `r cons_df %>% filter(fm_consensus < 0.1 & he12C > 2) %>% pull(norm_ratio) %>% mean() %>% format(digits = 3)`
 
@@ -369,8 +387,10 @@ combined_results <- results %>%
   bind_rows(graphite_results) %>% 
   group_by(rec_num) %>% 
   mutate(fm_mean = mean(fm_corr),
-         fm_diff = fm_corr - fm_mean) %>% 
+         fm_diff_mean = fm_corr - fm_mean) %>% 
   left_join(rename(names, Name = sample_name), by = "rec_num") %>% 
+  left_join(select(graphite_results, rec_num, fm_corr_gr = fm_corr)) %>% 
+  mutate(fm_diff = fm_corr - fm_corr_gr) %>% 
   ungroup()
 
 depth <- read_csv(here("data/haiti_depth.csv"))
@@ -385,7 +405,7 @@ combined_results <- left_join(combined_results, depth, by = "rec_num") %>%
 ```{r}
 combined_results %>% 
   filter(abs(fm_diff) > 0.02) %>% 
-  select(sample_name, method, fm_corr, sig_fm_corr)
+  select(sample_name, method, fm_corr, sig_fm_corr, fm_diff)
 ```
 
 Sample 6:7_39-40 had an issue during prep. Vial was found to be at ~1 ATM during backfilling with helium. This means the vial had a leaky seal and would have entrained atmosphere (Fm ~0.9) during prep. This is the likely cause of a HGIS Fm 5.2% higher than graphite.
@@ -399,6 +419,7 @@ ggplot(combined_results) +
                       ymin = fm_diff - sig_fm_corr, 
                       ymax = fm_diff + sig_fm_corr),
                   size = 1) +
+  scale_color_manual(values = c("#00b7bd", "#b7bf10")) +
   labs(title = "Haiti Core Graphite vs HGIS",
        x = "Fraction modern",
        y = "Fm - mean Fm")
@@ -406,7 +427,7 @@ ggplot(combined_results) +
 
 
 ```{r}
-# No outliers
+# No outliers, vs depth
 combined_results %>% 
   filter(abs(fm_diff) < 0.02) %>% 
 ggplot() +
@@ -415,11 +436,28 @@ ggplot() +
                       ymin = fm_diff - sig_fm_corr, 
                       ymax = fm_diff + sig_fm_corr),
                   position = "jitter") +
+  scale_color_manual(values = c("#00b7bd", "#b7bf10")) +
   labs(title = "Haiti Core Graphite vs HGIS",
        x = "Core depth (cm)",
        y = "Fm - mean Fm")
 ```
 
+```{r}
+# No outliers, vs mean_fm
+combined_results %>% 
+  filter(abs(fm_diff) < 0.02) %>% 
+ggplot() +
+  geom_hline(yintercept = 0) +
+  geom_pointrange(aes(fm_mean, fm_diff, color = method, shape = method,
+                      ymin = fm_diff - sig_fm_corr, 
+                      ymax = fm_diff + sig_fm_corr),
+                  position = "jitter") +
+  geom_smooth(method = "lm", aes(fm_mean, fm_diff, color = method)) +
+  scale_color_manual(values = c("#00b7bd", "#b7bf10")) +
+  labs(title = "Haiti Core Graphite vs HGIS",
+       x = "Mean Fm",
+       y = "Fm - mean Fm")
+```
 
 ```{r, eval=FALSE}
 # Highlight outliers
@@ -485,25 +523,27 @@ cal_sub <- combined_results %>%
   filter(sample_name != "6:7_39-40") %>% 
   filter(!str_starts(sample_name, "HATC")) %>% 
   filter(rc_age > 0) %>% 
-  mutate(id = paste(sample_name, "-", method)) %>% 
-  select(id, depth, rc_age, sig_rc_age, method)
+  mutate(id = paste(sample_name, "-", method),
+         cal_curve = "intcal20") %>% 
+  select(id, depth, rc_age, sig_rc_age, cal_curve, method) %>%
+  add_row(id = "top-1", depth = 0, rc_age = 0, sig_rc_age = 1, cal_curve = "normal", method = "top")
 
 cal_dates <- with(cal_sub,
-  BchronCalibrate(rc_age, sig_rc_age, positions = depth, ids = id))
+  BchronCalibrate(rc_age, sig_rc_age, positions = depth, ids = id, calCurves = cal_curve))
 
 cal_dates_gr <- cal_sub %>% 
-  filter(method == "graphite") %>% 
+  filter(method != "hgis") %>% 
   with(
-  BchronCalibrate(rc_age, sig_rc_age, positions = depth, ids = id))
+  BchronCalibrate(rc_age, sig_rc_age, positions = depth, ids = id, calCurves = cal_curve))
 
 cal_dates_gas <- cal_sub %>% 
-  filter(method == "hgis") %>%
+  filter(method != "graphite") %>%
   with(
-  BchronCalibrate(rc_age, sig_rc_age, positions = depth, ids = id))
+  BchronCalibrate(rc_age, sig_rc_age, positions = depth, ids = id, calCurves = cal_curve))
 
 ```
 
-```{r}
+```{r, eval=FALSE}
 plot(cal_dates)
 ```
 

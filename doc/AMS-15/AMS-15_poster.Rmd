@@ -68,20 +68,19 @@ calibrated age-depth models produced using gas-source data.
 
 # Method
 
-![HGIS Photo](images/gas_control.jpg)
+![Experimental setup. Helium and standard gas regulators at left, sample vial and open split at top right.](images/gas_control.jpg)
 
 Our method uses an open split and glass capillary to control gas flow to the ion source. Compared to closed inlet systems which regulate introduction of a CO2/Helium mixture to the ion source by regulating sample pressure, our method is simpler and faster, but does not maintain a constant flow of CO2 to the source. We compensate for this by limiting CO2 flow to a range that produces relatively constant C- ion current and stable ratios.
 
-![HGIS Figure](images/HGIS_open_split_drawing.svg)
+![Inlet layout. Helium displacement gas is delivered to vial through a double needle, mixed sample and helium flows to an open split, and a glass capillary delivers gas to the ion source.](images/HGIS_open_split_drawing.svg)
 
 ### Sample Preparation
 
-1. 10-30mg Carbonate in septa-sealed 7mL vials
-  - produces 2-6mL CO<sub>2</sub> @ ~1ATM
+1. Weigh 10-30mg Carbonate in septa-sealed 7mL vials produces 2-6mL CO<sub>2</sub> @ ~1ATM
 1. Evacuate and Acidify with 1 mL H3PO4 using automated Gilson prep bench
-1. Add helium to 1 ATM
+1. After reaction is complete, add helium to bring vials to ambient pressure.
 
-![HGIS Photo](images/gilson.png)
+![A modified liquid handling system is used to evacuate and add acid to sample vials.](images/gilson.png)
 
 ### Measurement
 
@@ -159,7 +158,7 @@ cur_time <- ggplot(data, aes(time, he12C)) +
 flow_time / cur_time
 ```
 
-```{r cur-flow-os, fig.height=6, dev='svg'}
+```{r cur-flow-os, fig.height=4, dev='svg'}
 ggplot(data, aes(co2flow, he12C)) +
   geom_smooth(span = .3, se=FALSE, color = "#00b7bd") +
   geom_point(size = 3, color = "#0069b1") +
@@ -202,6 +201,8 @@ cons_df %>%
 
 
 ## Results: Method precision and accuracy
+
+Replicate measurements of known-value carbonate reference materials were used to establish the precision and accuracy of the method. 
 
 ```{r}
 cons_df_sum <- cons_df %>% 
@@ -263,45 +264,6 @@ ggplot(aes(fm_consensus, fm_diff, color = Name)) +
 ```
 
 
-```{r}
-cons_df_sum <- cons_df %>% 
-  group_by(Name, fm_consensus) %>% 
-  summarize(across(c(fm_corr, sig_fm_corr, fm_diff, sigma),
-                   list(mean = mean, sd = sd)),
-            N = n()) %>% 
-  ungroup()
-
-cons_df_sum %>% 
-  arrange(fm_consensus) %>% 
-  select(Name, `Consensus Fm` = fm_consensus,
-         `Mean Fm` = fm_corr_mean,
-         `Mean Fm error` = sig_fm_corr_mean,
-         `SD of measurements` = fm_corr_sd,
-         N) %>% 
-gt() %>% 
-  tab_header(title = "Summary statistics by sample type") %>% 
-  fmt_number(3:5, decimals = 4)
-```
-
-```{r}
-cons_df %>% 
-  filter(Name %in% c("TIRI-I", "C-2", "NOSAMS2")) %>% 
-  ungroup() %>% 
-  summarize(across(c(sig_fm_corr, fm_diff, sigma),
-                   list(mean = mean, sd = sd)),
-            N = n()) %>% 
-  select(`Mean Fm difference` = fm_diff_mean,
-         `SD of mean difference` = fm_diff_sd,
-         `Mean Fm error` = sig_fm_corr_mean,
-         `Mean Sigma` = sigma_mean,
-         `SD of Sigma` = sigma_sd,
-         N
-         ) %>%  
-  gt() %>% 
-  tab_header(title = "Summary statisics for reference materials",
-             subtitle = "TIRI-I, C-2, and NOSAMS2") %>% 
-  fmt_number(3:5, decimals = 4)
-```
 
 
 ## Marine Sediment Core Carbonates
@@ -402,43 +364,6 @@ ggplot() +
        y = "Fm - mean Fm")
 ```
 
-```{r, eval=FALSE}
-# Highlight outliers
-ggplot(combined_results) +
-  geom_hline(yintercept = 0) +
-  geom_pointrange(aes(fm_corr, fm_diff, color = method, shape = method,
-                      ymin = fm_diff - sig_fm_corr, 
-                      ymax = fm_diff + sig_fm_corr),
-                  size = 1) +
-  gghighlight(abs(fm_diff) > 0.02,
-              #unhighlighted_params = list(colour = NULL),
-              keep_scales = TRUE) +
-  labs(title = "Haiti Core Graphite vs HGIS",
-       x = "Fraction modern",
-       y = "Fm - mean Fm")
-```
-
-
-```{r eval=FALSE}
-#All in one. 
-
-outlier_df <- combined_results %>% 
-  filter(abs(fm_diff) > 0.02)
-  
-ggplot(combined_results) +
-  geom_hline(yintercept = 0) +
-  geom_pointrange(aes(fm_corr, fm_diff, color = method, shape = method,
-                      ymin = fm_diff - sig_fm_corr, 
-                      ymax = fm_diff + sig_fm_corr),
-                  size = 1,
-                  color = "grey") +#,
-  gghighlight(abs(fm_diff) > 0.02,
-              unhighlighted_params = list(colour = NULL),
-              keep_scales = TRUE) +
-  labs(title = "Haiti Core Graphite vs HGIS",
-       x = "Fraction modern",
-       y = "Fm - mean Fm")
-```
 
 ## Fm depth plot
 
@@ -461,7 +386,6 @@ ggplot(aes(depth, rc_age, color = method)) +
 ## BChron model
 
 ```{r}
-
 cal_sub <- combined_results %>% 
   filter(sample_name != "6:7_39-40") %>% 
   filter(!str_starts(sample_name, "HATC")) %>% 

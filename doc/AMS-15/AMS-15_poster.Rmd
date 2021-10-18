@@ -106,8 +106,7 @@ Errors from normalization and blank correction are propagated at each step. The 
 
 Data reduction is done using an R package maintained on github (https://github.com/blongworth/hgis).
 
-# Results
-
+## Ion currents and method blank
 
 ```{r}
 # Read data. Don't use first carbonate test, smaller samples, or gas standards.
@@ -120,7 +119,7 @@ cons_df <- results_df %>%
   filter(!str_detect(Name, "Gas"))
 ```
 
-### Flow vs current
+### Ion current vs CO2 flow
 
 Introducing sample through an open split using helium displacement results in a decreasing flow of CO2 to the source over time. Measured ratio can depend on sample current, so CO2 flow rate must be kept in a range where ion currents are relatively constant with changing flow. We evaluated C- current over a range of CO2 flows and found that a range of flows produce a "flat top" in current. Less CO2 will starve the source of available material to dissociate and ionize, and too much CO2 also suppresses ionization.
 
@@ -162,8 +161,8 @@ flow_time / cur_time
 ggplot(data, aes(co2flow, he12C)) +
   geom_smooth(span = .3, se=FALSE, color = "#00b7bd") +
   geom_point(size = 3, color = "#0069b1") +
-  labs(title = "Vial dilution current",
-       subtitle = "250μL/min displacement, 30μl/min delivery",
+  labs(title = "Ion current is stable for a range of CO2 flow",
+       subtitle = "Current vs. CO2 flow during vial dillution",
        x = bquote('CO'[2]~'Flow (μl/min)'), 
        y = "12C current (μA)") +
   theme_classic()
@@ -183,7 +182,7 @@ $$Fm_s = Fm_m - Fm_{blk}\frac{Fm_{std} - Fm_m}{Fm_{std}}$$
 Data from the measurement of consensus standards over a range of fraction modern shows that this simple correction is effective for removing blank contribution without bias. Our mean measured fraction modern of C-1 and TIRI-F carbonate blanks is `r cons_df %>% filter(fm_consensus < 0.1 & he12C > 2) %>% pull(norm_ratio) %>% mean() %>% format(digits = 3)`.
 
 
-```{r blanks, fig.height=5, dev='svg'}
+```{r blanks, fig.height=4, dev='svg'}
 cons_df %>% 
   filter(fm_consensus < 0.1) %>% 
   ggplot(aes(he12C, norm_ratio)) +
@@ -191,7 +190,8 @@ cons_df %>%
   geom_errorbarh(aes(xmin = he12C - sig_he12C, xmax = he12C  + sig_he12C)) +
   geom_point(aes(color = wheel), size = 3) +
   #scale_color_manual("wheel", values = c("#b7bf10", "#00a9e0", "#0069b1")) +
-  labs(title = "Blanks",
+  labs(title = "Contaminant carbon is related to current",
+       subtitle = "Fm and current of radiocarbon-free carbonates",
        x = "12C Current (μA)",
        y = "Fraction modern") +
   theme_classic() +
@@ -200,7 +200,7 @@ cons_df %>%
 ```
 
 
-## Results: Method precision and accuracy
+## Consensus standards
 
 Replicate measurements of known-value carbonate reference materials were used to establish the precision and accuracy of the method. 
 
@@ -259,8 +259,10 @@ ggplot(aes(fm_consensus, fm_diff, color = Name)) +
                       ymax = fm_diff + sig_fm_corr), 
                   position = position_dodge2(width = 0.1), 
                   size = 0.2) + 
-  labs(subtitle = "Blank corrected", x = "Fm expected (points jittered for clarity)", 
-       y = "Fm difference (cons - measured)")
+  labs(title = "Agreement of HGIS with graphite measurements",
+       subtitle = "Blank corrected HGIS measurements of consensus carbonate standards",
+       x = "Fm expected (points jittered for clarity)", 
+       y = "Fm difference (HGIS - expected)")
 ```
 
 
@@ -268,7 +270,6 @@ ggplot(aes(fm_consensus, fm_diff, color = Name)) +
 
 ## Marine Sediment Core Carbonates
 
-To further test the method and a potential application, we measured 15 shell and coral macrofossils from a subtropical coastal marine sediment core using our gas method compared to the same samples measured using the traditional graphite method. We found the measurements to be in good agreement, with no significant bias and errors averaging XXX compared with XXX for graphite measurements.
 
 ```{r}
 # Read raw and reduced data as produced by analyse_carbonates.R
@@ -314,54 +315,42 @@ depth <- read_csv(here("data/haiti_depth.csv"))
 combined_results <- left_join(combined_results, depth, by = "rec_num") %>% 
   mutate(rc_age = -8033 * log(fm_corr),
          sig_rc_age = rc_age - -8033 * log(fm_corr + sig_fm_corr))
+
+# No outliers
+cr_no <- combined_results %>% 
+  filter(abs(fm_diff_mean) < 0.02)
+
+mean_diff <- cr_no %>% 
+  filter(method == "hgis") %>% 
+  summarise(across(fm_diff, list(mean = mean, sd = sd)))
+
+mean_errs <- cr_no %>% 
+  group_by(method) %>% 
+  summarise(mean_sig = mean(sig_fm_corr)) %>% 
+  pivot_wider(names_from = method,
+              values_from = mean_sig)
 ```
 
-
-```{r, eval = FALSE}
-ggplot(combined_results) +
-  geom_hline(yintercept = 0) +
-  geom_pointrange(aes(fm_corr, fm_diff, color = method, shape = method,
-                      ymin = fm_diff - sig_fm_corr, 
-                      ymax = fm_diff + sig_fm_corr),
-                  size = 1) +
-  scale_color_manual(values = c("#00b7bd", "#b7bf10")) +
-  labs(title = "Haiti Core Graphite vs HGIS",
-       x = "Fraction modern",
-       y = "Fm - mean Fm")
-```
-
+To further test the method and a potential application, we measured 15 shell and coral macrofossils from a subtropical coastal marine sediment core using our gas method compared to the same samples measured using the traditional graphite method. We found the measurements to be in good agreement, with no significant bias and errors averaging Fm `r mean_errs$hgis` compared with Fm `r mean_errs$graphite` for graphite measurements.
 
 ```{r}
-# No outliers, vs depth
-combined_results %>% 
-  filter(abs(fm_diff_mean) < 0.02) %>% 
-ggplot() +
+ggplot(cr_no) +
   geom_hline(yintercept = 0) +
+  #geom_hline(yintercept = mean_diff$fm_diff_mean, color = "blue") +
+  #geom_hline(yintercept = mean_diff$fm_diff_mean + mean_diff$fm_diff_sd, color = "lightblue") +
+  #geom_hline(yintercept = mean_diff$fm_diff_mean - mean_diff$fm_diff_sd, color = "lightblue") +
   geom_pointrange(aes(depth, fm_diff, color = method, shape = method,
                       ymin = fm_diff - sig_fm_corr, 
                       ymax = fm_diff + sig_fm_corr),
                   position = "jitter") +
   scale_color_manual(values = c("#00b7bd", "#b7bf10")) +
-  labs(title = "Haiti Core Graphite vs HGIS",
+  labs(title = "HGIS measurements agree with graphite",
+       subtitle = "Sediment core macrofossils measured via HGIS and graphite",
        x = "Core depth (cm)",
-       y = "Fm - mean Fm")
-```
-
-```{r, eval = FALSE}
-# No outliers, vs mean_fm
-combined_results %>% 
-  filter(abs(fm_diff_mean) < 0.02) %>% 
-ggplot() +
-  geom_hline(yintercept = 0) +
-  geom_pointrange(aes(fm_mean, fm_diff, color = method, shape = method,
-                      ymin = fm_diff - sig_fm_corr, 
-                      ymax = fm_diff + sig_fm_corr),
-                  position = "jitter") +
-  geom_smooth(method = "lm", aes(fm_mean, fm_diff, color = method)) +
-  scale_color_manual(values = c("#00b7bd", "#b7bf10")) +
-  labs(title = "Haiti Core Graphite vs HGIS",
-       x = "Mean Fm",
-       y = "Fm - mean Fm")
+       y = "HGIS Fm - graphite Fm") +
+  theme(legend.position = c(0.80, 0.85),
+        legend.direction = "horizontal",
+        legend.background = element_rect(fill = "white", color = "black")) 
 ```
 
 
@@ -370,7 +359,7 @@ ggplot() +
 ```{r}
 combined_results %>% 
   filter(sample_name != "6:7_39-40") %>% 
-ggplot(aes(depth, rc_age, color = method)) +
+ggplot(aes(depth, rc_age, color = method, shape = method)) +
   geom_pointrange(aes(ymin = rc_age - sig_rc_age, 
                       ymax = rc_age + sig_rc_age),
                   size = 0.5) +
@@ -378,9 +367,13 @@ ggplot(aes(depth, rc_age, color = method)) +
   coord_flip() +
   scale_y_reverse() +
   scale_x_reverse() +
-  labs(title = "Age vs depth for graphite and HGIS",
+  scale_color_manual(values = c("#00b7bd", "#b7bf10")) +
+  labs(title = "HGIS age-depth is similar to graphite",
+       subtitle = "Age vs. depth for graphite and HGIS",
        y = "Radiocarbon years (BP)",
-       x = "Core depth (cm)")
+       x = "Core depth (cm)") +
+  theme(legend.position = c(0.85, 0.30),
+        legend.background = element_rect(fill = "white", color = "black")) 
 ```
 
 ## BChron model
@@ -414,12 +407,26 @@ cal_dates_gas <- cal_sub %>%
 plot(cal_dates)
 ```
 
-```{r}
-plot(cal_dates_gr)
-```
+```{r, fig.height=5}
+bc_gr <- plot(cal_dates_gr) +
+  xlim(8000, 0) +
+  ylim(1000, 0) +
+  labs(title = "Graphite measurements",
+       xlab = "Age (yBP)",
+       ylab = "Core depth (cm)")
+  
+bc_gas <- plot(cal_dates_gas) +
+  xlim(8000, 0) +
+  ylim(1000, 0) +
+  labs(title = "HGIS measurements",
+       xlab = "Age (yBP)",
+       ylab = "Core depth (cm)")
 
-```{r}
-plot(cal_dates_gas)
+bchron <- bc_gr / bc_gas
+
+bchron +
+  plot_annotation(title = "HGIS and graphite age models agree",
+                  subtitle = "Calibrated ages vs core depth")
 ```
 
 ### Outlier

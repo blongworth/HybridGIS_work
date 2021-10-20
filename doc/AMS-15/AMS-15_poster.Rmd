@@ -37,6 +37,7 @@ library(gt)
 library(Bchron)
 library(gghighlight)
 library(patchwork)
+library(scales)
 
 options(digits = 3)
 options(scipen = 4)
@@ -258,11 +259,16 @@ ggplot(aes(fm_consensus, fm_diff, color = Name)) +
   geom_pointrange(aes(ymin = fm_diff - sig_fm_corr, 
                       ymax = fm_diff + sig_fm_corr), 
                   position = position_dodge2(width = 0.1), 
-                  size = 0.2) + 
+                  size = 0.5) + 
+  scale_color_brewer(palette = "Dark2") +
+  scale_x_continuous(labels = label_percent(suffix = "")) +
+  scale_y_continuous(breaks = breaks_extended(7),
+                     labels = label_percent(suffix = "",
+                                            accuracy = 1)) +
   labs(title = "Agreement of HGIS with graphite measurements",
        subtitle = "Blank corrected HGIS measurements of consensus carbonate standards",
-       x = "Fm expected (points jittered for clarity)", 
-       y = "Fm difference (HGIS - expected)")
+       x = "pMC expected (points jittered for clarity)", 
+       y = "pMC difference (HGIS - expected)")
 ```
 
 

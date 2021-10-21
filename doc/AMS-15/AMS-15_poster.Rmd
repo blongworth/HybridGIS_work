@@ -150,8 +150,8 @@ flow_time / cur_time
 ggplot(data, aes(co2flow, he12C)) +
   geom_smooth(span = .3, se=FALSE, color = "#00b7bd") +
   geom_point(size = 2, color = "#0069b1") +
-  labs(title = "Ion current is stable for a range of CO2 flow",
-       subtitle = "Current vs. CO2 flow during vial dillution",
+  labs(title = bquote('Ion current is stable for a range of CO'[2]~'flow'),
+       subtitle = bquote('Current vs. CO'[2]~'flow during vial dillution'),
        x = bquote('CO'[2]~'Flow (μl/min)'), 
        y = "12C current (μA)") +
   theme_classic()
@@ -179,10 +179,13 @@ cons_df %>%
   geom_errorbarh(aes(xmin = he12C - sig_he12C, xmax = he12C  + sig_he12C)) +
   geom_point(size = 2, color = "#0069b1") + #"#b7bf10"
   #scale_color_manual("wheel", values = c("#b7bf10", "#00a9e0", "#0069b1")) +
+  scale_y_continuous(breaks = breaks_extended(7),
+                     labels = label_percent(suffix = "",
+                                            accuracy = 1)) +
   labs(title = "Contaminant carbon is related to current",
        subtitle = "Fm and current of radiocarbon-free carbonates",
        x = "12C Current (μA)",
-       y = "Fraction modern") +
+       y = "pMC") +
   theme_classic() +
   theme(legend.position = c(0.82, 0.76),
         legend.background = element_rect(fill = "white", color = "black")) 
@@ -203,14 +206,16 @@ cons_df_sum <- cons_df %>%
 
 cons_df_sum %>% 
   arrange(fm_consensus) %>% 
-  select(Name, `Consensus Fm` = fm_consensus,
-         `Mean Fm` = fm_corr_mean,
-         `Mean Fm error` = sig_fm_corr_mean,
-         `SD of measurements` = fm_corr_sd,
+  select(Name, `Consensus pMC` = fm_consensus,
+         `Mean pMC` = fm_corr_mean,
+         `Mean pMC error` = sig_fm_corr_mean,
+         `Std. dev. of measurements` = fm_corr_sd,
          N) %>% 
 gt() %>% 
   tab_header(title = "Summary statistics by sample type") %>% 
-  fmt_number(3:5, decimals = 4)
+  fmt_number(2:5, 
+             scale_by = 100,
+             decimals = 2)
 ```
 
 <br><br>
@@ -219,20 +224,20 @@ gt() %>%
 cons_df %>% 
   filter(Name %in% c("TIRI-I", "C-2", "NOSAMS2")) %>% 
   ungroup() %>% 
-  summarize(across(c(sig_fm_corr, fm_diff, sigma),
+  summarize(across(c(sig_fm_corr, fm_diff),
                    list(mean = mean, sd = sd)),
             N = n()) %>% 
-  select(`Mean Fm difference` = fm_diff_mean,
-         `SD of mean difference` = fm_diff_sd,
-         `Mean Fm error` = sig_fm_corr_mean,
-         `Mean Sigma` = sigma_mean,
-         `SD of Sigma` = sigma_sd,
+  select(`Consensus difference` = fm_diff_mean,
+         `Std. Dev. of consensus difference` = fm_diff_sd,
+         `per-sample error` = sig_fm_corr_mean,
          N
          ) %>%  
   gt() %>% 
   tab_header(title = "Summary statisics for reference materials",
-             subtitle = "TIRI-I, C-2, and NOSAMS2") %>% 
-  fmt_number(3:5, decimals = 4)
+             subtitle = "TIRI-I, C-2, and NOSAMS2. Values in pMC") %>% 
+  fmt_number(1:3, 
+             scale_by = 100,
+             decimals = 2)
 ```
 
 ```{r}
@@ -340,10 +345,13 @@ ggplot(cr_no) +
                       ymax = fm_diff + sig_fm_corr),
                   position = "jitter") +
   scale_color_manual(values = c("#00b7bd", "#b7bf10")) +
+  scale_y_continuous(breaks = breaks_extended(7),
+                     labels = label_percent(suffix = "",
+                                            accuracy = 1)) +
   labs(title = "HGIS measurements agree with graphite",
        subtitle = "Sediment core macrofossils measured via HGIS and graphite",
        x = "Core depth (cm)",
-       y = "HGIS Fm - graphite Fm") +
+       y = "HGIS - graphite (pMC)") +
   theme(legend.position = c(0.80, 0.85),
         legend.direction = "horizontal",
         legend.background = element_rect(fill = "white", color = "black")) 

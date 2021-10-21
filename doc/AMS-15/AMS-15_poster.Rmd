@@ -48,19 +48,7 @@ Text and figures for AMS-15 poster.
 
 # Abstract
 
-We have developed a method for measurement of radiocarbon in carbonate minerals
-as CO~2~ gas via a NEC MCSNICS hybrid sputter gas ion source (HGIS). The method
-uses helium as a carrier gas to displace CO~2~ from sample vials to an open
-split, where a glass capillary samples the mixture for delivery directly to the
-HGIS. This method skips the gas transfer and quantification steps used in a
-closed inlet HGIS system, simplifying sample measurement. Samples larger than 10
-mg carbonate can currently be measured. Results from measurements of consensus
-standards (TIRI-I, IAEA C2, and an internal modern shell standard), and samples
-from a marine core (40-115 pMC) show that the method agrees well with
-traditional AMS measurement of the same samples as graphite, and that the method
-error is less than 1.5 pMC. We discuss advantages and disadvantages of
-continuous flow sample introduction, and the effect of reduced precision on
-calibrated age-depth models produced using gas-source data.
+We have developed a method for measurement of radiocarbon in carbonate minerals as CO~2~ gas via a NEC MCSNICS hybrid sputter gas ion source (HGIS). The method uses helium as a carrier gas to displace CO~2~ from sample vials to an open split, where a glass capillary samples the mixture for delivery directly to the HGIS. This method skips the gas transfer and quantification steps used in a closed inlet HGIS system, simplifying sample measurement. Samples larger than 10 mg carbonate can currently be measured. Results from measurements of consensus standards (TIRI-I, IAEA C2, and an internal modern shell standard), and samples from a marine core (40-115 pMC) show that the method agrees well with traditional AMS measurement of the same samples as graphite, and that the method error is less than 1.5 pMC. We discuss advantages and disadvantages of continuous flow sample introduction, and the effect of reduced precision on calibrated age-depth models produced using gas-source data.
 
 # Introduction
 
@@ -157,10 +145,10 @@ cur_time <- ggplot(data, aes(time, he12C)) +
 flow_time / cur_time
 ```
 
-```{r cur-flow-os, fig.height=4, dev='svg'}
+```{r cur-flow-os}
 ggplot(data, aes(co2flow, he12C)) +
   geom_smooth(span = .3, se=FALSE, color = "#00b7bd") +
-  geom_point(size = 3, color = "#0069b1") +
+  geom_point(size = 2, color = "#0069b1") +
   labs(title = "Ion current is stable for a range of CO2 flow",
        subtitle = "Current vs. CO2 flow during vial dillution",
        x = bquote('CO'[2]~'Flow (μl/min)'), 
@@ -182,13 +170,13 @@ $$Fm_s = Fm_m - Fm_{blk}\frac{Fm_{std} - Fm_m}{Fm_{std}}$$
 Data from the measurement of consensus standards over a range of fraction modern shows that this simple correction is effective for removing blank contribution without bias. Our mean measured fraction modern of C-1 and TIRI-F carbonate blanks is `r cons_df %>% filter(fm_consensus < 0.1 & he12C > 2) %>% pull(norm_ratio) %>% mean() %>% format(digits = 3)`.
 
 
-```{r blanks, fig.height=4, dev='svg'}
+```{r blanks}
 cons_df %>% 
   filter(fm_consensus < 0.1) %>% 
   ggplot(aes(he12C, norm_ratio)) +
   geom_errorbar(aes(ymin = norm_ratio - sig_norm_ratio, ymax = norm_ratio  + sig_norm_ratio)) +
   geom_errorbarh(aes(xmin = he12C - sig_he12C, xmax = he12C  + sig_he12C)) +
-  geom_point(aes(color = wheel), size = 3) +
+  geom_point(size = 2, color = "#0069b1") + #"#b7bf10"
   #scale_color_manual("wheel", values = c("#b7bf10", "#00a9e0", "#0069b1")) +
   labs(title = "Contaminant carbon is related to current",
        subtitle = "Fm and current of radiocarbon-free carbonates",
@@ -223,6 +211,8 @@ gt() %>%
   tab_header(title = "Summary statistics by sample type") %>% 
   fmt_number(3:5, decimals = 4)
 ```
+
+<br><br>
 
 ```{r}
 cons_df %>% 
@@ -412,15 +402,15 @@ bc_gr <- plot(cal_dates_gr) +
   xlim(8000, 0) +
   ylim(1000, 0) +
   labs(title = "Graphite measurements",
-       xlab = "Age (yBP)",
-       ylab = "Core depth (cm)")
+       x = "Age (yBP)",
+       y = "Core depth (cm)")
   
 bc_gas <- plot(cal_dates_gas) +
   xlim(8000, 0) +
   ylim(1000, 0) +
   labs(title = "HGIS measurements",
-       xlab = "Age (yBP)",
-       ylab = "Core depth (cm)")
+       x = "Age (yBP)",
+       y = "Core depth (cm)")
 
 bchron <- bc_gr / bc_gas
 

@@ -38,6 +38,7 @@ library(Bchron)
 library(gghighlight)
 library(patchwork)
 library(scales)
+library(latex2exp)
 
 options(digits = 3)
 options(scipen = 4)
@@ -153,7 +154,7 @@ ggplot(data, aes(co2flow, he12C)) +
   labs(title = bquote('Ion current is stable for a range of CO'[2]~'flow'),
        subtitle = bquote('Current vs. CO'[2]~'flow during vial dillution'),
        x = bquote('CO'[2]~'Flow (μl/min)'), 
-       y = "12C current (μA)") +
+       y = TeX(r'(^{12}C^- current (μA))')) +
   theme_classic()
 ```
 
@@ -184,7 +185,7 @@ cons_df %>%
                                             accuracy = 1)) +
   labs(title = "Contaminant carbon is related to current",
        subtitle = "Fm and current of radiocarbon-free carbonates",
-       x = "12C Current (μA)",
+       x = TeX(r'(^{12}C^- current (μA))'),
        y = "pMC") +
   theme_classic() +
   theme(legend.position = c(0.82, 0.76),

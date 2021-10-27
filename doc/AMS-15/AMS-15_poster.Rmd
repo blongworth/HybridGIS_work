@@ -39,10 +39,12 @@ library(gghighlight)
 library(patchwork)
 library(scales)
 library(latex2exp)
+library(errors)
 
 options(digits = 3)
 options(scipen = 4)
 options(decimals = 4)
+options(errors.notation = "plus-minus")
 theme_set(theme_classic())
 ```
 
@@ -207,17 +209,23 @@ cons_df_sum <- cons_df %>%
 
 cons_df_sum %>% 
   arrange(fm_consensus) %>% 
-  select(Name, `Consensus pMC` = fm_consensus,
-         `Mean pMC` = fm_corr_mean,
-         `Mean pMC error` = sig_fm_corr_mean,
-         `Std. dev. of measurements` = fm_corr_sd,
+  mutate(across(c(fm_consensus, fm_corr_mean, fm_corr_sd, sig_fm_corr_mean), 
+         function(x) x * 100),
+         fm_corr_err = set_errors(fm_corr_mean, fm_corr_sd)) %>% 
+  select(Name, `Consensus` = fm_consensus,
+         `HGIS ± SD` = fm_corr_err,
+         #`HGIS` = fm_corr_mean,
+         #`Std. dev. of measurements` = fm_corr_sd,
+         `Mean per-sample error` = sig_fm_corr_mean,
          N) %>% 
 gt() %>% 
-  tab_header(title = "Reference material precision and accuracy") %>% 
-  fmt_number(2:5, 
-             scale_by = 100,
-             decimals = 2)
+  tab_header(title = "Reference material precision and accuracy",
+             subtitle = "Values in pMC, Errors are SD of measurements") %>% 
+  fmt_number(4, 
+             decimals = 1) %>% 
+  cols_align("right", 3)
 ```
+
 
 <br><br>
 
@@ -255,8 +263,9 @@ ggplot(aes(fm_consensus, fm_diff, color = Name)) +
   geom_pointrange(aes(ymin = fm_diff - sig_fm_corr, 
                       ymax = fm_diff + sig_fm_corr), 
                   position = position_dodge2(width = 0.1), 
-                  size = 0.5) + 
-  scale_color_brewer(palette = "Dark2") +
+                  ) + #size = 0.5) + 
+   scale_color_brewer(palette = "Dark2") +
+  # scale_color_manual(values = c("#00a9e0", "#0069b1", "#00b7bd", "#b7bf10", "#00b7bd")) +
   scale_x_continuous(labels = label_percent(suffix = "")) +
   scale_y_continuous(breaks = breaks_extended(7),
                      labels = label_percent(suffix = "",

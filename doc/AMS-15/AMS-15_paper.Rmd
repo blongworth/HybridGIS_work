@@ -1,0 +1,64 @@
+---
+title: Analysis of Carbonates as CO2 using an open split interface to a hybrid sputter
+  gas ion source
+author: "Brett Longworth"
+date: "7/12/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+
+NEC hybrid gas ion source
+
+NEC inlets
+
+MICADAS source and inlets
+
+Comparison of open split to closed method
+
+Pros/cons
+
+
+
+# Methods
+
+## Inlet description
+
+## Sample preparation
+
+## Data acquisition
+
+
+## Data reduction
+
+
+# Results
+
+
+## System performance
+
+### Currents
+
+### Blanks
+
+### Sample size
+
+## Reference materials
+
+
+
+## Haiti Core
+
+
+# Discussion
+
+Quantification of method
+
+# Conclusion
+
+We developed a method for the analysis of carbonates using an open-split interface to a hybrid sputter gas ion source. Sample requirements, analysis time, precision, accuracy.

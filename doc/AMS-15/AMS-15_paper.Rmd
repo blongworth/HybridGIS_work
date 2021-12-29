@@ -1,63 +1,214 @@
 ---
-title: Analysis of Carbonates as CO2 using an open split interface to a hybrid sputter
-  gas ion source
-author: "Brett Longworth"
-date: "7/12/2021"
-output: html_document
+title: "Radiocarbon measurement of CO~2~ from carbonate minerals using a gas ion source with an open split interface"
+author:
+- Brett Longworth
+- Josh Burton
+- Simon Pendleton
+- Josh Hlavenka
+- Sydney Moser
+- Mark Roberts
+- Mark Kurz
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+We have developed a method for measurement of radiocarbon in carbonate minerals
+as CO~2~ gas via a NEC MCSNICS hybrid sputter gas ion source (HGIS). The method
+uses helium as a carrier gas to displace CO~2~ from sample vials to an open
+split, where a glass capillary samples the mixture for delivery directly to the
+HGIS. This method skips the gas transfer and quantification steps used in a
+closed inlet HGIS system, simplifying sample measurement. Samples larger than 10
+mg carbonate can currently be measured. Results from measurements of consensus
+standards (TIRI-I, IAEA C2, and an internal modern shell standard), and samples
+from a marine core (40-115 pMC) show that the method agrees well with
+traditional AMS measurement of the same samples as graphite, and that the method
+error is less than 1.5 pMC. We discuss advantages and disadvantages of
+continuous flow sample introduction, and the effect of reduced precision on
+calibrated age-depth models produced using gas-source data.
+
 # Introduction
+
+The NOSAMS USAMS is an AMS system based on a 3MV Tandetron accelerator. A NEC 134-sample gas-capable MCSNICS source. Analysis of samples as CO2 simplifies sample preparation, making analysis less expensive and faster. 
+
+The gas-capable 134-sample MCSNICS is produced by NEC. Sample CO2 is introduced onto a titanium frit in an aluminum target using an arm with a probe that mates with the back of the target.
 
 
 NEC hybrid gas ion source
 
 NEC inlets
 
+
 MICADAS source and inlets
 
 Comparison of open split to closed method
 
+Most interfaces to gas-accepting sputter ion sources are a closed inlet design. A mixture of sample and helium is introduced to the source through a capillary, and flow is controlled by the pressure in the sample volume and the length and diameter of the capillary. Flow may be adjusted by changing the pressure by varying the sample volume. We designed a simpler open inlet where a capillary samples gas in a flowing stream that exhausts to the atmosphere. This defines the delivery pressure as 1 ATM and therefore flow is controlled by the capillary and is not adjustable. The flow of CO2 to the source may be varied by controlling the ratio of CO2 to helium in the sample stream. An open inlet has the advantage of simplicity; flow of CO2 to the source is preset and there are no separate sample transfer and dilution steps. A disadvantage of the open split is that the flow of CO2 to the source varies with sample size (CO2:He) and changes over the course of a measurement due to dillution of the sample by displacement helium. Salazar and Szidat, Roberts gasbench, other open split methods.
+
 Pros/cons
 
 
-
-# Methods
+# Method
 
 ## Inlet description
 
+We developed a simple open-split interface that delivers a mixture of helium and CO2 to the source at atmospheric pressure.  
+
+Figure 1. photo and drawing of inlet.
+
+The open split interface supplies a helium-CO2 mixture to a split where a
+capillary delivers gas to the source and the rest is vented. The current split is a VICI Luer adapter on the outflow side of the dual needle (Figure 1). The split has fairly low volume. Testing is needed to determine minimum sample flow to avoid atmosphere entering the split.
+
+The test setup for extracting CO2 from septa-sealed vials is as follows: a double needle is inserted into the vial through the septa. One side of the needle is connected to helium which is used to force CO2 from the vial through the other side of the needle. The outflow from the vial enters an open split where a capillary is used to admit sample to the ion source. The system is currently set up to run with samples starting at atmospheric pressure.
+
+Currently, 250cm of 50um capillary defines flow rate from the open split into
+the source, with a bulkhead connector at the source cage.
+
 ## Sample preparation
 
+Reference: gilson
+
+Carbonate samples are weighed into 7 ml septa-sealed Vacutainer vials (Labco # 768W). Sealed vials are evacuated, then 1 ml 85% H3PO4 is added. The samples are allowed to react at 60C for 4-6 h. Sample pressure was adjusted to 1 ATM by adding helium or removing sample using a syringe.
+
+Process blank samples were prepared from powdered C-1 or TIRI-F. Standards were prepared on the Gilson prep system by evacuating vials and back filling with 1 ATM of a modern standard gas.
+
 ## Data acquisition
+
+A new target was used for each sample. Targets were allowed to "burn in" for 5-10 minutes with pure helium delivered to the source. Initial currents of > 10 uA dropped rapidly, eventually settling to 100-400 nA. After a stable base current was reached, the sample vial was installed on the double needle, starting sample flow to the source. Sample current rises to a stable level within 30 s, at which time, data acquisition is started. 10 blocks of 90 s for a total of 15 m.
 
 
 ## Data reduction
 
+Normalization and blank correction of measurements 
+
+A linear correction using measured values of standard gas and blank samples was used for correction of contaminant carbon and machine blank. We use equation 1 for correction
+
+LBC equation
+
+where x = y. 
+
+Constant contaminant discussed below.
+
+Data reduction via R package supplementary materials
 
 # Results
 
+All results in supplementary materials
 
 ## System performance
 
+Best currents for the source are around 10uA 12C- or roughly 1/10 of graphite
+currents. This is in line with what other hybrid sources produce. Typical "good" currents are between 5-10uA. The source
+typically produces best current at around 5uLs-1 CO2. Literature values give
+1.5uLs-1 as optimal, but we've never seen that, and pressures, capillaries and
+flows in at least one of these papers doesn't make sense.
+
+Source currents are variable by day and by target. "Good" currents for a given day vary between 5-10uA, and it's not yet clear what causes this variability. Alignment, source condition, and settings of the ionizer and cesium are all factors. Current also varies by target for a given set of gas and source conditions. Some targets are clearly "bad", producing currents much lower than other targets for a given set of conditions. Capillary clogging can be an issue, especially when sampling from vials with acid.
+
+Precision taken as the standard error of the mean of repeated runs of a sample is around 1%. Precision is typically a little worse than predicted by counting statistics. More work is needed to look at whether this reflects variability between samples, but initial test of paired replicates show similar standard deviation for samples that show good stable currents.
+
+Measured value of tank modern gas normalized to solid graphite standards ranges from agreeing with solid OX-I to 7% lower than expected for low current samples. Normalizing to tank CO2 is probably the best method to account for variability in hybrid source performance. 
+
+Precision of
+measurements of modern CO2 has been better than 1% (std error of mean of
+measurements of a target) for high current samples, with precision dropping off
+as current decreases below 6uA or so. Accuracy is reasonable within the large
+errors on gas measurements. Uncorrected measurements of dead CO2 range from 1%
+to 5% of modern depending on sample current.
+
+
+Measurement of a small number of replicates shows that between sample reproducibility is around 1%. Samples displaced by helium have slightly higher variability, but more tests are needed to better assess reproducibility.
+
+
+
 ### Currents
+
+Current vs flow modelling
+
+Figure: Current vs flow
 
 ### Blanks
 
+LBC vs constant contaminant/MBC. 
+
+Figure: current dependent blank
+
+Figure: justification for large blank
+
+Data for blanks
+
+Constant current blank is likely the best model, but we simplify to a large blank correction since blanks vary by run, currents are relatively similar between blanks, unknowns and standards, and the simpler model works well within the error of the method.
+
 ### Sample size
+
+Sample size tests.
+
+Figure: sample size vs current vs precision and accuracy
+
+Aimed to fill vial initially
+
+No current degradation down to X. Used Y as optimal mass and backfilled with helium. 
+
+First tests of displacing pure CO2 from a vial into the open split using helium
+are promising. Helium flowing at 100uLm-1 produces current from 7mL of CO2 for
+over 2 hours. Currents do decrease with time due to dilution, but by supplying
+higher than optimal CO2 flow to the source initially, stable currents can be
+maintained for some time. Fraction of CO2 in sample gas should follow this relationship:
+
+$$C(t) = e^{-\frac{r}{V}t}$$
+
+Where $C(t)$ is the fraction CO2, $r$ is the rate of helium displacement flow, and $V$ is the initial volume of the CO2-filled vial.
+
+Setting flow to the source to 10uL/min provides excess CO2 to source until the helium dilution ratio increases to > 1:1. Another approach may be to backfill vials with helium and run at a higher dilution ratio and flow to the source. This should produce a smaller change in He:CO2 over the course of a run. MICADAS runs at 95% He:CO2, which would mean producing < 0.5mL CO2 in a 7mL vial and backfilling with helium before displacing to the source. Some intermediate dilution may be appropriate. Alternatively, vials could be flushed with helium prior to acidification, rather than evacuating, leading to some concentration of CO2 in He at slightly > 1 ATM.
+
+Testing long runs of dilution of CO2 with displacing He and diluting He with CO2 show that the setup is still optimized for low flow to the source, even with larger diameter delivery capillaries. There appears to be a constriction in the split-source tubing that is keeping flows low. Current focus is on the large-sample 7mL method, so this will be diagnosed as time allows.
+
+
+Targets have shown "pulses" of higher current. Not sure why this is, but I suspect it's either buildup of graphite or other available carbon on the target, or target switching to the "high state" as sometimes happens with solid targets.
+
+First tests with carbonate in vials were hit-or-miss. Problems with capillary clogging and low currents led to poor results for several samples. A pair of NOSAMS2 samples produced good currents, results agreed well, but were about 3% higher than expected Fm. A second set of carbonates produced better currents (~5uA) and better results. Agreement of replicates varied from 3 to 16 permil. Near-modern NOSAMS2 was very close to the consensus value, while C-2 and C-1 were elevated by 2 and 3.6% respectively, indicating that a blank correction is needed.
+
+Two more recent carbonate tests produced stable currents and backgrounds. Since sample, target blank, and sample blank currents were relatively constant across samples, a large blank correction can be used to correct results. Samples from both runs showed a linear relationship between difference from expected Fm and Fm of the sample, but in one sample set the relationship was positive, and in the other, negative. Since the intercept with 0-offset was close to 0 Fm, I think this is a problem with normalization, rather than blank correction. Standards run at the end of the day are higher than those run at the beginning, which may give clues as to what's going on.
+
 
 ## Reference materials
 
+Measured
+
+figure: difference plot
+
+Assessment of data quality.
 
 
 ## Haiti Core
 
+### Measurements
+
+Outlier
+
+Figure: bland-altman of HGIS vs graphite.
+
+Summary of agreement
+
+### Age model
+
+Figure: age model comparison graphite HGIS
+
+Age model quality changes with lower precision.
 
 # Discussion
 
 Quantification of method
+
+Cost vs quality discussion
+
+ideas for further development of method
+
 
 # Conclusion
 

@@ -72,6 +72,7 @@ the source, with a bulkhead connector at the source cage.
 ## Sample preparation
 
 Reference: gilson
+\@ref(Roberts 2013) 
 
 Carbonate samples are weighed into 7 ml septa-sealed Vacutainer vials (Labco # 768W). Sealed vials are evacuated, then 1 ml 85% H3PO4 is added. The samples are allowed to react at 60C for 4-6 h. Sample pressure was adjusted to 1 ATM by adding helium or removing sample using a syringe.
 
@@ -185,11 +186,15 @@ figure: difference plot
 Assessment of data quality.
 
 
-## Haiti Core
+## Carbonate macrofossils for age-depth model
+
+A suite of carbonate macrofossils consisting of shell and coral fragements from a series of coastal marine cores REF were measured as graphite and as CO2 using the HGIS method. 
 
 ### Measurements
 
-Outlier
+Table of measurements (supplementary?)
+
+One HGIS sample vial was noted to be at atmospheric pressure when only XX mL CO2 should have been produced. The HGIS measurement for this sample was XX% higher than the measurement as graphite. We suspect that this sample was improperly sealed and eliminated it from the analysis as an outlier. SO2 story?
 
 Figure: bland-altman of HGIS vs graphite.
 
@@ -212,4 +217,10 @@ ideas for further development of method
 
 # Conclusion
 
-We developed a method for the analysis of carbonates using an open-split interface to a hybrid sputter gas ion source. Sample requirements, analysis time, precision, accuracy.
+We developed a method for the analysis of carbonates using an open-split interface to a hybrid sputter gas ion source. This system produces results that agree with graphite measurements to better than 1% from XXX mg of carbonate. Sample preparation takes about 10 min. of person time and 6h of automated processing and reaction time, and 20 min. of measurement time per sample. The simplicity of this approach... With lower cost and time per sample, the lower precision of the method may be balanced by the ability to measure more samples from a population, ie. triplicate measurement or more core depths. This may lead to more accurate results compared to a more precise graphite measurement where reproducibility is not as well constrained.
+
+Sample requirements, analysis time, precision, accuracy.
+
+# Acknowledgements
+
+This work is supported by NSF cooperative agreement. We are grateful to C. McIntyre, R. Hansman, G. Salazar, T. Ognibene, T. Broeck.

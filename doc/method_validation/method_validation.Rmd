@@ -14,6 +14,7 @@ library(readxl)
 library(here)
 library(errors)
 library(janitor)
+library(amsdata)
 ```
 
 
@@ -83,7 +84,7 @@ fm_std <- set_errors(1.03098, 0.0006)
 
 dfe <- df %>% 
   mutate(corr_14_12_err = set_errors(corr_14_12, max_err),
-         norm_ratio_err = norm_gas(corr_14_12_err, ratio_std, fm_std))
+         norm_ratio_err = norm_run(corr_14_12_err, ratio_std, fm_std))
 
 dfe %>% select(pos, sample_name, norm_ratio, sig_norm_ratio, norm_ratio_err)
   

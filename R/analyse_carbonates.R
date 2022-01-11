@@ -32,7 +32,7 @@ results <- pmap(list(files, dates, stds, blanks, outliers), reduce_hgis)
 raw_df <- map_dfr(results, 1)
 results_df <- map_dfr(results, 2)
 
-saveRDS(results, here("data_analysed/carb_all.Rdata"))
+saveRDS(results, here("data_analysed/carb_all.rds"))
 
 write_csv(raw_df, here("data_analysed/carb_all_raw.csv"))
 write_csv(results_df, here("data_analysed/carb_all_results.csv"))

@@ -116,9 +116,9 @@ cons_df <- results_df %>%
 Introducing sample through an open split using helium displacement results in a decreasing flow of CO2 to the source over time. Measured ratio can depend on sample current, so CO2 flow rate must be kept in a range where ion currents are relatively constant with changing flow. We evaluated C- current over a range of CO2 flows and found that a range of flows produce a "flat top" in current. Less CO2 will starve the source of available material to dissociate and ionize, and too much CO2 also suppresses ionization.
 
 ```{r cur-time-os, fig.height=7, dev='svg'}
-data <- get_hgis_data(here("data/USAMS040121R.txt"), as.Date("2021-04-02")) %>% 
-  filter(Pos == 5) %>% 
-  mutate(time = cum_acqtime/60,
+data <- process_hgis_results(here("data/USAMS040121R.txt"), as.Date("2021-04-02")) %>% 
+  filter(pos == 5) %>% 
+  mutate(time = cumsum(corr_lt) / 60,
          co2flow = concCO2(time, r = 244) * 30) #30ul/min
 
 # flow vs time subplot
@@ -284,7 +284,7 @@ ggplot(aes(fm_consensus, fm_diff, color = Name)) +
 
 ```{r}
 # Read raw and reduced data as produced by analyse_carbonates.R
-data <- readRDS(here("data_analysed/carb_all.Rdata"))
+data <- readRDS(here("data_analysed/carb_all.rds"))
 
 # Read sample data
 sample_data <- read_csv(here("data/carb_data.csv"))

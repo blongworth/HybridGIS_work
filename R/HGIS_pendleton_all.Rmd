@@ -40,7 +40,7 @@ Data reduction proceeds as follows:
 
 ```{r}
 # Read raw and reduced data as produced by analyse_carbonates.R
-data <- readRDS(here("data_analysed/carb_all.Rdata"))
+data <- readRDS(here("data_analysed/carb_all.rds"))
 
 # Read sample data
 sample_data <- read_csv(here("data/carb_data.csv"))

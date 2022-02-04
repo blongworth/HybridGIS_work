@@ -32,17 +32,16 @@ Most interfaces to gas-accepting sputter ion sources are a closed inlet design. 
 
 We designed a open inlet where a capillary samples gas for delivery to the ion source in a flowing stream that exhausts to the atmosphere. This defines the delivery pressure as 1 ATM and therefore flow is controlled by the capillary and is not adjustable. The flow of CO2 to the source may be varied by controlling the ratio of CO2 to helium in the sample stream. An open inlet has the advantage of simplicity; flow of CO2 to the source is preset and there are no separate sample transfer and dilution steps. This may translate to greater throughput by eliminating the time required for sample transfer, dilution, and setting of delivery pressure. A disadvantage of the open split is that the flow of CO2 to the source varies with sample size (CO2:He) and changes over the course of a measurement due to dilution of the sample by displacement helium. Our method compensates for this by limiting CO2 flow to a range that produces relatively constant C- ion current and stable ratios. Salazar and Szidat, Roberts gasbench, other open split methods.
 
+
 # Method
 
 ## Inlet description
 
-We developed a simple open-split interface that delivers a mixture of helium and CO2 to the source at atmospheric pressure.
-
-The open split interface supplies a helium-CO2 mixture to a split where a capillary delivers gas to the source and the rest is vented. A flow of helium is used to displace sample CO2 to the delivery capillary in the split. The core of the design is a dual needle and split housed in a VICI cross. Displacement helium flows in through one side of the cross, into the sample vial through 1/16" stainless steel tubing, which forms the outer flow path of the concentric dual needle. The mixture of sample CO2 and displacement helium flows up a needle inserted through the cross and stainless tubing which forms the inner flow path of the dual needle. The split is made from a VICI Luer adapter fitted to the outflow of the dual needle with the source delivery capillary inserted(Figure 1). The split has fairly low volume (< 1 mL). Testing is needed to determine minimum sample flow to avoid atmosphere entering the split. TODO: move flow ratio test to results.
+The open split interface supplies a helium-CO2 mixture to a split where a capillary delivers gas to the source and the rest is vented. A flow of helium is used to displace sample CO2 to the delivery capillary in the split. Our open-split interface is constructed of simple, off-the-shelf parts. The core of the design is a dual needle and split housed in a VICI cross. Displacement helium flows in through one side of the cross, into the sample vial through 1/16" stainless steel tubing, which forms the outer flow path of the concentric dual needle. The mixture of sample CO2 and displacement helium flows up a needle inserted through the cross and stainless tubing which forms the inner flow path of the dual needle. The split is made from a VICI Luer adapter fitted to the outflow of the dual needle with the source delivery capillary inserted (Figure 1). The split has fairly low volume (< 1 mL). Testing is needed to determine minimum sample flow to avoid atmosphere entering the split. TODO: move flow ratio test to results. The system is currently not automated, but may be easily mounted on the arm of a gasbench-style autosampler.
 
 The test setup for extracting CO2 from septa-sealed vials is as follows: a double needle is inserted into the vial through the septa. One side of the needle is connected to helium which is used to force CO2 from the vial through the other side of the needle. The outflow from the vial enters an open split where a capillary is used to admit sample to the ion source. The system is currently set up to run with samples starting at atmospheric pressure.
 
-250cm of 50um capillary defines flow rate from the open split into the source, with a bulkhead connector at the source cage.
+flow rate from the open split into the source is defined by 250cm of 50um glass capillary (confirm this, SGE, Trajan, Agilent?), split into two sections by a zero-volume bulkhead connector at the source cage. The section inside the cage is jacketed in teflon tubing to help protect against spark damage.
 
 ![Experimental setup. Helium and standard gas regulators at left, sample vial and open split at top right.](images/gas_control.jpg)
 
@@ -55,7 +54,7 @@ Reference: gilson
 
 Carbonate samples are weighed into 7 ml septa-sealed Vacutainer vials (Labco \# 768W). Sealed vials are evacuated, then 1 ml 85% H3PO4 is added. The samples are allowed to react at 60C for 4-6 h. Sample pressure is adjusted to 1 ATM by adding helium or removing sample using a syringe. Evacuation, acid addition, and heated reaction are performed by the automated gas handling system developed for the CFAMS GIS carbonate system \@ref(Roberts 2013).
 
-Process blank samples were prepared from powdered C-1 or TIRI-F. Standards were prepared using the automated gas handling system by evacuating vials prior to filling with 1 ATM of a modern standard gas.
+Process blank samples are prepared from powdered C-1 or TIRI-F. Standards are prepared using the automated gas handling system by evacuating vials prior to filling with 1 ATM of a modern standard gas.
 
 1.  Weigh 10-30mg Carbonate in septa-sealed 7mL vials produces 2-6mL CO<sub>2</sub> \@ \~1ATM
 2.  Evacuate and Acidify with 1 mL H3PO4 using automated Gilson prep bench
@@ -65,12 +64,13 @@ Process blank samples were prepared from powdered C-1 or TIRI-F. Standards were 
 
 ### Measurement
 
+Samples are measured on a modified 3MV Tandetron AMS system \@ref(Longworth 2015). The displacement helium is allowed to flow constantly during analysis, and the sample needle is inserted into a helium-filled vial between samples. Measurement of a sample proceeds as follows: a clean sputter target is inserted into the source and the target is sputtered until ten minutes (check this) have passed or blank target current falls below 100nA. The delivery needle is then inserted into the sample vial, which starts sample delivery to the split and source. Currents take ~30s to stabilize, at which point the data acquisition is started. Data is acquired in 10 blocks of 90 s each, for 15 minutes total acquisition time. Normalizing standards, blanks, and secondary standards are measured in the same way. Total time for a measurement, including target pre-cleaning is 20-25 minutes.
+
+Discuss delivery rates and sample sizes here or in results?
+
+Initial currents of \> 10 uA dropped rapidly, eventually settling to 100-400 nA.
 1.  Displace gas to open split with 100 uL/min He.
 2.  Introduce mixture to source \@ 30 uL/min
-3.  Acquire data: 90s x 10 measurements.
-
--   Normalizing standards: live tank gas in vials
--   Blanks: C-1 or TIRI-F in vials
 
 ### Data reduction
 
@@ -81,15 +81,9 @@ Normalization to standard, blank correction, and estimation of measurement error
 3.  Normalize to mean of Gas standard.
 4.  Blank correct: Blank subtraction using mean of carbonate blanks
 
-Errors from normalization and blank correction are propagated at each step. The per-sample error agrees well with variability of replicates, and measurement of known-value standards shows that the method has no significant bias.
+Errors from normalization and blank correction are propagated at each step. 
 
 Data reduction is done using an R package maintained on github (<https://github.com/blongworth/hgis>).
-
-## Data acquisition
-
-A new target was used for each sample. Targets were allowed to "burn in" for 5-10 minutes with pure helium delivered to the source. Initial currents of \> 10 uA dropped rapidly, eventually settling to 100-400 nA. After a stable base current was reached, the sample vial was installed on the double needle, starting sample flow to the source. Sample current rises to a stable level within 30 s, at which time, data acquisition is started. 10 blocks of 90 s for a total of 15 m.
-
-## Data reduction
 
 Normalization and blank correction of measurements
 
@@ -129,9 +123,43 @@ Figure: Current vs flow
 
 ### Blanks
 
+#### Current dependent blank
+
+
+$$I_{sample} + I_{blank} = I_{meas}$$
+$$Fm_mI_m=Fm_bI_b+Fm_sI_s$$
+
+$$Fm_s = Fm_m + \frac{I_b(Fm_m-Fm_b)}{I_m-I_b}$$
+
+0.1 μA blank current with 10 μA total = 1% blank
 LBC vs constant contaminant/MBC.
 
 Figure: current dependent blank
+
+#### Current independent blank
+
+We decided to use a simple linear correction. Samples kept within a narrow range of current and to a constant size.
+
+If **standards**, **blanks**, and **unknowns** have the **same** blank and current, current drops out.
+
+LBC eqn
+
+$$Fm_s = Fm_m - Fm_{blk}\frac{Fm_{std} - Fm_m}{Fm_{std}}$$
+
+```{r}
+# Fix to use current form of processed data
+carb_data <- map_dfr(list.files(here("data_analysed"), full.names = TRUE), read_csv) %>% 
+  filter(!is.na(rec_num),
+         Cur > 2) %>% 
+  mutate(fm_diff = mean - fm_consensus,
+         fm_sigma = sigma(mean, fm_consensus, merr),
+         fmbc_diff = fm_lbc - fm_consensus,
+         fmbc_sigma = sigma(fm_lbc, fm_consensus, merr))
+```
+
+
+
+Mean Fm of blanks: `r carb_data %>% filter(fm_consensus < 0.1 & Cur > 2) %>% pull(mean) %>% mean() %>% format(digits = 3)`
 
 Figure: justification for large blank
 
@@ -166,6 +194,7 @@ First tests with carbonate in vials were hit-or-miss. Problems with capillary cl
 Two more recent carbonate tests produced stable currents and backgrounds. Since sample, target blank, and sample blank currents were relatively constant across samples, a large blank correction can be used to correct results. Samples from both runs showed a linear relationship between difference from expected Fm and Fm of the sample, but in one sample set the relationship was positive, and in the other, negative. Since the intercept with 0-offset was close to 0 Fm, I think this is a problem with normalization, rather than blank correction. Standards run at the end of the day are higher than those run at the beginning, which may give clues as to what's going on.
 
 ## Reference materials
+The per-sample error agrees well with variability of replicates, and measurement of known-value standards shows that the method has no significant bias.
 
 Measured
 

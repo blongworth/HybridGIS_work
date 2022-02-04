@@ -26,19 +26,11 @@ We have developed a method for measurement of radiocarbon in carbonate minerals 
 
 Radiocarbon Accelerator Mass Spectrometry (AMS) is a sensitive method for determining the age, provenance, and composition of carbon-containing materials. A primary disadvantage of the method is its cost, which often limits the number of samples analyzed. This forces researchers to carefully choose samples to be run and limits repeat measurements for error determination. One driver of the cost of AMS analysis is the time and effort required for sample preparation, including reduction of the sample to graphite. Analysis of analyte CO2 directly via a gas-accepting AMS ion source eliminates the cost and effort of graphitization and returns results more rapidly. The NOSAMS USAMS is an AMS system based on a 3MV Tandetron accelerator. A NEC 134-sample gas-capable MCSNICS source. Analysis of samples as CO2 simplifies sample preparation, making analysis less expensive and faster.
 
-The gas-capable 134-sample MCSNICS is produced by NEC. Sample CO2 is introduced onto a titanium frit in an aluminum target using an arm with a probe that mates with the back of the target.
+The gas-capable 134-sample MCSNICS from National Electrostatics Corporation (NEC) works on the same principal as hybrid sources developed by ETH (REF) and HVEE (REF). Sample CO2 is introduced onto a titanium frit in an aluminum target using stainless tubing mounted to an arm with a probe that mates with the back of the target. A CO~2~ - helium mixture is exposed to a beam of charged cesium atoms, which causes dissociation of CO~2~ and ionization of molecular and atomic species. Negative ions are extracted from the target and a magnetic filter picks species with masses corresponding to carbon.
 
-NEC hybrid gas ion source
+Most interfaces to gas-accepting sputter ion sources are a closed inlet design. A mixture of sample and helium is introduced to the source through a capillary, and flow is controlled by the pressure in the sample volume and the length and diameter of the capillary. Flow may be adjusted by changing the pressure by varying the sample volume.
 
-NEC inlets
-
-MICADAS source and inlets
-
-Comparison of open split to closed method
-
-Most interfaces to gas-accepting sputter ion sources are a closed inlet design. A mixture of sample and helium is introduced to the source through a capillary, and flow is controlled by the pressure in the sample volume and the length and diameter of the capillary. Flow may be adjusted by changing the pressure by varying the sample volume. We designed a simpler open inlet where a capillary samples gas in a flowing stream that exhausts to the atmosphere. This defines the delivery pressure as 1 ATM and therefore flow is controlled by the capillary and is not adjustable. The flow of CO2 to the source may be varied by controlling the ratio of CO2 to helium in the sample stream. An open inlet has the advantage of simplicity; flow of CO2 to the source is preset and there are no separate sample transfer and dilution steps. A disadvantage of the open split is that the flow of CO2 to the source varies with sample size (CO2:He) and changes over the course of a measurement due to dilution of the sample by displacement helium. Salazar and Szidat, Roberts gasbench, other open split methods.
-
-Pros/cons
+We designed a open inlet where a capillary samples gas for delivery to the ion source in a flowing stream that exhausts to the atmosphere. This defines the delivery pressure as 1 ATM and therefore flow is controlled by the capillary and is not adjustable. The flow of CO2 to the source may be varied by controlling the ratio of CO2 to helium in the sample stream. An open inlet has the advantage of simplicity; flow of CO2 to the source is preset and there are no separate sample transfer and dilution steps. This may translate to greater throughput by eliminating the time required for sample transfer, dilution, and setting of delivery pressure. A disadvantage of the open split is that the flow of CO2 to the source varies with sample size (CO2:He) and changes over the course of a measurement due to dilution of the sample by displacement helium. Our method compensates for this by limiting CO2 flow to a range that produces relatively constant C- ion current and stable ratios. Salazar and Szidat, Roberts gasbench, other open split methods.
 
 # Method
 
@@ -46,25 +38,24 @@ Pros/cons
 
 We developed a simple open-split interface that delivers a mixture of helium and CO2 to the source at atmospheric pressure.
 
-The open split interface supplies a helium-CO2 mixture to a split where a capillary delivers gas to the source and the rest is vented. The current split is a VICI Luer adapter on the outflow side of the dual needle (Figure 1). The split has fairly low volume. Testing is needed to determine minimum sample flow to avoid atmosphere entering the split.
+The open split interface supplies a helium-CO2 mixture to a split where a capillary delivers gas to the source and the rest is vented. A flow of helium is used to displace sample CO2 to the delivery capillary in the split. The core of the design is a dual needle and split housed in a VICI cross. Displacement helium flows in through one side of the cross, into the sample vial through 1/16" stainless steel tubing, which forms the outer flow path of the concentric dual needle. The mixture of sample CO2 and displacement helium flows up a needle inserted through the cross and stainless tubing which forms the inner flow path of the dual needle. The split is made from a VICI Luer adapter fitted to the outflow of the dual needle with the source delivery capillary inserted(Figure 1). The split has fairly low volume (< 1 mL). Testing is needed to determine minimum sample flow to avoid atmosphere entering the split. TODO: move flow ratio test to results.
 
 The test setup for extracting CO2 from septa-sealed vials is as follows: a double needle is inserted into the vial through the septa. One side of the needle is connected to helium which is used to force CO2 from the vial through the other side of the needle. The outflow from the vial enters an open split where a capillary is used to admit sample to the ion source. The system is currently set up to run with samples starting at atmospheric pressure.
 
-Currently, 250cm of 50um capillary defines flow rate from the open split into the source, with a bulkhead connector at the source cage.
+250cm of 50um capillary defines flow rate from the open split into the source, with a bulkhead connector at the source cage.
 
 ![Experimental setup. Helium and standard gas regulators at left, sample vial and open split at top right.](images/gas_control.jpg)
 
-Our method uses an open split and glass capillary to control gas flow to the ion source. Compared to closed inlet systems which regulate introduction of a CO2/Helium mixture to the ion source by regulating sample pressure, our method is simpler and faster, but does not maintain a constant flow of CO2 to the source. We compensate for this by limiting CO2 flow to a range that produces relatively constant C- ion current and stable ratios.
 
 ![Inlet layout. Helium displacement gas is delivered to vial through a double needle, mixed sample and helium flows to an open split, and a glass capillary delivers gas to the ion source.](images/HGIS_open_split_drawing.svg)
 
 ## Sample preparation
 
-Reference: gilson \@ref(Roberts 2013)
+Reference: gilson 
 
-Carbonate samples are weighed into 7 ml septa-sealed Vacutainer vials (Labco \# 768W). Sealed vials are evacuated, then 1 ml 85% H3PO4 is added. The samples are allowed to react at 60C for 4-6 h. Sample pressure was adjusted to 1 ATM by adding helium or removing sample using a syringe.
+Carbonate samples are weighed into 7 ml septa-sealed Vacutainer vials (Labco \# 768W). Sealed vials are evacuated, then 1 ml 85% H3PO4 is added. The samples are allowed to react at 60C for 4-6 h. Sample pressure is adjusted to 1 ATM by adding helium or removing sample using a syringe. Evacuation, acid addition, and heated reaction are performed by the automated gas handling system developed for the CFAMS GIS carbonate system \@ref(Roberts 2013).
 
-Process blank samples were prepared from powdered C-1 or TIRI-F. Standards were prepared on the Gilson prep system by evacuating vials and back filling with 1 ATM of a modern standard gas.
+Process blank samples were prepared from powdered C-1 or TIRI-F. Standards were prepared using the automated gas handling system by evacuating vials prior to filling with 1 ATM of a modern standard gas.
 
 1.  Weigh 10-30mg Carbonate in septa-sealed 7mL vials produces 2-6mL CO<sub>2</sub> \@ \~1ATM
 2.  Evacuate and Acidify with 1 mL H3PO4 using automated Gilson prep bench

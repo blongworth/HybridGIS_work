@@ -1,0 +1,44 @@
+# Figure 5 bland altman plot of carbonate consensus standards run as
+# hgis compared to accepted value
+
+library(tidyverse)
+library(here)
+library(hgis)
+library(scales)
+
+# Read data. Don't use first carbonate test, smaller samples, or gas standards.
+results_df <- read_csv(here("data_analysed/carb_all_results.csv"))
+
+cons_df <- results_df %>% 
+  filter(!(wheel %in% c("USAMS020521", "USAMS061121", "USAMS061821"))) %>% 
+  mutate(he12C = he12C * 1E6) %>% 
+  compare_consensus() %>% 
+  filter(!str_detect(Name, "Gas"))
+
+
+mean_diff <- mean(cons_df$fm_diff)
+sd_diff <- sd(cons_df$fm_diff)
+
+cons_df %>% 
+ggplot(aes(fm_consensus, fm_diff, color = Name)) + 
+  geom_hline(yintercept = 0) +
+  geom_hline(yintercept = mean_diff, color = "blue") +
+  geom_hline(yintercept = mean_diff + sd_diff, color = "lightblue") +
+  geom_hline(yintercept = mean_diff - sd_diff, color = "lightblue") +
+  geom_smooth(method = "lm",  se = FALSE) + 
+  geom_pointrange(aes(ymin = fm_diff - sig_fm_corr, 
+                      ymax = fm_diff + sig_fm_corr), 
+                  position = position_dodge2(width = 0.1), 
+                  ) + #size = 0.5) + 
+   scale_color_brewer(palette = "Dark2") +
+  # scale_color_manual(values = c("#00a9e0", "#0069b1", "#00b7bd", "#b7bf10", "#00b7bd")) +
+  scale_x_continuous(labels = label_percent(suffix = "")) +
+  scale_y_continuous(breaks = breaks_extended(7),
+                     labels = label_percent(suffix = "",
+                                            accuracy = 1)) +
+  labs(title = "Agreement of HGIS with graphite measurements",
+       subtitle = "Blank corrected HGIS measurements of consensus carbonate standards",
+       x = "pMC expected (points jittered for clarity)", 
+       y = "pMC difference (HGIS - expected)")
+
+ggsave("fig5_consensus_stds.svg")

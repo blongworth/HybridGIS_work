@@ -1,0 +1,92 @@
+# Figure 6 bland altman plot of haiti core carbonates
+# hgis compared to graphite value
+
+library(tidyverse)
+library(here)
+library(hgis)
+library(amstools)
+library(scales)
+
+
+
+# Read raw and reduced data as produced by analyse_carbonates.R
+data <- readRDS(here("data_analysed/carb_all.rds"))
+
+# Read sample data
+sample_data <- read_csv(here("data/carb_data.csv"))
+
+# Select relevant reduced data, join with sample data
+results <- map_dfr(data, 2) %>% 
+  filter(wheel %in% c("USAMS052621", "USAMS062921"),
+         pos > 4) %>% 
+  left_join(sample_data, by = c("wheel", "pos")) %>% 
+  mutate(rec_num = ifelse(is.na(rec_num.y), rec_num.x, rec_num.y)) %>% 
+  select(-rec_num.x, -rec_num.y)
+
+names <- results %>% 
+  ungroup() %>% 
+  filter(wheel == "USAMS062921") %>% 
+  select(rec_num, sample_name)
+
+graphite_results <- getRecOS(results$rec_num) %>% 
+  filter(!is.na(reported)) %>% 
+  select(rec_num, fm_corr = f_modern, sig_fm_corr = f_ext_error) %>% 
+  mutate(method = "graphite") %>% 
+  left_join(names, by = "rec_num")
+
+combined_results <- results %>% 
+  filter(str_starts(sample_name, "HATC") | str_starts(sample_name, "\\d")) %>% 
+  mutate(method = "hgis") %>% 
+  select(wheel, sample_name, method, rec_num, fm_corr, sig_fm_corr) %>% 
+  bind_rows(graphite_results) %>% 
+  group_by(rec_num) %>% 
+  mutate(fm_mean = mean(fm_corr),
+         fm_diff_mean = fm_corr - fm_mean) %>% 
+  left_join(rename(names, Name = sample_name), by = "rec_num") %>% 
+  left_join(select(graphite_results, rec_num, fm_corr_gr = fm_corr)) %>% 
+  mutate(fm_diff = fm_corr - fm_corr_gr) %>% 
+  ungroup()
+
+depth <- read_csv(here("data/haiti_depth.csv"))
+
+combined_results <- left_join(combined_results, depth, by = "rec_num") %>% 
+  mutate(rc_age = -8033 * log(fm_corr),
+         sig_rc_age = rc_age - -8033 * log(fm_corr + sig_fm_corr))
+
+# No outliers
+cr_no <- combined_results %>% 
+  filter(abs(fm_diff_mean) < 0.02)
+
+mean_diff <- cr_no %>% 
+  filter(method == "hgis") %>% 
+  summarise(across(fm_diff, list(mean = mean, sd = sd)))
+
+mean_errs <- cr_no %>% 
+  group_by(method) %>% 
+  summarise(mean_sig = mean(sig_fm_corr)) %>% 
+  pivot_wider(names_from = method,
+              values_from = mean_sig)
+
+ggplot(cr_no) +
+  geom_hline(yintercept = 0) +
+  #geom_hline(yintercept = mean_diff$fm_diff_mean, color = "blue") +
+  #geom_hline(yintercept = mean_diff$fm_diff_mean + mean_diff$fm_diff_sd, color = "lightblue") +
+  #geom_hline(yintercept = mean_diff$fm_diff_mean - mean_diff$fm_diff_sd, color = "lightblue") +
+  geom_pointrange(aes(depth, fm_diff, color = method, shape = method,
+                      ymin = fm_diff - sig_fm_corr, 
+                      ymax = fm_diff + sig_fm_corr),
+                  position = "jitter") +
+  scale_color_manual(values = c("#00b7bd", "#b7bf10")) +
+  scale_y_continuous(breaks = breaks_extended(7),
+                     labels = label_percent(suffix = "",
+                                            accuracy = 1)) +
+  labs(title = "HGIS measurements agree with graphite",
+       subtitle = "Sediment core macrofossils measured via HGIS and graphite",
+       x = "Core depth (cm)",
+       y = "HGIS - graphite (pMC)") +
+  theme(legend.position = c(0.80, 0.85),
+        legend.direction = "horizontal",
+        legend.background = element_rect(fill = "white", color = "black")) 
+
+ggsave(here("doc/AMS-15/AMS-15_paper/figures/fig6_core_carbonates.svg"))
+

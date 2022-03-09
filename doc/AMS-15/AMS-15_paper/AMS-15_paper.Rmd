@@ -26,18 +26,16 @@ We have developed a method for measurement of radiocarbon in carbonate minerals 
 
 Radiocarbon Accelerator Mass Spectrometry (AMS) is a sensitive method for determining the age, provenance, and composition of carbon-containing materials. A primary disadvantage of the method is its cost, which often limits the number of samples analyzed. This forces researchers to carefully choose samples to be run and limits repeat measurements for error determination. One driver of the cost of AMS analysis is the time and effort required for sample preparation, including reduction of the sample to graphite. Analysis of analyte CO2 directly via a gas-accepting AMS ion source eliminates the cost and effort of graphitization and returns results more rapidly. The NOSAMS USAMS is an AMS system based on a 3MV Tandetron accelerator. A NEC 134-sample gas-capable MCSNICS source. Analysis of samples as CO2 simplifies sample preparation, making analysis less expensive and faster.
 
+Most interfaces to gas-accepting sputter ion sources are a closed inlet design. A mixture of sample and helium is introduced to the source through a capillary, and flow is controlled by the pressure in the sample volume and the length and diameter of the capillary. Flow may be adjusted by changing the pressure by varying the sample volume. We designed a open inlet where a capillary samples gas for delivery to the ion source in a flowing stream that exhausts to the atmosphere. This defines the delivery pressure as 1 ATM and therefore flow is controlled by the capillary and is not adjustable. The flow of CO2 to the source may be varied by controlling the ratio of CO2 to helium in the sample stream. An open inlet has the advantage of simplicity; flow of CO2 to the source is preset and there are no separate sample transfer and dilution steps. This may translate to greater throughput by eliminating the time required for sample transfer, dilution, and setting of delivery pressure. A disadvantage of the open split is that the flow of CO2 to the source varies with sample size (CO2:He) and changes over the course of a measurement due to dilution of the sample by displacement helium. Our method compensates for this by limiting CO2 flow to a range that produces relatively constant C- ion current and stable ratios. Salazar and Szidat, Roberts gasbench, other open split methods.
+
 The gas-capable 134-sample MCSNICS from National Electrostatics Corporation (NEC) works on the same principal as hybrid sources developed by ETH (REF) and HVEE (REF). Sample CO2 is introduced onto a titanium frit in an aluminum target using stainless tubing mounted to an arm with a probe that mates with the back of the target. A CO~2~ - helium mixture is exposed to a beam of charged cesium atoms, which causes dissociation of CO~2~ and ionization of molecular and atomic species. Negative ions are extracted from the target and a magnetic filter picks species with masses corresponding to carbon.
-
-Most interfaces to gas-accepting sputter ion sources are a closed inlet design. A mixture of sample and helium is introduced to the source through a capillary, and flow is controlled by the pressure in the sample volume and the length and diameter of the capillary. Flow may be adjusted by changing the pressure by varying the sample volume.
-
-We designed a open inlet where a capillary samples gas for delivery to the ion source in a flowing stream that exhausts to the atmosphere. This defines the delivery pressure as 1 ATM and therefore flow is controlled by the capillary and is not adjustable. The flow of CO2 to the source may be varied by controlling the ratio of CO2 to helium in the sample stream. An open inlet has the advantage of simplicity; flow of CO2 to the source is preset and there are no separate sample transfer and dilution steps. This may translate to greater throughput by eliminating the time required for sample transfer, dilution, and setting of delivery pressure. A disadvantage of the open split is that the flow of CO2 to the source varies with sample size (CO2:He) and changes over the course of a measurement due to dilution of the sample by displacement helium. Our method compensates for this by limiting CO2 flow to a range that produces relatively constant C- ion current and stable ratios. Salazar and Szidat, Roberts gasbench, other open split methods.
 
 
 # Method
 
 ## Inlet description
 
-The open split interface supplies a helium-CO2 mixture to a split where a capillary delivers gas to the source and the rest is vented. A flow of helium is used to displace sample CO2 to the delivery capillary in the split. Our open-split interface is constructed of simple, off-the-shelf parts. The core of the design is a dual needle and split housed in a VICI cross. Displacement helium flows in through one side of the cross, into the sample vial through 1/16" stainless steel tubing, which forms the outer flow path of the concentric dual needle. The mixture of sample CO2 and displacement helium flows up a needle inserted through the cross and stainless tubing which forms the inner flow path of the dual needle. The split is made from a VICI Luer adapter fitted to the outflow of the dual needle with the source delivery capillary inserted (Figure 1). The split has fairly low volume (< 1 mL). Testing is needed to determine minimum sample flow to avoid atmosphere entering the split. TODO: move flow ratio test to results. The system is currently not automated, but may be easily mounted on the arm of a gasbench-style autosampler.
+The open split interface supplies a helium-CO2 mixture to a split where a capillary delivers gas to the source and the rest is vented. A flow of helium is used to displace sample CO2 to the delivery capillary in the split. Our open-split interface is constructed of simple, off-the-shelf parts. The core of the design is a dual needle and split housed in a VICI cross. Displacement helium flows in through one side of the cross, into the sample vial through 1/16" stainless steel tubing, which forms the outer flow path of the concentric dual needle. The mixture of sample CO2 and displacement helium flows up a needle inserted through the cross and stainless tubing which forms the inner flow path of the dual needle. The split is made from a VICI Luer adapter fitted to the outflow of the dual needle with the source delivery capillary inserted (Figure 1). The split has fairly low volume (< 1 mL). Testing is needed to determine minimum sample flow to avoid atmosphere entering the split. TODO: move flow ratio test to results. The system is currently operated manually, but may be easily mounted on the arm of a gasbench-style autosampler to enable automated operation.
 
 The test setup for extracting CO2 from septa-sealed vials is as follows: a double needle is inserted into the vial through the septa. One side of the needle is connected to helium which is used to force CO2 from the vial through the other side of the needle. The outflow from the vial enters an open split where a capillary is used to admit sample to the ion source. The system is currently set up to run with samples starting at atmospheric pressure.
 
@@ -119,7 +117,7 @@ Measurement of a small number of replicates shows that between sample reproducib
 
 Current vs flow modelling
 
-Figure: Current vs flow
+Figure1: Current vs flow
 
 ### Blanks
 
@@ -134,7 +132,7 @@ $$Fm_s = Fm_m + \frac{I_b(Fm_m-Fm_b)}{I_m-I_b}$$
 0.1 μA blank current with 10 μA total = 1% blank
 LBC vs constant contaminant/MBC.
 
-Figure: current dependent blank
+Figure2: current dependent blank
 
 #### Current independent blank
 
@@ -161,7 +159,7 @@ carb_data <- map_dfr(list.files(here("data_analysed"), full.names = TRUE), read_
 
 Mean Fm of blanks: `r carb_data %>% filter(fm_consensus < 0.1 & Cur > 2) %>% pull(mean) %>% mean() %>% format(digits = 3)`
 
-Figure: justification for large blank
+Figure3: justification for large blank
 
 Data for blanks
 
@@ -171,7 +169,7 @@ Constant current blank is likely the best model, but we simplify to a large blan
 
 Sample size tests.
 
-Figure: sample size vs current vs precision and accuracy
+Figure4: sample size vs current vs precision and accuracy
 
 Aimed to fill vial initially
 
@@ -191,14 +189,16 @@ Targets have shown "pulses" of higher current. Not sure why this is, but I suspe
 
 First tests with carbonate in vials were hit-or-miss. Problems with capillary clogging and low currents led to poor results for several samples. A pair of NOSAMS2 samples produced good currents, results agreed well, but were about 3% higher than expected Fm. A second set of carbonates produced better currents (\~5uA) and better results. Agreement of replicates varied from 3 to 16 permil. Near-modern NOSAMS2 was very close to the consensus value, while C-2 and C-1 were elevated by 2 and 3.6% respectively, indicating that a blank correction is needed.
 
-Two more recent carbonate tests produced stable currents and backgrounds. Since sample, target blank, and sample blank currents were relatively constant across samples, a large blank correction can be used to correct results. Samples from both runs showed a linear relationship between difference from expected Fm and Fm of the sample, but in one sample set the relationship was positive, and in the other, negative. Since the intercept with 0-offset was close to 0 Fm, I think this is a problem with normalization, rather than blank correction. Standards run at the end of the day are higher than those run at the beginning, which may give clues as to what's going on.
+Two more recent carbonate tests produced stable currents and backgrounds. Sample, target blank, and sample blank currents were relatively constant across samples, so a large blank correction can be used to correct results. Samples from both runs showed a linear relationship between difference from expected Fm and Fm of the sample, but in one sample set the relationship was positive, and in the other, negative. Since the intercept with 0-offset was close to 0 Fm, I think this is a problem with normalization, rather than blank correction. Standards run at the end of the day are higher than those run at the beginning, which may give clues as to what's going on.
 
 ## Reference materials
 The per-sample error agrees well with variability of replicates, and measurement of known-value standards shows that the method has no significant bias.
 
 Measured
 
-figure: difference plot
+Table: summary of reference materials
+
+figure5: difference plot
 
 Assessment of data quality.
 
@@ -212,13 +212,13 @@ Table of measurements (supplementary?)
 
 One HGIS sample vial was noted to be at atmospheric pressure when only XX mL CO2 should have been produced. The HGIS measurement for this sample was XX% higher than the measurement as graphite. We suspect that this sample was improperly sealed and eliminated it from the analysis as an outlier. SO2 story?
 
-Figure: bland-altman of HGIS vs graphite.
+Figure6: bland-altman of HGIS vs graphite.
 
 Summary of agreement
 
 ### Age model
 
-Figure: age model comparison graphite HGIS
+Figure7: age model comparison graphite HGIS
 
 Age model quality changes with lower precision.
 
@@ -239,3 +239,15 @@ Sample requirements, analysis time, precision, accuracy.
 # Acknowledgements
 
 This work is supported by NSF cooperative agreement. We are grateful to C. McIntyre, R. Hansman, G. Salazar, T. Ognibene, T. Broeck.
+
+# Figure captions
+
+Fig. 1. Performance of the NOSAMS MCSNICS hybrid gas ion source. 
+
+Fig. 2. Assessment of blanks. (a) Current dependent blank. (b) Fraction modern of large, radiocarbon dead samples compared to sample current. Blank rises with decreasing current, as expected, but may be treated as a single blank with a simple correction for full-size samples producing greater than XX uA C- current.
+
+Fig. 3. Relationship of sample size to C- ion current. There is no strong relationship between size and current for samples larger than XX ug C.
+
+Fig 4. Agreement of standards with graphite consensus values. 
+
+Fig 5. Comparison of Haiti core samples measured as graphite.

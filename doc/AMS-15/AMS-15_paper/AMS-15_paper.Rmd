@@ -35,13 +35,11 @@ The gas-capable 134-sample MCSNICS from National Electrostatics Corporation (NEC
 
 ## Inlet description
 
-The open split interface supplies a helium-CO2 mixture to a split where a capillary delivers gas to the source and the rest is vented. A flow of helium is used to displace sample CO2 to the delivery capillary in the split. Our open-split interface is constructed of simple, off-the-shelf parts. The core of the design is a dual needle and split housed in a VICI cross. Displacement helium flows in through one side of the cross, into the sample vial through 1/16" stainless steel tubing, which forms the outer flow path of the concentric dual needle. The mixture of sample CO2 and displacement helium flows up a needle inserted through the cross and stainless tubing which forms the inner flow path of the dual needle. The split is made from a VICI Luer adapter fitted to the outflow of the dual needle with the source delivery capillary inserted (Figure 1). The split has fairly low volume (< 1 mL). Testing is needed to determine minimum sample flow to avoid atmosphere entering the split. TODO: move flow ratio test to results. The system is currently operated manually, but may be easily mounted on the arm of a gasbench-style autosampler to enable automated operation.
+The open split interface supplies a helium-CO2 mixture to a split where a capillary delivers gas to the source and the rest is vented. A flow of helium is used to displace sample CO2 to the delivery capillary in the split. Our open-split interface is constructed of simple, off-the-shelf parts. The core of the design is a dual needle and split housed in a VICI cross. Displacement helium flows in through one side of the cross, into the sample vial through 1/16" stainless steel tubing, which forms the outer flow path of the concentric dual needle. The mixture of sample CO2 and displacement helium flows up a needle inserted through the cross and stainless tubing which forms the inner flow path of the dual needle. The split is made from a VICI Luer adapter fitted to the outflow of the dual needle with the source delivery capillary inserted (Figure 1). The split has fairly low volume (< 1 mL).  The system is currently operated manually, but may be easily mounted on the arm of a gasbench-style autosampler to enable automated operation.
 
 The test setup for extracting CO2 from septa-sealed vials is as follows: a double needle is inserted into the vial through the septa. One side of the needle is connected to helium which is used to force CO2 from the vial through the other side of the needle. The outflow from the vial enters an open split where a capillary is used to admit sample to the ion source. The system is currently set up to run with samples starting at atmospheric pressure.
 
-flow rate from the open split into the source is defined by 250cm of 50um glass capillary (confirm this, SGE, Trajan, Agilent?), split into two sections by a zero-volume bulkhead connector at the source cage. The section inside the cage is jacketed in teflon tubing to help protect against spark damage.
-
-![Experimental setup. Helium and standard gas regulators at left, sample vial and open split at top right.](images/gas_control.jpg)
+The flow rate from the open split into the source is defined by 250cm of 50um glass capillary (confirm this, SGE, Trajan, Agilent?), split into two sections by a zero-volume bulkhead connector at the source cage. The section inside the cage is jacketed in teflon tubing to help protect against spark damage.
 
 
 ![Inlet layout. Helium displacement gas is delivered to vial through a double needle, mixed sample and helium flows to an open split, and a glass capillary delivers gas to the ion source.](images/HGIS_open_split_drawing.svg)
@@ -50,54 +48,33 @@ flow rate from the open split into the source is defined by 250cm of 50um glass 
 
 Reference: gilson 
 
-Carbonate samples are weighed into 7 ml septa-sealed Vacutainer vials (Labco \# 768W). Sealed vials are evacuated, then 1 ml 85% H3PO4 is added. The samples are allowed to react at 60C for 4-6 h. Sample pressure is adjusted to 1 ATM by adding helium or removing sample using a syringe. Evacuation, acid addition, and heated reaction are performed by the automated gas handling system developed for the CFAMS GIS carbonate system \@ref(Roberts 2013).
+Carbonate samples are weighed into 7 ml septa-sealed Vacutainer vials (Labco \# 768W). Sealed vials are evacuated, then 1 ml 85% Phosphoric acid is added. The samples are allowed to react at 60C for 4-6 h. Sample pressure is adjusted to 1 ATM by allowing the sample to equilibrate with a helium filled syringe connected through the vial septum. Evacuation, acid addition, and heated reaction are performed by the automated gas handling system developed for the CFAMS GIS carbonate system \@ref(Roberts 2013).
 
-Process blank samples are prepared from powdered C-1 or TIRI-F. Standards are prepared using the automated gas handling system by evacuating vials prior to filling with 1 ATM of a modern standard gas.
+Standards are prepared by evacuating vials and then filling with 1 ATM of a modern standard gas using the automated gas handling system. Process blank samples are prepared from powdered C-1 or TIRI-F, acidified in vials using the method above. 
 
-1.  Weigh 10-30mg Carbonate in septa-sealed 7mL vials produces 2-6mL CO<sub>2</sub> \@ \~1ATM
-2.  Evacuate and Acidify with 1 mL H3PO4 using automated Gilson prep bench
-3.  After reaction is complete, add helium to bring vials to ambient pressure.
-
-![A modified liquid handling system is used to evacuate and add acid to sample vials.](images/gilson.png)
 
 ### Measurement
 
 Samples are measured on a modified 3MV Tandetron AMS system \@ref(Longworth 2015). The displacement helium is allowed to flow constantly during analysis, and the sample needle is inserted into a helium-filled vial between samples. Measurement of a sample proceeds as follows: a clean sputter target is inserted into the source and the target is sputtered until ten minutes (check this) have passed or blank target current falls below 100nA. The delivery needle is then inserted into the sample vial, which starts sample delivery to the split and source. Currents take ~30s to stabilize, at which point the data acquisition is started. Data is acquired in 10 blocks of 90 s each, for 15 minutes total acquisition time. Normalizing standards, blanks, and secondary standards are measured in the same way. Total time for a measurement, including target pre-cleaning is 20-25 minutes.
 
-Discuss delivery rates and sample sizes here or in results?
-
-Initial currents of \> 10 uA dropped rapidly, eventually settling to 100-400 nA.
-1.  Displace gas to open split with 100 uL/min He.
-2.  Introduce mixture to source \@ 30 uL/min
 
 ### Data reduction
 
-Normalization to standard, blank correction, and estimation of measurement error are done with the following steps:
+After aquisition, data reduction, normalization and blank correction result in a final fraction modern with error. First, each 90s block is corrected for fractionation using the AMS <sup>13</sup>C measurement. The raw 14/12C ratio divided by the 13/12C ratio squared gives the corrected 14/12C ratio. Outlier runs, defined as those outside of 1.5 times the interquartile range, are dropped at this point. Remaining runs of a sample are averaged and per-sample error is taken as the greater of counting error or the standard error of the measurements. Ratios are then normalized using the mean of gas standards measured during the run. The measurement error of the standards is taken as the greater of the standard error of all standards or the errors of the standards added in quadrature. 
 
-1.  Correct for fractionation using online AMS <sup>13</sup>C measurement.
-2.  Determine per-sample mean and error (repeatabilty and counting error).
-3.  Normalize to mean of Gas standard.
-4.  Blank correct: Blank subtraction using mean of carbonate blanks
+Measurements are corrected for process and measurement blank using a linear correction that assumes that the corrected fraction modern of blank samples should be zero, samples with the fraction modern of the standard need no correction, and applies a proportional correction to samples of intermediate fraction modern. (REF) The correction uses measured values of standard gas and blank samples for correction of contaminant carbon and machine blank. We use equation 1 for this correction.
 
-Errors from normalization and blank correction are propagated at each step. 
+$$ R_s = R_m - \frac{R_b(R_{ox}-R_m)}{R_{ox}} $$
 
-Data reduction is done using an R package maintained on github (<https://github.com/blongworth/hgis>).
+Where $R_s$ is the ratio of the unknown sample, $R_m$ is the measured ratio, $R_b$ is the ratio of the blank, and $R_{ox}$ is the ratio of the normalizing standard. The errors in the blanks and standards are propagated with errors of the samples to produce the final error estimate for the sample. This correction does not account for the effect of a blank with constant mass or current on samples of varying mass or current. For all measurements used to assess the performance of the method and for the Haiti core comparison, sample, standard, and blank masses were kept constant. Sample current did vary, but we believe the linear correction described above produces the most accurate results within this range. We discuss this constant contaminant (REF) blank in the results below. Data reduction is done using a package written in R (REF) which is published on github (<https://github.com/blongworth/hgis>).
 
-Normalization and blank correction of measurements
-
-A linear correction using measured values of standard gas and blank samples was used for correction of contaminant carbon and machine blank. We use equation 1 for correction
-
-LBC equation
-
-where x = y.
-
-Constant contaminant discussed below.
-
-Data reduction via R package supplementary materials
 
 # Results
 
 All results in supplementary materials
+
+Determination of ideal flows.
+Testing is needed to determine minimum sample flow to avoid atmosphere entering the split. TODO: move flow ratio test to results.
 
 ## System performance
 
@@ -113,13 +90,17 @@ Precision of measurements of modern CO2 has been better than 1% (std error of me
 
 Measurement of a small number of replicates shows that between sample reproducibility is around 1%. Samples displaced by helium have slightly higher variability, but more tests are needed to better assess reproducibility.
 
+Discuss delivery rates and sample sizes here or in results?
+
+Initial currents of \> 10 uA dropped rapidly, eventually settling to 100-400 nA.
+
 ### Currents
 
 Current vs flow modelling
 
 Figure1: Current vs flow
 
-### Blanks
+### Contaminant carbon
 
 #### Current dependent blank
 

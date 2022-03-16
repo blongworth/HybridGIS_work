@@ -75,6 +75,8 @@ All results in supplementary materials
 
 Determination of ideal flows.
 Testing is needed to determine minimum sample flow to avoid atmosphere entering the split. TODO: move flow ratio test to results.
+## Method development
+
 
 ## System performance
 
@@ -104,6 +106,10 @@ Figure1: Current vs flow
 
 #### Current dependent blank
 
+To assess blank contribution and ratio dependence on sample current, vials of live and dead standard gas were measured as the displacement helium flow dilluted the samples, producing diminishing current over time. We used these data to develop a current-balance model following methods used to assess mass-dependent or constant contamination blanks in graphite targets (REFS). The constant contamination blank was also assessed directly by measuring pure helium in vials using the same method. Results from both tests are shown in figure 2. The inverse of the sample current is used to linearize the data, allowing assessment with a simple linear model. Fits from modern and dead dilution tests should trend towards the fraction modern of the blank, crossing at the inverse of blank current. Contaminant current measured directly agrees well with the model assessment, but has a higher fraction modern. This is likely due to a combination of low measurement precision for the direct measurement and high sensitivity of the model to variability in the measured fraction modern and current in the depletion samples (REF). This constant contamination blank is consistent with the fact that hybrid cathodes produce a minimum current with or without gas flow to the source. Given that this minimum current ranges from 100 to 400, this current likely makes up a large fraction of the method blank.
+
+
+
 
 $$I_{sample} + I_{blank} = I_{meas}$$
 $$Fm_mI_m=Fm_bI_b+Fm_sI_s$$
@@ -117,6 +123,7 @@ Figure2: current dependent blank
 
 #### Current independent blank
 
+While dillution and direct measurement data show evidence
 We decided to use a simple linear correction. Samples kept within a narrow range of current and to a constant size.
 
 If **standards**, **blanks**, and **unknowns** have the **same** blank and current, current drops out.

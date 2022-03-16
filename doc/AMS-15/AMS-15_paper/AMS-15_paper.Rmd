@@ -123,10 +123,8 @@ Figure2: current dependent blank
 
 #### Current independent blank
 
-While dillution and direct measurement data show evidence
-We decided to use a simple linear correction. Samples kept within a narrow range of current and to a constant size.
+While dillution and direct measurement data show evidence for a constant blank with a variable effect depending on sample size, the blank correction may be simplified if blanks, standards, and unknown samples are the same size. If the fraction modern of the blank is 0.8 modern as estimated above, blank samples will show the most effect of a constant contamination blank with current. Figure 3 shows the fraction modern of measured blanks compared to their mean 12C- ion current. Fraction modern of measured blanks does decrease with increasing current, but the effect is small, less than Fm 0.01 over the range of currents measured. This change with current is roughly equal to the variablility between blanks, so the error due to the use of a current-dependent blank based on samples measured over multiple wheels will likely be larger than a current independent blank correction based on blanks measured on each wheel.
 
-If **standards**, **blanks**, and **unknowns** have the **same** blank and current, current drops out.
 
 LBC eqn
 

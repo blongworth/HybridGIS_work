@@ -52,6 +52,7 @@ depth <- read_csv(here("data/haiti_depth.csv"))
 combined_results <- left_join(combined_results, depth, by = "rec_num") %>% 
   mutate(rc_age = -8033 * log(fm_corr),
          sig_rc_age = rc_age - -8033 * log(fm_corr + sig_fm_corr))
+write_csv(combined_results, here("data_analysed/haiti_combined.csv"))
 
 # No outliers
 cr_no <- combined_results %>% 

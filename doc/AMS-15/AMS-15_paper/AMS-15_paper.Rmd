@@ -75,6 +75,7 @@ All results in supplementary materials
 
 Determination of ideal flows.
 Testing is needed to determine minimum sample flow to avoid atmosphere entering the split. TODO: move flow ratio test to results.
+
 ## Method development
 
 
@@ -102,13 +103,37 @@ Current vs flow modelling
 
 Figure1: Current vs flow
 
+### Sample size
+
+Sample size tests.
+
+Figure4: sample size vs current vs precision and accuracy
+
+Aimed to fill vial initially
+
+No current degradation down to X. Used Y as optimal mass and backfilled with helium.
+
+First tests of displacing pure CO2 from a vial into the open split using helium are promising. Helium flowing at 100uLm-1 produces current from 7mL of CO2 for over 2 hours. Currents do decrease with time due to dilution, but by supplying higher than optimal CO2 flow to the source initially, stable currents can be maintained for some time. Fraction of CO2 in sample gas should follow this relationship:
+
+$$C(t) = e^{-\frac{r}{V}t}$$
+
+Where $C(t)$ is the fraction CO2, $r$ is the rate of helium displacement flow, and $V$ is the initial volume of the CO2-filled vial.
+
+Setting flow to the source to 10uL/min provides excess CO2 to source until the helium dilution ratio increases to \> 1:1. Another approach may be to backfill vials with helium and run at a higher dilution ratio and flow to the source. This should produce a smaller change in He:CO2 over the course of a run. MICADAS runs at 95% He:CO2, which would mean producing \< 0.5mL CO2 in a 7mL vial and backfilling with helium before displacing to the source. Some intermediate dilution may be appropriate. Alternatively, vials could be flushed with helium prior to acidification, rather than evacuating, leading to some concentration of CO2 in He at slightly \> 1 ATM.
+
+Testing long runs of dilution of CO2 with displacing He and diluting He with CO2 show that the setup is still optimized for low flow to the source, even with larger diameter delivery capillaries. There appears to be a constriction in the split-source tubing that is keeping flows low. Current focus is on the large-sample 7mL method, so this will be diagnosed as time allows.
+
+Targets have shown "pulses" of higher current. Not sure why this is, but I suspect it's either buildup of graphite or other available carbon on the target, or target switching to the "high state" as sometimes happens with solid targets.
+
+First tests with carbonate in vials were hit-or-miss. Problems with capillary clogging and low currents led to poor results for several samples. A pair of NOSAMS2 samples produced good currents, results agreed well, but were about 3% higher than expected Fm. A second set of carbonates produced better currents (\~5uA) and better results. Agreement of replicates varied from 3 to 16 permil. Near-modern NOSAMS2 was very close to the consensus value, while C-2 and C-1 were elevated by 2 and 3.6% respectively, indicating that a blank correction is needed.
+
+Two more recent carbonate tests produced stable currents and backgrounds. Sample, target blank, and sample blank currents were relatively constant across samples, so a large blank correction can be used to correct results. Samples from both runs showed a linear relationship between difference from expected Fm and Fm of the sample, but in one sample set the relationship was positive, and in the other, negative. Since the intercept with 0-offset was close to 0 Fm, I think this is a problem with normalization, rather than blank correction. Standards run at the end of the day are higher than those run at the beginning, which may give clues as to what's going on.
+
 ### Contaminant carbon
 
 #### Current dependent blank
 
 To assess blank contribution and ratio dependence on sample current, vials of live and dead standard gas were measured as the displacement helium flow dilluted the samples, producing diminishing current over time. We used these data to develop a current-balance model following methods used to assess mass-dependent or constant contamination blanks in graphite targets (REFS). The constant contamination blank was also assessed directly by measuring pure helium in vials using the same method. Results from both tests are shown in figure 2. The inverse of the sample current is used to linearize the data, allowing assessment with a simple linear model. Fits from modern and dead dilution tests should trend towards the fraction modern of the blank, crossing at the inverse of blank current. Contaminant current measured directly agrees well with the model assessment, but has a higher fraction modern. This is likely due to a combination of low measurement precision for the direct measurement and high sensitivity of the model to variability in the measured fraction modern and current in the depletion samples (REF). This constant contamination blank is consistent with the fact that hybrid cathodes produce a minimum current with or without gas flow to the source. Given that this minimum current ranges from 100 to 400, this current likely makes up a large fraction of the method blank.
-
-
 
 
 $$I_{sample} + I_{blank} = I_{meas}$$
@@ -151,31 +176,6 @@ Data for blanks
 
 Constant current blank is likely the best model, but we simplify to a large blank correction since blanks vary by run, currents are relatively similar between blanks, unknowns and standards, and the simpler model works well within the error of the method.
 
-### Sample size
-
-Sample size tests.
-
-Figure4: sample size vs current vs precision and accuracy
-
-Aimed to fill vial initially
-
-No current degradation down to X. Used Y as optimal mass and backfilled with helium.
-
-First tests of displacing pure CO2 from a vial into the open split using helium are promising. Helium flowing at 100uLm-1 produces current from 7mL of CO2 for over 2 hours. Currents do decrease with time due to dilution, but by supplying higher than optimal CO2 flow to the source initially, stable currents can be maintained for some time. Fraction of CO2 in sample gas should follow this relationship:
-
-$$C(t) = e^{-\frac{r}{V}t}$$
-
-Where $C(t)$ is the fraction CO2, $r$ is the rate of helium displacement flow, and $V$ is the initial volume of the CO2-filled vial.
-
-Setting flow to the source to 10uL/min provides excess CO2 to source until the helium dilution ratio increases to \> 1:1. Another approach may be to backfill vials with helium and run at a higher dilution ratio and flow to the source. This should produce a smaller change in He:CO2 over the course of a run. MICADAS runs at 95% He:CO2, which would mean producing \< 0.5mL CO2 in a 7mL vial and backfilling with helium before displacing to the source. Some intermediate dilution may be appropriate. Alternatively, vials could be flushed with helium prior to acidification, rather than evacuating, leading to some concentration of CO2 in He at slightly \> 1 ATM.
-
-Testing long runs of dilution of CO2 with displacing He and diluting He with CO2 show that the setup is still optimized for low flow to the source, even with larger diameter delivery capillaries. There appears to be a constriction in the split-source tubing that is keeping flows low. Current focus is on the large-sample 7mL method, so this will be diagnosed as time allows.
-
-Targets have shown "pulses" of higher current. Not sure why this is, but I suspect it's either buildup of graphite or other available carbon on the target, or target switching to the "high state" as sometimes happens with solid targets.
-
-First tests with carbonate in vials were hit-or-miss. Problems with capillary clogging and low currents led to poor results for several samples. A pair of NOSAMS2 samples produced good currents, results agreed well, but were about 3% higher than expected Fm. A second set of carbonates produced better currents (\~5uA) and better results. Agreement of replicates varied from 3 to 16 permil. Near-modern NOSAMS2 was very close to the consensus value, while C-2 and C-1 were elevated by 2 and 3.6% respectively, indicating that a blank correction is needed.
-
-Two more recent carbonate tests produced stable currents and backgrounds. Sample, target blank, and sample blank currents were relatively constant across samples, so a large blank correction can be used to correct results. Samples from both runs showed a linear relationship between difference from expected Fm and Fm of the sample, but in one sample set the relationship was positive, and in the other, negative. Since the intercept with 0-offset was close to 0 Fm, I think this is a problem with normalization, rather than blank correction. Standards run at the end of the day are higher than those run at the beginning, which may give clues as to what's going on.
 
 ## Reference materials
 The per-sample error agrees well with variability of replicates, and measurement of known-value standards shows that the method has no significant bias.
@@ -190,7 +190,22 @@ Assessment of data quality.
 
 ## Carbonate macrofossils for age-depth model
 
-A suite of carbonate macrofossils consisting of shell and coral fragements from a series of coastal marine cores REF were measured as graphite and as CO2 using the HGIS method.
+A suite of 15 carbonate macrofossils consisting of shell and coral fragements from a series of coastal marine cores REF were measured as graphite and as CO2 using the HGIS method to further test the method and serve to demonstrate a potential application.
+coral macrofossils from a subtropical coastal marine sediment core using our gas 
+method and compared to the same samples measured using the traditional 
+graphite method. 
+
+To further test the method and a potential application, we measured 15 shell and 
+coral macrofossils from a subtropical coastal marine sediment core using our gas 
+method and compared to the same samples measured using the traditional 
+graphite method. 
+We found the HGIS and graphite measurements to be in good agreement, with no 
+significant bias (figure 6). Mean per-sample error was 1 pMC for HGIS measurements, 
+compared with 0.3 pMC for graphite.
+The accuracy of age-depth models is often driven by environmental factors and 
+sparse data, rather than the precision of individual dates [3]. The lower time and 
+cost of the hybrid method allows analysis of more samples. This may produce more 
+accurate age models, despite reduced precision of individual measurements.
 
 ### Measurements
 
@@ -210,11 +225,16 @@ Age model quality changes with lower precision.
 
 # Discussion
 
-Quantification of method
+## Quantification of method
 
-Cost vs quality discussion
+## Cost vs quality discussion
 
-ideas for further development of method
+The accuracy of age-depth models is often driven by environmental factors and 
+sparse data, rather than the precision of individual dates [3]. The lower time and 
+cost of the hybrid method allows analysis of more samples. This may produce more 
+accurate age models, despite reduced precision of individual measurements.
+
+## ideas for further development of method
 
 # Conclusion
 
@@ -228,12 +248,15 @@ This work is supported by NSF cooperative agreement. We are grateful to C. McInt
 
 # Figure captions
 
-Fig. 1. Performance of the NOSAMS MCSNICS hybrid gas ion source. 
+Fig. 1. Schematic of the open split inlet. Two valco valves provide the ability to admit helium and live or dead tank standards. The double needle  is housed in a VICI cross and allows displacement helium to flow into the sample vial and the sample-helium mixture to flow to the open split, where a capillary delivers the mixture to the ion source.
 
-Fig. 2. Assessment of blanks. (a) Current dependent blank. (b) Fraction modern of large, radiocarbon dead samples compared to sample current. Blank rises with decreasing current, as expected, but may be treated as a single blank with a simple correction for full-size samples producing greater than XX uA C- current.
+Fig. 2. Performance of the NOSAMS MCSNICS hybrid gas ion source. a. Modelled flows of helium and CO2 to the ion source during displacement of a pure CO2 vial sample with helium. b. Measured 12C- ion current during the same dillution experiment. c. Measured ion current for modelled CO2 flow. The stability of the source over a range of flow produces stable current for up to 40 m of measurement time. 
 
-Fig. 3. Relationship of sample size to C- ion current. There is no strong relationship between size and current for samples larger than XX ug C.
+Fig. 3. Relationship of sample size to C- ion current. There is no strong relationship between size and current for samples larger than 800 ug C.  
 
-Fig 4. Agreement of standards with graphite consensus values. 
+Fig. 4. Assessment of blanks. (a) Current dependent blank model and data. Fm and current of measurements from dillution tests of live and dead gas are used to generate linear fits which should cross at the Fm and current of the constant current blank. Direct determination of Fm and current of the blank are also shown. (b) Fraction modern of large, radiocarbon dead samples compared to sample current. Blank rises with decreasing current, as expected, but may be treated as a single blank with a simple correction for full-size samples producing greater than 3 uA C- current.
 
-Fig 5. Comparison of Haiti core samples measured as graphite.
+
+Fig 5. Agreement of standards with graphite consensus values. Difference of HGIS measurements from consensus for individual samples are plotted against their expected value. Expected values are spread to avoid overlapping points. Error bars represent one sigma sample errors. The black line is the mean difference from expected value for all measurements, and the blue lines are one standard deviation of all measurements.
+
+Fig 6. Comparison of Haiti core samples measured as graphite. a. Difference between HGIS and graphite measurements of the same materials vs. core depth (should this be mean of values?). Samples are offset on the horizontal axis for clarity. Error bars are measurement error for each sample. b) comparison of age-depth models produced using HGIS and graphite measurements.

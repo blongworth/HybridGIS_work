@@ -81,7 +81,7 @@ Testing is needed to determine minimum sample flow to avoid atmosphere entering 
 
 ## System performance
 
-Best currents for the source are around 10uA 12C- or roughly 1/10 of graphite currents. This is in line with what other hybrid sources produce. Typical "good" currents are between 5-10uA. The source typically produces best current at around 5uLs-1 CO2. Literature values give 1.5uLs-1 as optimal, but we've never seen that, and pressures, capillaries and flows in at least one of these papers doesn't make sense.
+Best currents for the source are around 10uA 12C- or roughly 1/10 of graphite currents. This is generally comparable with other hybrid sources REFS. Typical currents for this study were between 4-10uA???. The source typically produces best current at around 5uLs-1 CO2. Literature values give 1.5uLs-1 as optimal, but we've never seen that, and pressures, capillaries and flows in at least one of these papers doesn't make sense.
 
 Source currents are variable by day and by target. "Good" currents for a given day vary between 5-10uA, and it's not yet clear what causes this variability. Alignment, source condition, and settings of the ionizer and cesium are all factors. Current also varies by target for a given set of gas and source conditions. Some targets are clearly "bad", producing currents much lower than other targets for a given set of conditions. Capillary clogging can be an issue, especially when sampling from vials with acid.
 
@@ -178,15 +178,15 @@ Constant current blank is likely the best model, but we simplify to a large blan
 
 
 ## Reference materials
+
+Precision and accuracy of the method were assessed by measuring carbonate standards with consensus values from graphite measurements. Summary data for these samples are listed in table 1, and measurement data for all samples is in supplementary information. Measurement, data reduction, and blank correction was performed as described above. 
+
+Overall, reference materials run with the hybrid gas method were in good agreement with consensus values. Mean difference from consenus for all measurements was -0.04 pMC, and the standard deviation of the difference was 1.10 pMC. Mean propagated measurement error was 1.13 pMC for these samples. The hybrid method has no bias in agregate. Method error is larger than graphite, but calculated per-sample error is similar to standard deviation of replicate measurements. A summary of accuracy and precision of these measurements is in Table 1.
+
+The difference beween reference samples and graphite consensus does not vary systematically by fraction modern, indicating that the method has no significant bias by fraction modern (Figure 6).
+
 The per-sample error agrees well with variability of replicates, and measurement of known-value standards shows that the method has no significant bias.
 
-Measured
-
-Table: summary of reference materials
-
-figure5: difference plot
-
-Assessment of data quality.
 
 ## Carbonate macrofossils for age-depth model
 
@@ -199,25 +199,22 @@ To further test the method and a potential application, we measured 15 shell and
 coral macrofossils from a subtropical coastal marine sediment core using our gas 
 method and compared to the same samples measured using the traditional 
 graphite method. 
+
 We found the HGIS and graphite measurements to be in good agreement, with no 
-significant bias (figure 6). Mean per-sample error was 1 pMC for HGIS measurements, 
-compared with 0.3 pMC for graphite.
+significant bias (figure 6). Mean difference between hybrid and graphite measurements was -0.35 pMC and the standard deviation of this difference was 0.85 pMC. Mean per-sample error was 1.02 pMC for HGIS measurements, compared with 0.18 pMC for graphite.
+
+One HGIS sample vial was noted to be at atmospheric pressure when the 16mg sample should have produced only one half atmosphere of CO2. The HGIS measurement for this sample was 5.3 pMC higher than the measurement as graphite. We suspect that this sample was improperly sealed and eliminated it from the analysis as an outlier. 
+
+### Age model
+
+Age models were developed for both the traditional graphite measurements of the core carbonates and the HGIS measurements (Figure 7). We used the Bchron Baesian radiochronology package to develop these models. The age-depth curves produced by the two datasets are very similar, with the largest differences being in the uncertainty of the individual dates.
+
+Mean and sd of difference of calibrated ages?
+
 The accuracy of age-depth models is often driven by environmental factors and 
 sparse data, rather than the precision of individual dates [3]. The lower time and 
 cost of the hybrid method allows analysis of more samples. This may produce more 
 accurate age models, despite reduced precision of individual measurements.
-
-### Measurements
-
-Table of measurements (supplementary?)
-
-One HGIS sample vial was noted to be at atmospheric pressure when only XX mL CO2 should have been produced. The HGIS measurement for this sample was XX% higher than the measurement as graphite. We suspect that this sample was improperly sealed and eliminated it from the analysis as an outlier. SO2 story?
-
-Figure6: bland-altman of HGIS vs graphite.
-
-Summary of agreement
-
-### Age model
 
 Figure7: age model comparison graphite HGIS
 
@@ -225,22 +222,17 @@ Age model quality changes with lower precision.
 
 # Discussion
 
-## Quantification of method
-
-## Cost vs quality discussion
+We developed a method for the analysis of carbonates using an open-split interface to a hybrid sputter gas ion source. This system produces results that agree with graphite measurements to better than 1% from 8-20 mg of carbonate. Sample preparation takes about 10 min. of person time and 6h of automated processing and reaction time, and 20 min. of measurement time per sample. The simplicity of this approach... With lower cost and time per sample, the lower precision of the method may be balanced by the ability to measure more samples from a population, ie. triplicate measurement or more core depths. This may lead to more accurate results compared to a more precise graphite measurement where reproducibility is not as well constrained.
 
 The accuracy of age-depth models is often driven by environmental factors and 
 sparse data, rather than the precision of individual dates [3]. The lower time and 
 cost of the hybrid method allows analysis of more samples. This may produce more 
 accurate age models, despite reduced precision of individual measurements.
 
+Sample requirements, analysis time, precision, accuracy.
+
 ## ideas for further development of method
 
-# Conclusion
-
-We developed a method for the analysis of carbonates using an open-split interface to a hybrid sputter gas ion source. This system produces results that agree with graphite measurements to better than 1% from XXX mg of carbonate. Sample preparation takes about 10 min. of person time and 6h of automated processing and reaction time, and 20 min. of measurement time per sample. The simplicity of this approach... With lower cost and time per sample, the lower precision of the method may be balanced by the ability to measure more samples from a population, ie. triplicate measurement or more core depths. This may lead to more accurate results compared to a more precise graphite measurement where reproducibility is not as well constrained.
-
-Sample requirements, analysis time, precision, accuracy.
 
 # Acknowledgements
 

@@ -6,8 +6,7 @@ library(here)
 library(hgis)
 library(amstools)
 library(scales)
-
-
+library(gt)
 
 # Read raw and reduced data as produced by analyse_carbonates.R
 data <- readRDS(here("data_analysed/carb_all.rds"))
@@ -68,6 +67,7 @@ mean_errs <- cr_no %>%
   pivot_wider(names_from = method,
               values_from = mean_sig)
 
+# Make difference plot of core carbonates
 ggplot(cr_no) +
   geom_hline(yintercept = 0) +
   #geom_hline(yintercept = mean_diff$fm_diff_mean, color = "blue") +
@@ -91,3 +91,24 @@ ggplot(cr_no) +
 
 ggsave(here("doc/AMS-15/AMS-15_paper/figures/fig6_core_carbonates.svg"))
 
+# data for core carbonates section
+
+# mean 
+
+cr_no %>% 
+  group_by(method) %>% 
+  #filter(method == "hgis") %>% 
+  summarize(across(c(sig_fm_corr, fm_diff),
+                   list(mean = mean, sd = sd)),
+            N = n()) %>% 
+  select(`Consensus difference` = fm_diff_mean,
+         `Std. Dev. of consensus difference` = fm_diff_sd,
+         `per-sample error` = sig_fm_corr_mean,
+         N
+         ) %>%  
+  gt() %>% 
+  tab_header(title = "Haiti carbonates performance summary",
+             subtitle = "TIRI-I, C-2, and NOSAMS2. Values in pMC") %>% 
+  fmt_number(1:3, 
+             scale_by = 100,
+             decimals = 2)

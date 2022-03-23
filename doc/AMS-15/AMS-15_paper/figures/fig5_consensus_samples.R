@@ -41,5 +41,5 @@ ggplot(aes(fm_consensus, fm_diff, color = Name)) +
        x = "pMC expected (points jittered for clarity)", 
        y = "pMC difference (HGIS - expected)")
 
-ggsave(here("doc/AMS-15/AMS-15_paper/figures/fig5_consensus_stds.svg"))
+ggsave(here("doc/AMS-15/AMS-15_paper/figures/fig5_consensus_samples.svg"))
 

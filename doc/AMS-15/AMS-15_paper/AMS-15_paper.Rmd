@@ -18,6 +18,15 @@ output:
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
+```{r, message = FALSE}
+library(tidyverse)
+library(hgis)
+library(here)
+
+carb <- readRDS(here("data_analysed/carb_all.rds")) %>% 
+  map_dfr(2)
+```
+
 # Abstract
 
 We have developed a method for measurement of radiocarbon in carbonate minerals as CO~2~ gas via a NEC MCSNICS hybrid sputter gas ion source (HGIS). The method uses helium as a carrier gas to displace CO~2~ from sample vials to an open split, where a glass capillary samples the mixture for delivery directly to the HGIS. This method skips the gas transfer and quantification steps used in a closed inlet HGIS system, simplifying sample measurement. Samples larger than 10 mg carbonate can currently be measured. Results from measurements of consensus standards (TIRI-I, IAEA C2, and an internal modern shell standard), and samples from a marine core (40-115 pMC) show that the method agrees well with traditional AMS measurement of the same samples as graphite, and that the method error is less than 1.5 pMC. We discuss advantages and disadvantages of continuous flow sample introduction, and the effect of reduced precision on calibrated age-depth models produced using gas-source data.
@@ -42,23 +51,19 @@ The test setup for extracting CO2 from septa-sealed vials is as follows: a doubl
 The flow rate from the open split into the source is defined by 250cm of 50um glass capillary (confirm this, SGE, Trajan, Agilent?), split into two sections by a zero-volume bulkhead connector at the source cage. The section inside the cage is jacketed in teflon tubing to help protect against spark damage.
 
 
-![Inlet layout. Helium displacement gas is delivered to vial through a double needle, mixed sample and helium flows to an open split, and a glass capillary delivers gas to the ion source.](images/HGIS_open_split_drawing.svg)
-
 ## Sample preparation
-
-Reference: gilson 
 
 Carbonate samples are weighed into 7 ml septa-sealed Vacutainer vials (Labco \# 768W). Sealed vials are evacuated, then 1 ml 85% Phosphoric acid is added. The samples are allowed to react at 60C for 4-6 h. Sample pressure is adjusted to 1 ATM by allowing the sample to equilibrate with a helium filled syringe connected through the vial septum. Evacuation, acid addition, and heated reaction are performed by the automated gas handling system developed for the CFAMS GIS carbonate system \@ref(Roberts 2013).
 
 Standards are prepared by evacuating vials and then filling with 1 ATM of a modern standard gas using the automated gas handling system. Process blank samples are prepared from powdered C-1 or TIRI-F, acidified in vials using the method above. 
 
 
-### Measurement
+## Measurement
 
 Samples are measured on a modified 3MV Tandetron AMS system \@ref(Longworth 2015). The displacement helium is allowed to flow constantly during analysis, and the sample needle is inserted into a helium-filled vial between samples. Measurement of a sample proceeds as follows: a clean sputter target is inserted into the source and the target is sputtered until ten minutes (check this) have passed or blank target current falls below 100nA. The delivery needle is then inserted into the sample vial, which starts sample delivery to the split and source. Currents take ~30s to stabilize, at which point the data acquisition is started. Data is acquired in 10 blocks of 90 s each, for 15 minutes total acquisition time. Normalizing standards, blanks, and secondary standards are measured in the same way. Total time for a measurement, including target pre-cleaning is 20-25 minutes.
 
 
-### Data reduction
+## Data reduction
 
 After aquisition, data reduction, normalization and blank correction result in a final fraction modern with error. First, each 90s block is corrected for fractionation using the AMS <sup>13</sup>C measurement. The raw 14/12C ratio divided by the 13/12C ratio squared gives the corrected 14/12C ratio. Outlier runs, defined as those outside of 1.5 times the interquartile range, are dropped at this point. Remaining runs of a sample are averaged and per-sample error is taken as the greater of counting error or the standard error of the measurements. Ratios are then normalized using the mean of gas standards measured during the run. The measurement error of the standards is taken as the greater of the standard error of all standards or the errors of the standards added in quadrature. 
 
@@ -79,15 +84,29 @@ Testing is needed to determine minimum sample flow to avoid atmosphere entering 
 ## Method development
 
 
-## System performance
+## Source performance
 
-Best currents for the source are around 10uA 12C- or roughly 1/10 of graphite currents. This is generally comparable with other hybrid sources REFS. Typical currents for this study were between 4-10uA???. The source typically produces best current at around 5uLs-1 CO2. Literature values give 1.5uLs-1 as optimal, but we've never seen that, and pressures, capillaries and flows in at least one of these papers doesn't make sense.
+```{r}
+carbcur <- carb %>%  
+  map_dfr(2) %>% 
+  compare_consensus() %>% 
+  mutate(c12ua = he12C * 1E6)
+samples <- read_csv(here("data/carb_data.csv")) %>% 
+  select(wheel, pos, mass, he_added)
+currents <- left_join(carbcur, samples, by = c("wheel", "pos")) %>% 
+  filter(wheel != "USAMS020521")
+
+curmean <- mean(currents$c12ua) %>% format(digits = 2) %>% paste("uA")
+cursd <- sd(currents$c12ua)
+```
+
+
+
+Best currents for the source are around 10uA 12C- or roughly 1/10 of graphite currents. This is generally comparable with other hybrid sources REFS. Typical currents for this study were between 4-9uA and average current for all samples was `r curmean`. The source typically produces best current at around 5uLs-1 CO2. Literature values give 1.5uLs-1 as optimal, but we've never seen that, and pressures, capillaries and flows in at least one of these papers doesn't make sense.
 
 Source currents are variable by day and by target. "Good" currents for a given day vary between 5-10uA, and it's not yet clear what causes this variability. Alignment, source condition, and settings of the ionizer and cesium are all factors. Current also varies by target for a given set of gas and source conditions. Some targets are clearly "bad", producing currents much lower than other targets for a given set of conditions. Capillary clogging can be an issue, especially when sampling from vials with acid.
 
 Precision taken as the standard error of the mean of repeated runs of a sample is around 1%. Precision is typically a little worse than predicted by counting statistics. More work is needed to look at whether this reflects variability between samples, but initial test of paired replicates show similar standard deviation for samples that show good stable currents.
-
-Measured value of tank modern gas normalized to solid graphite standards ranges from agreeing with solid OX-I to 7% lower than expected for low current samples. Normalizing to tank CO2 is probably the best method to account for variability in hybrid source performance.
 
 Precision of measurements of modern CO2 has been better than 1% (std error of mean of measurements of a target) for high current samples, with precision dropping off as current decreases below 6uA or so. Accuracy is reasonable within the large errors on gas measurements. Uncorrected measurements of dead CO2 range from 1% to 5% of modern depending on sample current.
 
@@ -106,8 +125,6 @@ Figure1: Current vs flow
 ### Sample size
 
 Sample size tests.
-
-Figure4: sample size vs current vs precision and accuracy
 
 Aimed to fill vial initially
 
@@ -133,7 +150,11 @@ Two more recent carbonate tests produced stable currents and backgrounds. Sample
 
 #### Current dependent blank
 
-To assess blank contribution and ratio dependence on sample current, vials of live and dead standard gas were measured as the displacement helium flow dilluted the samples, producing diminishing current over time. We used these data to develop a current-balance model following methods used to assess mass-dependent or constant contamination blanks in graphite targets (REFS). The constant contamination blank was also assessed directly by measuring pure helium in vials using the same method. Results from both tests are shown in figure 2. The inverse of the sample current is used to linearize the data, allowing assessment with a simple linear model. Fits from modern and dead dilution tests should trend towards the fraction modern of the blank, crossing at the inverse of blank current. Contaminant current measured directly agrees well with the model assessment, but has a higher fraction modern. This is likely due to a combination of low measurement precision for the direct measurement and high sensitivity of the model to variability in the measured fraction modern and current in the depletion samples (REF). This constant contamination blank is consistent with the fact that hybrid cathodes produce a minimum current with or without gas flow to the source. Given that this minimum current ranges from 100 to 400, this current likely makes up a large fraction of the method blank.
+Measurement of radiocarbon-free reference materials shows that the average normalized ratio for these samples is XXX +- YYY (N=XXX). We investigated the sources of this method blank as a current-dependent blank and as a current-independent blank. 
+
+To assess blank contribution and ratio dependence on sample current, vials of live and dead standard gas were measured as the displacement helium flow diluted the samples, producing diminishing current over time. We used these data to develop a current-balance model following methods used to assess mass-dependent or constant contamination blanks in graphite targets (REFS). The constant contamination blank was also assessed directly by measuring pure helium in vials using the same method. Results from both tests are shown in figure 2. The inverse of the sample current is used to linearize the data, allowing assessment with a simple linear model. Fits from modern and dead dilution tests should trend towards the fraction modern of the blank, crossing at the inverse of blank current. Based on this assessment, we estimate the ratio of the blank as XXX pMC with a current of XXX nA. 
+
+The directly blank current (XXX nA) agrees well with the model assessment, but has a higher fraction modern (XXX pMC). This is likely due to a combination of low measurement precision for the direct measurement and high sensitivity of the model to variability in the measured fraction modern and current in the depletion samples (REF). This constant contamination blank is consistent with the fact that hybrid cathodes produce a minimum current with or without gas flow to the source. Given that this minimum current ranges from 100 nA to 400 nA, this current likely makes up a large fraction of the method blank.
 
 
 $$I_{sample} + I_{blank} = I_{meas}$$
@@ -144,12 +165,9 @@ $$Fm_s = Fm_m + \frac{I_b(Fm_m-Fm_b)}{I_m-I_b}$$
 0.1 μA blank current with 10 μA total = 1% blank
 LBC vs constant contaminant/MBC.
 
-Figure2: current dependent blank
-
 #### Current independent blank
 
-While dillution and direct measurement data show evidence for a constant blank with a variable effect depending on sample size, the blank correction may be simplified if blanks, standards, and unknown samples are the same size. If the fraction modern of the blank is 0.8 modern as estimated above, blank samples will show the most effect of a constant contamination blank with current. Figure 3 shows the fraction modern of measured blanks compared to their mean 12C- ion current. Fraction modern of measured blanks does decrease with increasing current, but the effect is small, less than Fm 0.01 over the range of currents measured. This change with current is roughly equal to the variablility between blanks, so the error due to the use of a current-dependent blank based on samples measured over multiple wheels will likely be larger than a current independent blank correction based on blanks measured on each wheel.
-
+While dilution and direct measurement data show evidence for a constant blank with a variable effect depending on sample size, the blank correction may be simplified if blanks, standards, and unknown samples are the same size. If the fraction modern of the blank is 0.8 modern as estimated above, blank samples will show the most effect of a constant contamination blank with current. Figure 3 shows the fraction modern of measured blanks compared to their mean 12C- ion current. Fraction modern of measured blanks does decrease with increasing current, but the effect is small, less than Fm 0.01 over the range of currents measured. This change with current is roughly equal to the variability between blanks, so the error due to the use of a current-dependent blank based on samples measured over multiple wheels will likely be larger than a current independent blank correction based on blanks measured on each wheel.
 
 LBC eqn
 
@@ -157,18 +175,16 @@ $$Fm_s = Fm_m - Fm_{blk}\frac{Fm_{std} - Fm_m}{Fm_{std}}$$
 
 ```{r}
 # Fix to use current form of processed data
-carb_data <- map_dfr(list.files(here("data_analysed"), full.names = TRUE), read_csv) %>% 
-  filter(!is.na(rec_num),
-         Cur > 2) %>% 
-  mutate(fm_diff = mean - fm_consensus,
-         fm_sigma = sigma(mean, fm_consensus, merr),
-         fmbc_diff = fm_lbc - fm_consensus,
-         fmbc_sigma = sigma(fm_lbc, fm_consensus, merr))
+blanks <- carb %>% 
+  filter(rec_num %in% c(2138, 83028),
+         he12C > 2E-6,
+         sample_type == "B")
 ```
 
 
 
-Mean Fm of blanks: `r carb_data %>% filter(fm_consensus < 0.1 & Cur > 2) %>% pull(mean) %>% mean() %>% format(digits = 3)`
+Mean Fm of blanks: `r mean(blanks$norm_ratio) %>% format(digits = 3)`
+SD of Fm of blanks: `r sd(blanks$norm_ratio) %>% format(digits = 3)`
 
 Figure3: justification for large blank
 
@@ -238,17 +254,34 @@ Sample requirements, analysis time, precision, accuracy.
 
 This work is supported by NSF cooperative agreement. We are grateful to C. McIntyre, R. Hansman, G. Salazar, T. Ognibene, T. Broeck.
 
+# Figures
+
+![Figure 1. Inlet layout. Helium displacement gas is delivered to vial through a double needle, mixed sample and helium flows to an open split, and a glass capillary delivers gas to the ion source.](images/HGIS_open_split_drawing.svg)
+
+![Figure 2](figures/fig1a_flow_current_time.svg)
+
+![Figure 2b](figures/fig1b_current_flow.svg)
+
+![Figure 4](figures/fig2_current_dependent_blank.svg)
+
+![Figure 4b](figures/fig3_cur_indep_blank.svg)
+
+![Figure 5](figures/fig5_consensus_samples.svg)
+
+![Figure 6](figures/fig6_core_carbonates.svg)
+
 # Figure captions
 
-Fig. 1. Schematic of the open split inlet. Two valco valves provide the ability to admit helium and live or dead tank standards. The double needle  is housed in a VICI cross and allows displacement helium to flow into the sample vial and the sample-helium mixture to flow to the open split, where a capillary delivers the mixture to the ion source.
+Figure 1. Schematic of the open split inlet. Two valco valves provide the ability to admit helium and live or dead tank standards. The double needle is housed in a VICI cross and allows displacement helium to flow into the sample vial and the sample-helium mixture to flow to the open split, where a capillary delivers the mixture to the ion source.
 
-Fig. 2. Performance of the NOSAMS MCSNICS hybrid gas ion source. a. Modelled flows of helium and CO2 to the ion source during displacement of a pure CO2 vial sample with helium. b. Measured 12C- ion current during the same dillution experiment. c. Measured ion current for modelled CO2 flow. The stability of the source over a range of flow produces stable current for up to 40 m of measurement time. 
+Figure 2. Performance of the NOSAMS MCSNICS hybrid gas ion source. a. Modelled flows of helium and CO2 to the ion source during displacement of a pure CO2 vial sample with helium. b. Measured 12C- ion current during the same dillution experiment. c. Measured ion current for modelled CO2 flow. The stability of the source over a range of flow produces stable current for up to 40 m of measurement time. 
 
-Fig. 3. Relationship of sample size to C- ion current. There is no strong relationship between size and current for samples larger than 800 ug C.  
+Will probably skip this figure:
+Figure 3. Relationship of sample size to C- ion current. There is no strong relationship between size and current for samples larger than 800 ug C.  
 
-Fig. 4. Assessment of blanks. (a) Current dependent blank model and data. Fm and current of measurements from dillution tests of live and dead gas are used to generate linear fits which should cross at the Fm and current of the constant current blank. Direct determination of Fm and current of the blank are also shown. (b) Fraction modern of large, radiocarbon dead samples compared to sample current. Blank rises with decreasing current, as expected, but may be treated as a single blank with a simple correction for full-size samples producing greater than 3 uA C- current.
+Figure 4. Assessment of blanks. (a) Current dependent blank model and data. Fm and current of measurements from dillution tests of live and dead gas are used to generate linear fits which should cross at the Fm and current of the constant current blank. Direct determination of Fm and current of the blank are also shown. (b) Fraction modern of large, radiocarbon dead samples compared to sample current. Blank rises with decreasing current, as expected, but may be treated as a single blank with a simple correction for full-size samples producing greater than 3 uA C- current.
 
 
-Fig 5. Agreement of standards with graphite consensus values. Difference of HGIS measurements from consensus for individual samples are plotted against their expected value. Expected values are spread to avoid overlapping points. Error bars represent one sigma sample errors. The black line is the mean difference from expected value for all measurements, and the blue lines are one standard deviation of all measurements.
+Figure 5. Agreement of standards with graphite consensus values. Difference of HGIS measurements from consensus for individual samples are plotted against their expected value. Expected values are spread to avoid overlapping points. Error bars represent one sigma sample errors. The black line is the mean difference from expected value for all measurements, and the blue lines are one standard deviation of all measurements.
 
-Fig 6. Comparison of Haiti core samples measured as graphite. a. Difference between HGIS and graphite measurements of the same materials vs. core depth (should this be mean of values?). Samples are offset on the horizontal axis for clarity. Error bars are measurement error for each sample. b) comparison of age-depth models produced using HGIS and graphite measurements.
+Figure 6. Comparison of Haiti core samples measured as graphite. a. Difference between HGIS and graphite measurements of the same materials vs. core depth (should this be mean of values?). Samples are offset on the horizontal axis for clarity. Error bars are measurement error for each sample. b) comparison of age-depth models produced using HGIS and graphite measurements.

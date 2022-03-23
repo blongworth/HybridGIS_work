@@ -43,7 +43,7 @@ cur_time <- ggplot(data, aes(time, he12C)) +
 
 flow_time / cur_time
 
-ggsave("fig1a_flow_current_time.svg")
+ggsave(here("doc/AMS-15/AMS-15_paper/figures/fig1a_flow_current_time.svg"))
 
 ggplot(data, aes(co2flow, he12C)) +
   geom_smooth(span = .3, se = FALSE, color = "#00b7bd") +
@@ -54,4 +54,4 @@ ggplot(data, aes(co2flow, he12C)) +
        y = TeX(r'(^{12}C^- current (μA))')) +
   theme_classic()
 
-ggsave("fig1b_current_flow.svg")
+ggsave(here("doc/AMS-15/AMS-15_paper/figures/fig1b_current_flow.svg"))

@@ -1,18 +1,25 @@
 # Current dependent blank model and data
 # Plot of data and model with measured blanks
-# This should be remade with more data and functions
+# This should be remade with new data reduction
 # Use sample depletion data?
 # Or skip altogether!
+
+library(tidyverse)
+library(amstools)
+library(amsdata)
+library(hgis)
+library(here)
+library(broom)
 
 data<- get_hgis_data(here("data/USAMS101320R.txt"), as.Date("2020-11-17")) %>% 
   mutate(Num = ifelse(Pos %in% c(2, 4), "S", ifelse(Num == "S", "U", Num)))
 stdrat <- mean(data$cor1412he[data$Num == "S" & !data$outlier])
-data1013 <- data %>% mutate(normFm = norm_gas(cor1412he, stdrat))
+data1013 <- data %>% mutate(normFm = norm_run(cor1412he, stdrat))
 
 data <- get_hgis_data(here("data/USAMS120320R.txt"), as.Date("2020-12-04")) %>% 
   mutate(Num = ifelse(Pos %in% c(2, 4), "S", ifelse(Num == "S", "U", Num)))
 stdrat <- mean(data$cor1412he[data$Num == "S" & !data$outlier])
-data1204 <- data %>% mutate(normFm = norm_gas(cor1412he, stdrat))
+data1204 <- data %>% mutate(normFm = norm_run(cor1412he, stdrat))
 
 data1211 <- get_hgis_data(here("data/USAMS120320R.txt")) %>% 
   filter(Pos %in% 1:4 | as.Date(ts) == "2020-12-11")
@@ -21,29 +28,29 @@ data <- get_hgis_data(here("data/USAMS120320R.txt"), as.Date("2020-12-18")) %>%
   filter(Pos != 0) %>% 
   mutate(Num = ifelse(Pos %in% c(2, 4), "S", ifelse(Num == "S", "U", Num)))
 stdrat <- mean(data$cor1412he[data$Num == "S" & !data$outlier])
-data1218 <- data %>% mutate(normFm = norm_gas(cor1412he, stdrat))
+data1218 <- data %>% mutate(normFm = norm_run(cor1412he, stdrat))
 
 data0108 <- get_hgis_data(here("data/USAMS120320R.txt"), as.Date("2021-01-08"))
 
 data <- get_hgis_data(here("data/USAMS020521R.txt")) %>% 
   mutate(Num = ifelse(Pos %in% c(2, 4), "S", ifelse(Num == "S", "U", Num)))
 stdrat <- mean(data$cor1412he[data$Num == "S" & !data$outlier])
-data205 <- data %>% mutate(normFm = norm_gas(cor1412he, stdrat))
+data205 <- data %>% mutate(normFm = norm_run(cor1412he, stdrat))
 
 data <- get_hgis_data(here("data/USAMS030421R.txt"), as.Date("2021-03-05")) %>% 
   mutate(Num = ifelse(Pos %in% c(2, 4), "S", ifelse(Num == "S", "U", Num)))
 stdrat <- mean(data$cor1412he[data$Num == "S" & !data$outlier])
-data304 <- data %>% mutate(normFm = norm_gas(cor1412he, stdrat))
+data304 <- data %>% mutate(normFm = norm_run(cor1412he, stdrat))
 
 data <- get_hgis_data(here("data/USAMS040121R.txt"), as.Date("2021-04-09")) %>% 
   mutate(Num = ifelse(Pos %in% c(22, 24), "S", ifelse(Num == "S", "U", Num)))
 stdrat <- mean(data$cor1412he[data$Num == "S" & !data$outlier])
-data409 <- data %>% mutate(normFm = norm_gas(cor1412he, stdrat))
+data409 <- data %>% mutate(normFm = norm_run(cor1412he, stdrat))
 
 data <- get_hgis_data(here("data/USAMS041521R.txt"), as.Date("2021-04-16"))  %>% 
   mutate(Num = ifelse(Pos %in% c(22, 24), "S", ifelse(Num == "S", "U", Num)))
 stdrat <- mean(data$cor1412he[data$Num == "S" & !data$outlier])
-data415 <- data %>% mutate(normFm = norm_gas(cor1412he, stdrat))
+data415 <- data %>% mutate(normFm = norm_run(cor1412he, stdrat))
 
 std <- getStdTable()
 
@@ -108,3 +115,5 @@ ggplot(ds, aes(Cur_inv, mean, color = Gas)) +
   theme_classic() +
   theme(legend.position = "none",
         legend.background = element_rect(fill = "white", color = "black")) 
+
+ggsave(here("doc/AMS-15/AMS-15_paper/figures/fig2_current_dependent_blank.svg"))

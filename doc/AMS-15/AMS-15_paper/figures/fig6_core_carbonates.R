@@ -7,6 +7,7 @@ library(hgis)
 library(amstools)
 library(scales)
 library(gt)
+library(Bchron)
 
 # Read raw and reduced data as produced by analyse_carbonates.R
 data <- readRDS(here("data_analysed/carb_all.rds"))
@@ -70,22 +71,25 @@ mean_errs <- cr_no %>%
 # Make difference plot of core carbonates
 ggplot(cr_no) +
   geom_hline(yintercept = 0) +
-  #geom_hline(yintercept = mean_diff$fm_diff_mean, color = "blue") +
-  #geom_hline(yintercept = mean_diff$fm_diff_mean + mean_diff$fm_diff_sd, color = "lightblue") +
-  #geom_hline(yintercept = mean_diff$fm_diff_mean - mean_diff$fm_diff_sd, color = "lightblue") +
-  geom_pointrange(aes(depth, fm_diff, color = method, shape = method,
+  # geom_hline(yintercept = mean_diff$fm_diff_mean, color = "blue") +
+  # geom_hline(yintercept = mean_diff$fm_diff_mean + mean_diff$fm_diff_sd, color = "lightblue") +
+  # geom_hline(yintercept = mean_diff$fm_diff_mean - mean_diff$fm_diff_sd, color = "lightblue") +
+  geom_pointrange(aes(fm_mean, fm_diff, color = method, shape = method,
                       ymin = fm_diff - sig_fm_corr, 
                       ymax = fm_diff + sig_fm_corr),
                   position = "jitter") +
   scale_color_manual(values = c("#00b7bd", "#b7bf10")) +
+  scale_x_continuous(breaks = breaks_extended(7),
+                     labels = label_percent(suffix = "",
+                                            accuracy = 1)) +
   scale_y_continuous(breaks = breaks_extended(7),
                      labels = label_percent(suffix = "",
                                             accuracy = 1)) +
   labs(title = "HGIS measurements agree with graphite",
        subtitle = "Sediment core macrofossils measured via HGIS and graphite",
-       x = "Core depth (cm)",
+       x = "Mean of measurements (pMC)",
        y = "HGIS - graphite (pMC)") +
-  theme(legend.position = c(0.80, 0.85),
+  theme(legend.position = c(0.85, 0.15),
         legend.direction = "horizontal",
         legend.background = element_rect(fill = "white", color = "black")) 
 
@@ -112,3 +116,58 @@ cr_no %>%
   fmt_number(1:3, 
              scale_by = 100,
              decimals = 2)
+
+# Bchron plots
+# separate data and make cal curve for graphite and hgis
+# How to handle bomb dates
+# use IntCal package and assign bomb curve
+
+cal_sub <- cr_no %>% 
+  filter(rc_age > 0) %>% 
+  mutate(id = paste(sample_name, "-", method)) %>% 
+  select(id, depth, rc_age, sig_rc_age)
+
+cal_dates <- with(cal_sub,
+  BchronCalibrate(rc_age, sig_rc_age, positions = depth, ids = id))
+plot(cal_dates)
+
+cal_sub_hgis <- cr_no %>% 
+  filter(rc_age > 0,
+         method == "hgis") %>% 
+  select(id = sample_name, depth, rc_age, sig_rc_age) %>% 
+  mutate(curve = "intcal20") %>% 
+  add_row(id = "Top", depth = 0, rc_age = 0, sig_rc_age = 1, curve = "normal")
+
+cal_dates_hgis  <- with(cal_sub_hgis,
+  BchronCalibrate(rc_age, sig_rc_age, positions = depth, ids = id, calCurves = curve))
+plot(cal_dates_hgis)
+
+chron_hgis  <- with(cal_sub_hgis,
+  Bchronology(rc_age, sig_rc_age, positions = depth, ids = id, calCurves = curve))
+plot(chron_hgis) +
+  ggtitle("HGIS chronology")
+summary(chron_hgis, "convergence")
+
+cal_sub_gr <- cr_no %>% 
+  filter(rc_age > 0,
+         method == "graphite") %>% 
+  select(id = sample_name, depth, rc_age, sig_rc_age) %>% 
+  mutate(curve = "intcal20",
+         thickness = 10) %>% 
+  add_row(id = "Top", depth = 0, rc_age = 0, sig_rc_age = 1, curve = "normal", thickness = 10)
+
+cal_dates_gr  <- with(cal_sub_gr,
+  BchronCalibrate(rc_age, sig_rc_age, 
+                  positions = depth, ids = id, 
+                  calCurves = curve))
+plot(cal_dates_gr)
+
+chron_gr  <- with(cal_sub_gr,
+  Bchronology(rc_age, sig_rc_age, 
+              positions = depth, ids = id, 
+              calCurves = curve, positionThicknesses = thickness))
+plot(chron_gr) +
+  ggtitle("Graphite chronology")
+
+#predict(chron_gr, seq(0, 900, by = 50) )
+#class(chron_gr)

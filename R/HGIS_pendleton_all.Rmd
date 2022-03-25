@@ -110,7 +110,7 @@ cons <- results %>%
   filter(!is.na(fm_consensus)) %>% 
   select(sample_name, fm_consensus, fm_corr, sig_fm_corr) %>% 
   mutate(Fm_diff = fm_corr - fm_consensus,
-         sigma = amstools::sigma(fm_corr, fm_consensus, sig_fm_corr)) %>% 
+         sigma = amsdata::sigma(fm_corr, fm_consensus, sig_fm_corr)) %>% 
   arrange(sample_name) %>% 
   select(Name = sample_name, 
          #`Mean current (uA)` = he12C_mean, 

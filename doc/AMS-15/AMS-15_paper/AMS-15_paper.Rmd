@@ -35,13 +35,13 @@ We have developed a method for measurement of radiocarbon in carbonate minerals 
 
 # Introduction
 
-Radiocarbon Accelerator Mass Spectrometry (AMS) is a sensitive method for determining the age, provenance, and composition of carbon-containing materials. A primary disadvantage of the method is its cost, which often limits the number of samples analyzed. This forces researchers to carefully choose samples to be run and limits repeat measurements for error determination. One driver of the cost of AMS analysis is the time and effort required for sample preparation, including reduction of the sample to graphite. Analysis of analyte CO2 directly via a gas-accepting AMS ion source eliminates the cost and effort of graphitization and returns results more rapidly. The NOSAMS USAMS is an AMS system based on a 3MV Tandetron accelerator. A NEC 134-sample gas-capable MCSNICS source. Analysis of samples as CO2 simplifies sample preparation, making analysis less expensive and faster.
+Radiocarbon Accelerator Mass Spectrometry (AMS) is a sensitive method for determining the age, provenance, and composition of carbon-containing materials. A primary disadvantage of the method is its cost, which often limits the number of samples analyzed. This forces researchers to carefully choose samples to be run and limits repeat measurements for error determination. One driver of the cost of AMS analysis is the time and effort required for sample preparation, including reduction of the sample to graphite. Analysis of CO2 directly via a gas-accepting AMS ion source eliminates the cost and effort of graphitization and returns results more rapidly. The NOSAMS USAMS is an AMS system based on a 3MV Tandetron accelerator (REF) combined with A NEC 134-sample gas-capable MCSNICS source \@ref(Longworth 2015).
 
 Most interfaces to gas-accepting sputter ion sources are a closed inlet design. A mixture of sample and helium is introduced to the source through a capillary, and flow is controlled by the pressure in the inlet volume and the length and diameter of the capillary. Pressure is adjusted by changing either the inlet volume or the amount of gas in the inlet. We designed a open inlet where a capillary samples gas for delivery to the ion source in a flowing stream that exhausts to the atmosphere, often called an open split. This defines the delivery pressure as 1 ATM and therefore flow is controlled by the capillary parameters and is not easily adjustable during measurement. The flow of CO2 to the source may be varied by controlling the ratio of CO2 to helium in the sample stream. Changing the ratio of CO2 to helium changes the partial pressure of CO2 and therefore the carbon flow rate to the source. 
 
-An open inlet has the advantage of simplicity; flow of CO2 to the source is preset and there are no separate sample transfer and dilution steps. This may translate to greater throughput by eliminating the time required for sample transfer, dilution, and setting of delivery pressure. A disadvantage of the open split is that the flow of CO2 to the source varies with sample size (CO2:He) and changes over the course of a measurement due to dilution of the sample by displacement helium. Our method compensates for this by limiting CO2 flow to a range that produces relatively constant C- ion current and stable ratios. Salazar and Szidat, Roberts gasbench, other open split methods.
+An open inlet has the advantage of simplicity; flow of CO2 to the source is preset and there are no separate sample transfer and dilution steps. This may translate to greater throughput by eliminating the time required for sample transfer, dilution, and setting of delivery pressure. A disadvantage of the open split is that the flow of CO2 to the source varies with sample size (CO2:He) and changes over the course of a measurement due to dilution of the sample by displacement helium. Our method compensates for this by limiting CO2 flow to a range that produces relatively constant C- ion current and stable ratios. In gas-source AMS, Roberts et. al (2013?) use an open split to introduce sample gas to a ECR ion source and Salazar and Szidat (2021?) designed a continuous flow system that maintains relatively stable pCO2 during acquisition by controlling pressure and venting excess gas to atmosphere.
 
-The gas-capable 134-sample MCSNICS from National Electrostatics Corporation (NEC) works on the same principal as hybrid sources developed by ETH (REF) and HVEE (REF). Sample CO2 is introduced onto a titanium frit in an aluminum target using stainless tubing mounted to an arm with a probe that mates with the back of the target. A CO~2~ - helium mixture is exposed to a beam of charged cesium atoms, which causes dissociation of CO~2~ and ionization of molecular and atomic species. Negative ions are extracted from the target and a magnetic filter picks species with masses corresponding to carbon.
+The gas-capable 134-sample MCSNICS from National Electrostatics Corporation (NEC) works on the same principle as hybrid sources developed by ETH (REF) and HVEE (REF). The sample CO~2~ - helium mixture is introduced onto a titanium frit in an aluminum target cathode using stainless tubing mounted to an arm with a probe that mates with the back of the cathode. Sample gas is exposed to a beam of charged cesium atoms, which causes dissociation of CO~2~ and ionization of molecular and atomic species. Negative ions are extracted from the target and carbon species are selected and interferences filtered by the USAMS Tandetron beamline.
 
 
 # Method
@@ -52,7 +52,7 @@ The open split interface supplies a helium-CO2 mixture to a split where a capill
 
 The test setup for extracting CO2 from septa-sealed vials is as follows: a double needle is inserted into the vial through the septa. One side of the needle is connected to helium which is used to force CO2 from the vial through the other side of the needle. The outflow from the vial enters an open split where a capillary is used to admit sample to the ion source. The system is currently set up to run with samples starting at atmospheric pressure.
 
-The flow rate from the open split into the source is defined by 250cm of 50um glass capillary (confirm this, SGE, Trajan, Agilent?), split into two sections by a zero-volume bulkhead connector at the source cage. The section inside the cage is jacketed in teflon tubing to help protect against spark damage.
+The helium displacement flow rate was set to 250ul/min for initial tests and was reduced to 100 ul/min for later work including most reference standard comparisons and the core comparison. The flow rate from the open split into the source is defined by 250cm of 50um glass capillary (confirm this, SGE, Trajan, Agilent?), split into two sections by a zero-volume bulkhead connector at the source cage. The section inside the cage is jacketed in teflon tubing to help protect against spark damage. The total flow rate of gas to the source varies due to the viscosity difference between CO2 and helium and is estimated to be 30 ul/min. ???
 
 
 ## Sample preparation
@@ -90,7 +90,7 @@ Testing is needed to determine minimum sample flow to avoid atmosphere entering 
 
 ## Source performance
 
-```{r}
+```{r, message = FALSE}
 carbcur <- carb %>%  
   map_dfr(2) %>% 
   compare_consensus() %>% 
@@ -104,20 +104,13 @@ curmean <- mean(currents$c12ua) %>% format(digits = 2) %>% paste("uA")
 cursd <- sd(currents$c12ua)
 ```
 
-Our initial work with the NEC source established optimal source parameters for consistent source performance. We used tank CO2 connected through a regulator to the ion source to measure source performance over a range of CO2 flows. Optimal flow for this source is 7.5uLs-1 CO2, but the source produces near optimal currents over a wide range of flows. Adding helium to the gas mixture produced similar currents to pure CO2 at the same CO2 flow rates.
+Initial work with the NEC source established optimal source parameters for consistent source performance. We used tank CO2 connected through a regulator to the ion source to measure source performance over a range of CO2 flows. Optimal flow for this source is 7.5uLs-1 CO2, but the source produces near optimal currents over a wide range of flows. Adding helium to the gas mixture produced similar currents to pure CO2 at the same CO2 flow rates.
 
 Best currents for the source are around 10uA 12C- or roughly 1/10 of graphite currents. This is generally comparable with other hybrid sources REFS. Typical currents for this study were between 4-9uA and average current for all samples was `r curmean`. The source typically produces best current at around 5uLs-1 CO2. Literature values give 1.5uLs-1 as optimal, but we've never seen that, and pressures, capillaries and flows in at least one of these papers doesn't make sense.
 
 Source currents are variable by day and by target under similar source, inlet, and sample conditions. Capillary condition, source and gas delivery arm alignment, slight variability in target geometry, source condition, and performance of the ionizer and cesium may all be factors. Current also varies by target for a given set of gas and source conditions. Some targets are clearly "bad", producing currents much lower than other targets for a given set of conditions. Capillary clogging can be an issue, especially when sampling from vials with acid.
 
-Precision taken as the standard error of the mean of repeated runs of a sample is around 1%. Precision is typically a little worse than predicted by counting statistics. More work is needed to look at whether this reflects variability between samples, but initial test of paired replicates show similar standard deviation for samples that show good stable currents.
-
 Precision of measurements of modern CO2 has been better than 1% (std error of mean of measurements of a target) for high current samples, with precision dropping off as current decreases below 6uA or so. Accuracy is reasonable within the large errors on gas measurements. Uncorrected measurements of dead CO2 range from 1% to 5% of modern depending on sample current.
-
-
-Discuss delivery rates and sample sizes here or in results?
-
-Initial currents of \> 10 uA dropped rapidly, eventually settling to 100-400 nA.
 
 ### Currents
 
@@ -133,7 +126,10 @@ Aimed to fill vial initially
 
 No current degradation down to X. Used Y as optimal mass and backfilled with helium.
 
-First tests of displacing pure CO2 from a vial into the open split using helium are promising. Helium flowing at 100uLm-1 produces current from 7mL of CO2 for over 2 hours. Currents do decrease with time due to dilution, but by supplying higher than optimal CO2 flow to the source initially, stable currents can be maintained for some time. Fraction of CO2 in sample gas should follow this relationship:
+First tests of displacing pure CO2 from a vial into the open split using helium are promising. Helium flowing at 100uLm-1 produces current from 7mL of CO2 for over 2 hours. Currents do decrease with time due to dilution, but by supplying higher than optimal CO2 flow to the source initially, stable currents can be maintained for some time. 
+
+
+Fraction of CO2 in sample gas should follow this relationship:
 
 $$C(t) = e^{-\frac{r}{V}t}$$
 
@@ -168,9 +164,9 @@ nblank <- length(blanks$norm_ratio)
 
 #### Current dependent blank
 
-Measurement of radiocarbon-free reference materials shows that the average normalized ratio for these samples is `r blankmean` ± `r blanksd` (N=`r nblank`). We investigated the sources of this method blank as a current-dependent blank and as a current-independent blank. 
+The HGIS method produces higher ratios for radiocarbon dead samples than the graphite method. Measurement of radiocarbon-free reference materials shows that the average normalized ratio for these samples is `r blankmean` ± `r blanksd` (N=`r nblank`). We investigated the sources of this method blank as a current-dependent blank and as a current-independent blank. 
 
-To assess blank contribution and ratio dependence on sample current, vials of live and dead standard gas were measured as the displacement helium flow diluted the samples, producing diminishing current over time. We used these data to develop a current-balance model following methods used to assess mass-dependent or constant contamination blanks in graphite targets (REFS). The constant contamination blank was also assessed directly by measuring pure helium in vials using the same method. Results from both tests are shown in figure 2. The inverse of the sample current is used to linearize the data, allowing assessment with a simple linear model. Fits from modern and dead dilution tests should trend towards the fraction modern of the blank, crossing at the inverse of blank current. Based on this assessment, we estimate the ratio of the blank as having F14C of 0.43 with a current of 110 nA. 
+HGIS cathodes produce measurable ion current, even with no gas flow. This current is initially > 10 uA and drops exponentially, reaching a baseline of 100-200 nA after 5-10 minutes. For the range of currents in this study (3-9 uA), this baseline current represents a 1-6% contribution to the total current at the F14C of the target baseline. This can be interpreted as a constant current dependent blank, analogous to a mass dependent "constant contaminant" blank and may be modelled with the same tools (REF). To assess blank contribution and ratio dependence on sample current, vials of live and dead standard gas were measured as the displacement helium flow diluted the samples, producing diminishing current over time. We used these data to develop a current-balance model following methods used to assess mass-dependent or constant contamination blanks in graphite targets (REFS). The constant contamination blank was also assessed directly by measuring pure helium in vials using the same method. Results from both tests are shown in figure 2. The inverse of the sample current is used to linearize the data, allowing assessment with a simple linear model. Fits from modern and dead dilution tests should trend towards the fraction modern of the blank, crossing at the inverse of blank current. Based on this assessment, we estimate the ratio of the blank as having F14C of 0.43 with a current of 110 nA. 
 
 The directly measured blank current (120 nA) agrees well with the model assessment, but has a higher fraction modern (F14C = 0.82). This is likely due to a combination of low measurement precision for the direct measurement and high sensitivity of the model to variability in the measured fraction modern and current in the depletion samples (REF). This constant contamination blank is consistent with the fact that hybrid cathodes produce a minimum current with or without gas flow to the source. Given that this minimum current ranges from 100 nA to 400 nA, this current likely makes up a large fraction of the method blank.
 

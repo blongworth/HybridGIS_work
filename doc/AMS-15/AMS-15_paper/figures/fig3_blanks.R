@@ -3,6 +3,7 @@
 # This should be remade with new data reduction
 # Use sample depletion data?
 # Or skip altogether!
+# Add current error for fig A
 
 library(tidyverse)
 library(amstools)
@@ -10,6 +11,9 @@ library(amsdata)
 library(hgis)
 library(here)
 library(broom)
+library(patchwork)
+
+theme_set(theme_classic())
 
 data<- get_hgis_data(here("data/USAMS101320R.txt"), as.Date("2020-11-17")) %>% 
   mutate(Num = ifelse(Pos %in% c(2, 4), "S", ifelse(Num == "S", "U", Num)))
@@ -98,22 +102,58 @@ blankfit <- fits %>%
 blank_val <- blankfit %>% 
   select(Fm_blank, m_blank)
 
-ggplot(ds, aes(Cur_inv, mean, color = Gas)) +
+
+# Make plot of fm vs current with model fits
+
+blank_model <- ggplot(ds, aes(Cur_inv, mean, color = Gas)) +
   geom_abline(slope = blankfit$LiveGas_Cur_inv, 
               intercept = blankfit$`LiveGas_(Intercept)`,
               color = "#0069b1") +
   geom_abline(slope = blankfit$DeadGas_Cur_inv, 
               intercept = blankfit$`DeadGas_(Intercept)`,
               color = "#00a9e0") +
-  geom_pointrange(aes(ymin = mean - merr, ymax = mean + merr), size = .3) + 
+  geom_pointrange(aes(ymin = mean - merr, ymax = mean + merr)) + 
   scale_color_manual("Gas", values = c("#b7bf10", "#00a9e0", "#0069b1")) +
   xlim(0, 10) +
-  labs(title = "Modeled blank",
-       subtitle = "Fits cross at Fm and current of blank",
+  labs(title = "A",
+       #subtitle = "Fits cross at Fm and current of blank",
        x = "Inverse 12C Current (μA-1)",
-       y = "Fraction modern") +
-  theme_classic() +
+       y = "F14C") +
   theme(legend.position = "none",
         legend.background = element_rect(fill = "white", color = "black")) 
 
-ggsave(here("doc/AMS-15/AMS-15_paper/figures/fig2_current_dependent_blank.svg"))
+###
+# Direct blank measurements
+###
+
+# Shows uncorrected blank Fm's vs current
+# Need to investigate high outliers- bad wheel?
+
+# Get data
+blanks <- readRDS(here("data_analysed/carb_all.rds")) %>% 
+  map_dfr(2) %>% 
+  filter(rec_num %in% c(2138, 83028),
+         he12C > 2E-6,
+         sample_type == "B") %>% 
+  mutate(he12C = he12C * 1E6,
+         sig_he12C = sig_he12C * 1E6)
+
+# Plot fm vs current
+fm_curr <- blanks %>% 
+  mutate(Type = ifelse(rec_num == 2138, "TIRI-F", "IAEA C-1")) %>%
+  ggplot(aes(he12C, norm_ratio)) +
+  geom_errorbar(aes(ymin = norm_ratio - sig_norm_ratio,
+                    ymax = norm_ratio + sig_norm_ratio)) +
+  geom_errorbarh(aes(xmin = he12C - sig_he12C, xmax = he12C + sig_he12C)) +
+  geom_point(color = "#00a9e0", size = 3) +
+  labs(title = "B",
+       x = "12C Current (μA)",
+       y = "F14C") +
+  theme(legend.position = c(0.82, 0.76),
+        legend.background = element_rect(fill = "white", color = "black"))
+
+
+# Build figure and save
+blank_model / fm_curr
+
+ggsave(here("doc/AMS-15/AMS-15_paper/figures/fig3_blanks.svg"))

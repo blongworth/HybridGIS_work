@@ -8,6 +8,9 @@ library(amstools)
 library(scales)
 library(gt)
 library(Bchron)
+library(patchwork)
+
+theme_set(theme_classic())
 
 # Read raw and reduced data as produced by analyse_carbonates.R
 data <- readRDS(here("data_analysed/carb_all.rds"))
@@ -68,8 +71,10 @@ mean_errs <- cr_no %>%
   pivot_wider(names_from = method,
               values_from = mean_sig)
 
+
 # Make difference plot of core carbonates
-ggplot(cr_no) +
+
+core_compare <- ggplot(cr_no) +
   geom_hline(yintercept = 0) +
   # geom_hline(yintercept = mean_diff$fm_diff_mean, color = "blue") +
   # geom_hline(yintercept = mean_diff$fm_diff_mean + mean_diff$fm_diff_sd, color = "lightblue") +
@@ -79,21 +84,42 @@ ggplot(cr_no) +
                       ymax = fm_diff + sig_fm_corr),
                   position = "jitter") +
   scale_color_manual(values = c("#00b7bd", "#b7bf10")) +
-  scale_x_continuous(breaks = breaks_extended(7),
-                     labels = label_percent(suffix = "",
-                                            accuracy = 1)) +
-  scale_y_continuous(breaks = breaks_extended(7),
-                     labels = label_percent(suffix = "",
-                                            accuracy = 1)) +
-  labs(title = "HGIS measurements agree with graphite",
-       subtitle = "Sediment core macrofossils measured via HGIS and graphite",
-       x = "Mean of measurements (pMC)",
-       y = "HGIS - graphite (pMC)") +
-  theme(legend.position = c(0.85, 0.15),
-        legend.direction = "horizontal",
+  labs(title = "A",
+       #subtitle = "Sediment core macrofossils measured via HGIS and graphite",
+       x = "Mean of measurements (F14C)",
+       y = "HGIS - graphite (F14C)") +
+  theme(legend.position = "none")
+  # theme(legend.position = c(0.85, 0.15),
+  #       legend.direction = "horizontal",
+  #       legend.background = element_rect(fill = "white", color = "black")) 
+
+
+# Simple age depth plot
+# If this is used, should use calibrated ages
+# or at least bomb correction
+
+age_depth <- cr_no %>% 
+  ggplot(aes(depth, rc_age, color = method, shape = method)) +
+  geom_pointrange(aes(ymin = rc_age - sig_rc_age, 
+                      ymax = rc_age + sig_rc_age),
+                  size = 0.5) +
+  geom_smooth(alpha = .2) +
+  coord_flip() +
+  scale_y_reverse() +
+  scale_x_reverse() +
+  scale_color_manual(values = c("#00b7bd", "#b7bf10")) +
+  labs(title = "B",
+       #subtitle = "Age vs. depth for graphite and HGIS",
+       y = "Radiocarbon years (BP)",
+       x = "Core depth (cm)") +
+  theme(legend.position = c(0.85, 0.30),
         legend.background = element_rect(fill = "white", color = "black")) 
 
-ggsave(here("doc/AMS-15/AMS-15_paper/figures/fig6_core_carbonates.svg"))
+# Combine plots and save
+
+core_compare / age_depth
+
+ggsave(here("doc/AMS-15/AMS-15_paper/figures/fig5_core_carbonates.svg"))
 
 # data for core carbonates section
 

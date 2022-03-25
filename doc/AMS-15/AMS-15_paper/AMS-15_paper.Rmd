@@ -259,30 +259,25 @@ This work is supported by NSF cooperative agreement. We are grateful to C. McInt
 
 ![Figure 1. Inlet layout. Helium displacement gas is delivered to vial through a double needle, mixed sample and helium flows to an open split, and a glass capillary delivers gas to the ion source.](images/HGIS_open_split_drawing.svg)
 
-![Figure 2](figures/fig1a_flow_current_time.svg)
+![Figure 2](figures/fig2_current_flow.svg)
 
-![Figure 2b](figures/fig1b_current_flow.svg)
+![Figure 3](figures/fig3_blanks.svg)
 
-![Figure 4](figures/fig2_current_dependent_blank.svg)
+![Figure 4](figures/fig4_consensus_samples.svg)
 
-![Figure 4b](figures/fig3_cur_indep_blank.svg)
-
-![Figure 5](figures/fig5_consensus_samples.svg)
-
-![Figure 6](figures/fig6_core_carbonates.svg)
+![Figure 5](figures/fig5_core_carbonates.svg)
 
 # Figure captions
 
 Figure 1. Schematic of the open split inlet. Two valco valves provide the ability to admit helium and live or dead tank standards. The double needle is housed in a VICI cross and allows displacement helium to flow into the sample vial and the sample-helium mixture to flow to the open split, where a capillary delivers the mixture to the ion source.
 
-Figure 2. Performance of the NOSAMS MCSNICS hybrid gas ion source. a. Modelled flows of helium and CO2 to the ion source during displacement of a pure CO2 vial sample with helium. b. Measured 12C- ion current during the same dillution experiment. c. Measured ion current for modelled CO2 flow. The stability of the source over a range of flow produces stable current for up to 40 m of measurement time. 
+Figure 2. Performance of the NOSAMS MCSNICS hybrid gas ion source. a. Modeled flows of helium and CO2 to the ion source during displacement of a pure CO2 vial sample with helium. b. Measured 12C- ion current during the same dilution experiment. c. Measured ion current for modeled CO2 flow. The stability of the source over a range of flow produces stable current for up to 40 m of measurement time. 
 
 Will probably skip this figure:
 Figure 3. Relationship of sample size to C- ion current. There is no strong relationship between size and current for samples larger than 800 ug C.  
 
-Figure 4. Assessment of blanks. (a) Current dependent blank model and data. Fm and current of measurements from dillution tests of live and dead gas are used to generate linear fits which should cross at the Fm and current of the constant current blank. Direct determination of Fm and current of the blank are also shown. (b) Fraction modern of large, radiocarbon dead samples compared to sample current. Blank rises with decreasing current, as expected, but may be treated as a single blank with a simple correction for full-size samples producing greater than 3 uA C- current.
+Figure 3. Assessment of blanks. (a) Current dependent blank model and data. Fm and current of measurements from dilution tests of live and dead gas are used to generate linear fits which should cross at the Fm and current of the constant current blank. Direct determination of Fm and current of the blank are also shown. (b) Fraction modern of large, radiocarbon dead samples compared to sample current. Blank rises with decreasing current, as expected, but may be treated as a single blank with a simple correction for full-size samples producing greater than 3 uA C- current.
 
+Figure 4. Agreement of standards with graphite consensus values. Difference of HGIS measurements from consensus for individual samples are plotted against their expected value. Expected values are spread to avoid overlapping points. Error bars represent one sigma sample errors. The black line is the mean difference from expected value for all measurements, and the blue lines are one standard deviation of all measurements.
 
-Figure 5. Agreement of standards with graphite consensus values. Difference of HGIS measurements from consensus for individual samples are plotted against their expected value. Expected values are spread to avoid overlapping points. Error bars represent one sigma sample errors. The black line is the mean difference from expected value for all measurements, and the blue lines are one standard deviation of all measurements.
-
-Figure 6. Comparison of Haiti core samples measured as graphite. a. Difference between HGIS and graphite measurements of the same materials vs. core depth (should this be mean of values?). Samples are offset on the horizontal axis for clarity. Error bars are measurement error for each sample. b) comparison of age-depth models produced using HGIS and graphite measurements.
+Figure 5. Comparison of Haiti core samples measured as graphite and via HGIS. a. Difference between HGIS and graphite measurements of the same materials. Difference between HGIS and graphite measurements is shown on the vertical axis and plotted against the mean of the two measurements. Samples are offset on the horizontal axis for clarity. Error bars are measurement error for each sample. Graphite measurements are included to allow comparison of error estimates. b) comparison of age-depth models produced using HGIS and graphite measurements.

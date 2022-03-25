@@ -4,14 +4,13 @@ author:
 - Brett Longworth
 - Josh Burton
 - Simon Pendleton
-- Josh Hlavenka
 - Sydney Moser
 - Mark Roberts
 - Mark Kurz
 output:
   html_document: default
-  word_document: default
   pdf_document: default
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -22,6 +21,9 @@ knitr::opts_chunk$set(echo = FALSE)
 library(tidyverse)
 library(hgis)
 library(here)
+#library(errors)
+
+#options(errors.notation = "plus-minus")
 
 carb <- readRDS(here("data_analysed/carb_all.rds")) %>% 
   map_dfr(2)
@@ -149,13 +151,28 @@ Two more recent carbonate tests produced stable currents and backgrounds. Sample
 
 ### Contaminant carbon
 
+```{r}
+# Fix to use current form of processed data
+blanks <- carb %>% 
+  filter(rec_num %in% c(2138, 83028),
+         he12C > 2E-6,
+         sample_type == "B")
+blankmean <- mean(blanks$norm_ratio) %>% format(digits = 3)
+blanksd <-  sd(blanks$norm_ratio) %>% format(digits = 3)
+
+# errors should produce an "all in one" for this, but it doesn't work with inline code
+# meanblank <- as.errors(mean(blanks$norm_ratio), sd(blanks$norm_ratio))
+nblank <- length(blanks$norm_ratio)
+```
+
+
 #### Current dependent blank
 
-Measurement of radiocarbon-free reference materials shows that the average normalized ratio for these samples is XXX +- YYY (N=XXX). We investigated the sources of this method blank as a current-dependent blank and as a current-independent blank. 
+Measurement of radiocarbon-free reference materials shows that the average normalized ratio for these samples is `r blankmean` ± `r blanksd` (N=`r nblank`). We investigated the sources of this method blank as a current-dependent blank and as a current-independent blank. 
 
-To assess blank contribution and ratio dependence on sample current, vials of live and dead standard gas were measured as the displacement helium flow diluted the samples, producing diminishing current over time. We used these data to develop a current-balance model following methods used to assess mass-dependent or constant contamination blanks in graphite targets (REFS). The constant contamination blank was also assessed directly by measuring pure helium in vials using the same method. Results from both tests are shown in figure 2. The inverse of the sample current is used to linearize the data, allowing assessment with a simple linear model. Fits from modern and dead dilution tests should trend towards the fraction modern of the blank, crossing at the inverse of blank current. Based on this assessment, we estimate the ratio of the blank as XXX pMC with a current of XXX nA. 
+To assess blank contribution and ratio dependence on sample current, vials of live and dead standard gas were measured as the displacement helium flow diluted the samples, producing diminishing current over time. We used these data to develop a current-balance model following methods used to assess mass-dependent or constant contamination blanks in graphite targets (REFS). The constant contamination blank was also assessed directly by measuring pure helium in vials using the same method. Results from both tests are shown in figure 2. The inverse of the sample current is used to linearize the data, allowing assessment with a simple linear model. Fits from modern and dead dilution tests should trend towards the fraction modern of the blank, crossing at the inverse of blank current. Based on this assessment, we estimate the ratio of the blank as having F14C of 0.43 with a current of 110 nA. 
 
-The directly blank current (XXX nA) agrees well with the model assessment, but has a higher fraction modern (XXX pMC). This is likely due to a combination of low measurement precision for the direct measurement and high sensitivity of the model to variability in the measured fraction modern and current in the depletion samples (REF). This constant contamination blank is consistent with the fact that hybrid cathodes produce a minimum current with or without gas flow to the source. Given that this minimum current ranges from 100 nA to 400 nA, this current likely makes up a large fraction of the method blank.
+The directly measured blank current (120 nA) agrees well with the model assessment, but has a higher fraction modern (F14C = 0.82). This is likely due to a combination of low measurement precision for the direct measurement and high sensitivity of the model to variability in the measured fraction modern and current in the depletion samples (REF). This constant contamination blank is consistent with the fact that hybrid cathodes produce a minimum current with or without gas flow to the source. Given that this minimum current ranges from 100 nA to 400 nA, this current likely makes up a large fraction of the method blank.
 
 
 $$I_{sample} + I_{blank} = I_{meas}$$
@@ -174,18 +191,9 @@ LBC eqn
 
 $$Fm_s = Fm_m - Fm_{blk}\frac{Fm_{std} - Fm_m}{Fm_{std}}$$
 
-```{r}
-# Fix to use current form of processed data
-blanks <- carb %>% 
-  filter(rec_num %in% c(2138, 83028),
-         he12C > 2E-6,
-         sample_type == "B")
-```
 
 
 
-Mean Fm of blanks: `r mean(blanks$norm_ratio) %>% format(digits = 3)`
-SD of Fm of blanks: `r sd(blanks$norm_ratio) %>% format(digits = 3)`
 
 Figure3: justification for large blank
 

@@ -102,6 +102,12 @@ blankfit <- fits %>%
 blank_val <- blankfit %>% 
   select(Fm_blank, m_blank)
 
+# Directly measured Fm and mass of blank
+blank_meas <- ds %>% 
+  ungroup() %>% 
+  filter(Gas == "Blank") %>% 
+  summarize(mean_cur = mean(Cur),
+            mean_rat = mean(mean))
 
 # Make plot of fm vs current with model fits
 

@@ -42,7 +42,7 @@ Most interfaces to gas-accepting sputter ion sources are a closed inlet design (
 
 An open inlet has the advantage of simplicity; flow of CO2 to the source is preset and there are no separate sample transfer and dilution steps. This may translate to greater throughput by eliminating the time required for sample transfer, dilution, and setting of delivery pressure. A disadvantage of the open split is that the flow of CO2 to the source varies with sample size (CO2:He) and changes over the course of a measurement due to dilution of the sample by displacement helium. Our method compensates for this by limiting CO2 flow to a range that produces relatively constant C- ion current and stable ratios. In gas-source AMS, @Roberts2013 use an open split to introduce sample gas to a ECR ion source and @salazar_low-cost_2019 designed a continuous flow system that maintains relatively stable pCO2 during acquisition by controlling pressure and venting excess gas to atmosphere.
 
-The gas-capable 134-sample MCSNICS from National Electrostatics Corporation (NEC) (@Xu2007) works on the same principle as hybrid sources developed by ETH (@ruff_gas_2007, @ruff2010) and HVEE (@BronkRamsey2004). The sample CO~2~ - helium mixture is introduced onto a titanium frit in an aluminum target cathode using stainless tubing mounted to an arm with a probe that mates with the back of the cathode. Sample gas is exposed to a beam of charged cesium atoms, which causes dissociation of CO~2~ and ionization of molecular and atomic species. Negative ions are extracted from the target and carbon species are selected and interferences filtered by the USAMS Tandetron beamline.
+The gas-capable 134-sample MCSNICS from National Electrostatics Corporation (NEC) (@Xu2007) works on the same principle as hybrid sources developed by ETH (@ruff_gas_2007, @ruff2010) and HVEE (@BronkRamsey2004). The sample CO~2~ - helium mixture is introduced onto a titanium insert or frit in an aluminum target cathode using stainless tubing mounted to an arm with a probe that mates with the back of the cathode. Sample gas is exposed to a beam of charged cesium atoms, which causes dissociation of CO~2~ and ionization of molecular and atomic species. Negative ions are extracted from the target and carbon species are selected and interferences filtered by the USAMS Tandetron beamline.
 
 
 # Method
@@ -226,11 +226,9 @@ Age models were developed for both the traditional graphite measurements of the 
 Mean and sd of difference of calibrated ages?
 
 The accuracy of age-depth models is often driven by environmental factors and 
-sparse data, rather than the precision of individual dates (REFS from poster). The lower time and 
+sparse data, rather than the precision of individual dates (@blaauw_double_2018 ONE MORE?). The lower time and 
 cost of the hybrid method allows analysis of more samples. This may produce more 
 accurate age models, despite reduced precision of individual measurements.
-
-Figure7: age model comparison graphite HGIS
 
 Age model quality changes with lower precision.
 

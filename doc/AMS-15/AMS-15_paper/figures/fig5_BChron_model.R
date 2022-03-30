@@ -1,20 +1,21 @@
 
 # Bchron plots
 # separate data and make cal curve for graphite and hgis
-# How to handle bomb dates
-# use IntCal package and assign bomb curve
 
 library(tidyverse)
 library(here)
-library(hgis)
+# library(hgis)
 library(amstools)
-library(scales)
-library(gt)
 library(Bchron)
 library(IntCal)
-library(patchwork)
+# library(patchwork)
 
 theme_set(theme_classic())
+
+
+#####
+# Read and combine data
+#####
 
 # Read raw and reduced data as produced by analyse_carbonates.R
 data <- readRDS(here("data_analysed/carb_all.rds"))
@@ -30,17 +31,20 @@ results <- map_dfr(data, 2) %>%
   mutate(rec_num = ifelse(is.na(rec_num.y), rec_num.x, rec_num.y)) %>% 
   select(-rec_num.x, -rec_num.y)
 
+# Make cross ref table to allow joining graphite and hgis data
 names <- results %>% 
   ungroup() %>% 
   filter(wheel == "USAMS062921") %>% 
   select(rec_num, sample_name)
 
+# Get graphite results
 graphite_results <- getRecOS(results$rec_num) %>% 
   filter(!is.na(reported)) %>% 
   select(rec_num, fm_corr = f_modern, sig_fm_corr = f_ext_error) %>% 
   mutate(method = "graphite") %>% 
   left_join(names, by = "rec_num")
 
+# Join graphite and hgis results
 combined_results <- results %>% 
   filter(str_starts(sample_name, "HATC") | str_starts(sample_name, "\\d")) %>% 
   mutate(method = "hgis") %>% 
@@ -54,19 +58,23 @@ combined_results <- results %>%
   mutate(fm_diff = fm_corr - fm_corr_gr) %>% 
   ungroup()
 
+# read core depth data
 depth <- read_csv(here("data/haiti_depth.csv"))
 
+# Join core depth data to combined results
 combined_results <- left_join(combined_results, depth, by = "rec_num") %>% 
   mutate(rc_age = -8033 * log(fm_corr),
          sig_rc_age = rc_age - -8033 * log(fm_corr + sig_fm_corr))
 write_csv(combined_results, here("data_analysed/haiti_combined.csv"))
 
-# No outliers
+# Remove outlier: HGIS sample leaked
 cr_no <- combined_results %>% 
-  filter(abs(fm_diff_mean) < 0.02)
+  filter(rec_num != 171996)
 
 
+#####
 # Import Bomb curve
+#####
 
 # load curve Hua 2020 NH1 Curve
 bomb_NH1 <- IntCal::ccurve(postbomb = TRUE)
@@ -82,6 +90,7 @@ file.copy(
 )
 
 # create dataframes for BChron
+# Need to add reservoir age correction
 cal_sub <- cr_no %>% 
   mutate(id = paste(sample_name, "-", method)) %>% 
   select(sample_name, id, depth, rc_age, sig_rc_age, method) %>% 
@@ -97,6 +106,11 @@ cal_sub_hgis <- cal_sub %>%
 
 cal_sub_gr <- cal_sub %>% 
   filter(method == "graphite" | is.na(method)) 
+
+
+#####
+# Calibrate dates
+#####
 
 # Calibrate hgis ages
 cal_dates_hgis <- with(cal_sub_hgis,
@@ -117,11 +131,36 @@ sig_cal_bp_gr <- map(cal_dates_gr, 2)
 plot(cal_dates_hgis) +
   ggtitle("HGIS dates")
 
+
+#####
+# Make chronologies
+#####
+
+# S. Moser settings
+# Bchronology(ages=ages, 
+#             ageSds=ageSds, 
+#             calCurves=calCurves, 
+#             ids=id, 
+#             positions=position, 
+#             positionThicknesses=thickness, 
+#             predictPositions=seq(0,896,by=1), 
+#             allowOutside = TRUE, 
+#             iterations=15000, 
+#             burn=2000, 
+#             thin = 12, 
+#             extractDate = -66, 
+#             thetaStart = NULL) 
+
 # Make hgis chronology
+# Some of the MCMC settings are causing a crash
 chron_hgis  <- with(cal_sub_hgis,
                     Bchronology(rc_age, sig_rc_age, positions = depth, 
                                 ids = sample_name, calCurves = curve,
-                                artificialThickness = 1))
+                                artificialThickness = 1,
+                                #iterations = 15000,
+                                #burn = 2000,
+                                #thin = 12,
+                                extractDate = -66))
 plot(chron_hgis) +
   ggtitle("HGIS chronology")
 summary(chron_hgis, "convergence")

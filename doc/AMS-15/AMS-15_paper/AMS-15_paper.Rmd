@@ -69,6 +69,8 @@ The helium displacement flow rate was set to 250 μl min^-1^ for initial tests, 
 
 Carbonate samples were weighed into 7 ml septa-sealed Vacutainer vials (Labco 768W). Sealed vials were evacuated, then 1 ml 85% phosphoric acid was added. The samples were allowed to react at 60 C for 4-6 h. Sample pressure was adjusted to 1 atm by allowing the sample to equilibrate with a helium-filled syringe connected through the vial septum. Evacuation, acid addition, and heated reaction were performed by the automated gas handling system developed for the CFAMS GIS carbonate system [@Roberts2013].
 
+Reference and process blank materials were not pretreated or cleaned. Carbonate shell samples for the core comparison study were picked from a split core and cleaned by washing with distilled water and dried at 60 C. Shell samples were crushed and mixed, but not otherwise pretreated. Other? Sonication?
+
 Standards were prepared by evacuating vials and then filling with a modern standard CO~2~ using the automated gas handling system. Standards were adjusted to the same size as other samples by removing CO~2~ and replacing with helium using a syringe. Process blank samples were prepared from powdered C-1 or TIRI-F, acidified in vials using the method above.
 
 ## Measurement
@@ -157,9 +159,9 @@ The per-sample error agrees well with variability of replicates, and measurement
 
 ## Carbonate macrofossils for age-depth model
 
-A suite of 15 carbonate macrofossils consisting of shell and coral fragments from a series of coastal marine cores REF were measured as graphite and as CO~2~ using the HGIS method to further test the method and serve to demonstrate a potential application. coral macrofossils from a subtropical coastal marine sediment core using our gas method and compared to the same samples measured using the traditional graphite method.
+A suite of 15 carbonate macrofossils consisting of shell and coral fragments from a series of coastal marine cores @moser2021 were measured as graphite and as CO~2~ using the HGIS method to further test the method and serve to demonstrate a potential application. Sediment cores were collected from Baie des Baradères, Haiti during a scientific cruise in May 2016 lead by Dr. Jeffrey Donnelly (WHOI). Coring was performed with a Rossfelder vibracorer from a 20-foot pontoon boat. The cores were collected from a coastal karst basin (CKB) at vertical depth \~11.7 m and coordinates 18.514° N, 73.629° W. Core HATC1 D1 is 145 cm long and was collected in a 3-inch poly tube as a control directly beside core HATC1 D2, which is a continuous 896 cm core collected in a 3-inch aluminum tube. Carbonate materials such as corals and bivalve shells were selected throughout the core for the age-depth model.
 
-To further test the method and a potential application, we measured 15 shell and coral macrofossils from a subtropical coastal marine sediment core using our gas method and compared to the same samples measured using the traditional graphite method.
+age range
 
 We found the HGIS and graphite measurements to be in good agreement, with no significant bias (Figure 5a). Mean difference between hybrid and graphite measurements was -0.003 F^14^C and the standard deviation of this difference was 0.009 F^14^C. Mean per-sample error was 0.010 F^14^C for HGIS measurements, compared with 0.002 F^14^C for graphite.
 
@@ -168,6 +170,8 @@ One HGIS sample vial was noted to be at atmospheric pressure when the 16 mg samp
 ### Age model
 
 Age models were developed for both the traditional graphite measurements of the core carbonates and the HGIS measurements (Figure 5b). We used the Bchron Baesian radiochronology package [@haslett_simple_2008] to develop these models. The age-depth curves produced by the two datasets are very similar, with the largest differences being in the uncertainty of the individual dates.
+
+We applied a correction for the regional marine reservoir effect with a delta R of -216 and uncertainty 92 based on the oxcal model with 10 reservoir points. Samples with radiocarbon age \> 0 were calibrated using the Marine20 curve @heaton_marine20marine_2020. The NH1 curve from Hua et. al @hua_atmospheric_2013 was used for calibration of postmodern dates.
 
 Mean and sd of difference of calibrated ages?
 

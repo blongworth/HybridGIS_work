@@ -98,8 +98,8 @@ cal_sub <- cr_no %>%
          rc_age_corr = if_else(curve == "marine20", rc_age - 216, rc_age),
          sig_rc_age_corr = if_else(curve == "marine20", sqrt(sig_rc_age^2 + 92^2), sig_rc_age)) %>% 
   add_row(id = "Top", sample_name = "Top", depth = 0, 
-          rc_age = 0, sig_rc_age = 1, 
-          rc_age_corr = 0, sig_rc_age_corr = 1, 
+          rc_age = -66, sig_rc_age = 1, 
+          rc_age_corr = -66, sig_rc_age_corr = 1, 
           curve = "normal")
 
 
@@ -108,7 +108,10 @@ cal_sub <- cr_no %>%
 #####
 
 cal_dates <- with(cal_sub,
-  BchronCalibrate(rc_age_corr, sig_rc_age_corr, positions = depth, ids = id, calCurves = curve))
+  BchronCalibrate(rc_age_corr, sig_rc_age_corr, 
+                  positions = depth, ids = id, 
+                  calCurves = curve,
+                  allowOutside = TRUE))
 plot(cal_dates)
 
 
@@ -162,7 +165,9 @@ summary(chron_hgis, "convergence")
 chron_gr  <- with(cal_sub_gr,
                   Bchronology(rc_age_corr, sig_rc_age_corr, positions = depth, 
                               ids = sample_name, calCurves = curve, 
-                              artificialThickness = 1.00))
+                              #artificialThickness = 1.00,
+                              allowOutside = TRUE,
+                              extractDate = -66))
 plot(chron_gr) +
   ggtitle("Graphite chronology")
 

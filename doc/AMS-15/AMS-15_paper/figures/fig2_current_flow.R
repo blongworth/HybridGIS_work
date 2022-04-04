@@ -16,7 +16,8 @@ data <- process_hgis_results(here("data/USAMS040121R.txt"),
                              as.Date("2021-04-02")) %>%
   filter(pos == 5) %>% 
   mutate(time = cumsum(corr_lt) / 60,
-         co2flow = concCO2(time, r = 244) * 30) #30ul/min
+         co2flow = concCO2(time, r = 244) * 30, #30ul/min
+         he12C = he12C * 1E6)
 
 # current vs time subplot
 cur_time <- ggplot(data, aes(time, he12C)) +
@@ -26,7 +27,9 @@ cur_time <- ggplot(data, aes(time, he12C)) +
   labs(title = "A",
        #title = "Ion current",
        x = "Time (min)",
-       y = "12C current (μA)")
+       y = "12C current (μA)") +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank())
 
 # flow vs time subplot
 flow_time <- data.frame(x = 0:125) %>% 
@@ -39,10 +42,9 @@ flow_time <- data.frame(x = 0:125) %>%
   labs(title = "B",
        #title = "Gas flows to source",
        #subtitle = "7mL vial, 244μL/min helium, 30μL/min to source",
+       x = "Time (min)",
        y = "Gas flow (μL/min)") +
-  theme(axis.title.x = element_blank(),
-        axis.text.x = element_blank(),
-        legend.position = c(0.87, 0.65),
+  theme(legend.position = c(0.87, 0.50),
         legend.background = element_rect(fill = "white", color = "black"))
 
 # Current vs flow subplot
@@ -54,10 +56,12 @@ cur_flow <- ggplot(data, aes(co2flow, he12C)) +
        #title = bquote('Ion current is stable for a range of CO'[2]~'flow'),
        #subtitle = bquote('Current vs. CO'[2]~'flow during vial dillution'),
        x = bquote('CO'[2]~'Flow (μl/min)'),
-       y = TeX(r'(^{12}C^- current (μA))'))
+       y = "12C- current (μA)"
+       #y = TeX("^{12}C^- current (uA)")
+       )
 
 # Build figure and save
 cur_time / flow_time / cur_flow
 
-ggsave(here("doc/AMS-15/AMS-15_paper/figures/fig2_current_flow.svg"))
-ggsave(here("doc/AMS-15/AMS-15_paper/figures/fig2_current_flow.pdf"))
+ggsave(here("doc/AMS-15/AMS-15_paper/figures/fig2_current_flow.svg"), width = 7, height = 7)
+ggsave(here("doc/AMS-15/AMS-15_paper/figures/fig2_current_flow.pdf"), width = 7, height = 7)

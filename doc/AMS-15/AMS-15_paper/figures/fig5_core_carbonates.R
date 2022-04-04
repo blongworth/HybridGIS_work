@@ -115,11 +115,29 @@ age_depth <- cr_no %>%
   theme(legend.position = c(0.85, 0.30),
         legend.background = element_rect(fill = "white", color = "black")) 
 
+# Bchron age models
+
+# Read chronologies
+
+chron_hgis <- read_rds(here("data_analysed/hgis_chronology.rds"))
+chron_gr <- read_rds(here("data_analysed/graphite_chronology.rds"))
+
+hgis_bchron <- plot(chron_hgis) +
+  xlim(8000, -500) +
+  ggtitle("B")
+
+gr_bchron <- plot(chron_gr) +
+  xlim(8000, -500) +
+  ggtitle("C") +
+  theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank())
 # Combine plots and save
 
-core_compare / age_depth
+core_compare / (hgis_bchron | gr_bchron)
 
-ggsave(here("doc/AMS-15/AMS-15_paper/figures/fig5_core_carbonates.svg"))
+# Save figure
+ggsave(here("doc/AMS-15/AMS-15_paper/figures/fig5_core_carbonates.svg"), width = 7, height = 7)
+ggsave(here("doc/AMS-15/AMS-15_paper/figures/fig5_core_carbonates.pdf"), width = 7, height = 7)
 
 # data for core carbonates section
 

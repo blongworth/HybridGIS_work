@@ -41,5 +41,6 @@ ggplot(aes(fm_consensus, fm_diff, color = Name, shape = Name)) +
        y = "F14C difference (HGIS - expected)")
 
 # Save figure
-ggsave(here("doc/AMS-15/AMS-15_paper/figures/fig4_consensus_samples.svg"))
+ggsave(here("doc/AMS-15/AMS-15_paper/figures/fig4_consensus_samples.svg"), width = 7, height = 4)
+ggsave(here("doc/AMS-15/AMS-15_paper/figures/fig4_consensus_samples.pdf"), width = 7, height = 4)
 

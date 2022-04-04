@@ -162,4 +162,5 @@ fm_curr <- blanks %>%
 # Build figure and save
 blank_model / fm_curr
 
-ggsave(here("doc/AMS-15/AMS-15_paper/figures/fig3_blanks.svg"))
+ggsave(here("doc/AMS-15/AMS-15_paper/figures/fig3_blanks.svg"), width = 7, height = 5)
+ggsave(here("doc/AMS-15/AMS-15_paper/figures/fig3_blanks.pdf"), width = 7, height = 5)

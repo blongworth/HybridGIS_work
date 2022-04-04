@@ -57,9 +57,11 @@ combined_results <- left_join(combined_results, depth, by = "rec_num") %>%
          sig_rc_age = rc_age - -8033 * log(fm_corr + sig_fm_corr))
 write_csv(combined_results, here("data_analysed/haiti_combined.csv"))
 
-# No outliers
-cr_no <- combined_results %>% 
-  filter(abs(fm_diff_mean) < 0.02)
+# Remove outlier: HGIS sample leaked
+# Remove HATC duplicates
+cr_no <- core %>% 
+  filter(rec_num != 171996,
+         !str_starts(sample_name, "HATC"))
 
 mean_diff <- cr_no %>% 
   filter(method == "hgis") %>% 
@@ -143,21 +145,21 @@ ggsave(here("doc/AMS-15/AMS-15_paper/figures/fig5_core_carbonates.pdf"), width =
 
 # mean 
 
-cr_no %>% 
-  group_by(method) %>% 
-  #filter(method == "hgis") %>% 
-  summarize(across(c(sig_fm_corr, fm_diff),
-                   list(mean = mean, sd = sd)),
-            N = n()) %>% 
-  select(`Consensus difference` = fm_diff_mean,
-         `Std. Dev. of consensus difference` = fm_diff_sd,
-         `per-sample error` = sig_fm_corr_mean,
-         N
-         ) %>%  
-  gt() %>% 
-  tab_header(title = "Haiti carbonates performance summary",
-             subtitle = "TIRI-I, C-2, and NOSAMS2. Values in pMC") %>% 
-  fmt_number(1:3, 
-             scale_by = 100,
-             decimals = 2)
-
+# cr_no %>% 
+#   group_by(method) %>% 
+#   #filter(method == "hgis") %>% 
+#   summarize(across(c(sig_fm_corr, fm_diff),
+#                    list(mean = mean, sd = sd)),
+#             N = n()) %>% 
+#   select(`Consensus difference` = fm_diff_mean,
+#          `Std. Dev. of consensus difference` = fm_diff_sd,
+#          `per-sample error` = sig_fm_corr_mean,
+#          N
+#          ) %>%  
+#   gt() %>% 
+#   tab_header(title = "Haiti carbonates performance summary",
+#              subtitle = "TIRI-I, C-2, and NOSAMS2. Values in pMC") %>% 
+#   fmt_number(1:3, 
+#              scale_by = 100,
+#              decimals = 2)
+# 

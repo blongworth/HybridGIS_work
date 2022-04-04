@@ -140,17 +140,20 @@ cal_sub_nb <- cal_sub %>%
 
 # Separate hgis and graphite
 cal_sub_hgis <- cal_sub_nb %>% 
-  filter(method == "hgis" | is.na(method))
+  filter(method == "hgis" | is.na(method),
+         !(str_starts(sample_name, "HATC"))) %>% # Remove duplicates
+  arrange(depth)
 
 cal_sub_gr <- cal_sub_nb %>% 
-  filter(method == "graphite" | is.na(method)) 
+  filter(method == "graphite" | is.na(method)) %>% 
+  arrange(depth)
 
 # Make hgis chronology
 # Some of the MCMC settings are causing a crash
 chron_hgis  <- with(cal_sub_hgis,
                     Bchronology(rc_age_corr, sig_rc_age_corr, positions = depth, 
                                 ids = sample_name, calCurves = curve,
-                                artificialThickness = 1,
+                                #artificialThickness = 1,
                                 allowOutside = TRUE
                                 #iterations = 15000,
                                 #burn = 2000,
@@ -158,6 +161,7 @@ chron_hgis  <- with(cal_sub_hgis,
                                 #extractDate = -66
                                 ))
 plot(chron_hgis) +
+  xlim(8000, -500) +
   ggtitle("HGIS chronology")
 summary(chron_hgis, "convergence")
 
@@ -165,11 +169,16 @@ summary(chron_hgis, "convergence")
 chron_gr  <- with(cal_sub_gr,
                   Bchronology(rc_age_corr, sig_rc_age_corr, positions = depth, 
                               ids = sample_name, calCurves = curve, 
-                              #artificialThickness = 1.00,
+                              #artificialThickness = 10.00,
                               allowOutside = TRUE,
                               extractDate = -66))
 plot(chron_gr) +
+  xlim(8000, -500) +
   ggtitle("Graphite chronology")
 
 #predict(chron_gr, seq(0, 900, by = 50) )
 #class(chron_gr)
+
+# Save chronologies
+write_rds(chron_hgis, here("data_analysed/hgis_chronology.rds"))
+write_rds(chron_gr, here("data_analysed/graphite_chronology.rds"))

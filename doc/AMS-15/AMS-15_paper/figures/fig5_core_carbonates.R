@@ -59,7 +59,7 @@ write_csv(combined_results, here("data_analysed/haiti_combined.csv"))
 
 # Remove outlier: HGIS sample leaked
 # Remove HATC duplicates
-cr_no <- core %>% 
+cr_no <- combined_results %>% 
   filter(rec_num != 171996,
          !str_starts(sample_name, "HATC"))
 
@@ -126,11 +126,15 @@ chron_gr <- read_rds(here("data_analysed/graphite_chronology.rds"))
 
 hgis_bchron <- plot(chron_hgis) +
   xlim(8000, -500) +
-  ggtitle("B")
+  labs(title = "B",
+       y = "Years BP",
+       x = "Core depth (cm)")
 
 gr_bchron <- plot(chron_gr) +
   xlim(8000, -500) +
-  ggtitle("C") +
+  labs(title = "C",
+       y = "Years BP",
+       x = "Core depth (cm)") +
   theme(axis.title.y = element_blank(),
         axis.text.y = element_blank())
 # Combine plots and save

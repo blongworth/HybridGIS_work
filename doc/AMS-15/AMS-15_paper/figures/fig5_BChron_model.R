@@ -77,14 +77,14 @@ cr_no <- combined_results %>%
 #####
 
 # load curve Hua 2020 NH1 Curve
-bomb_NH1 <- IntCal::ccurve(postbomb = TRUE)
+bomb_NH2 <- IntCal::ccurve("nh2")
 
 # create Bchron cal curve
-createCalCurve("bomb_NH1", bomb_NH1[, 1], bomb_NH1[, 2], bomb_NH1[,3])
+createCalCurve("bomb_NH2", bomb_NH2[, 1], bomb_NH2[, 2], bomb_NH2[,3])
 
 # Copy to bchron install directory
 file.copy(
-  from = "bomb_NH1.rda",
+  from = "bomb_NH2.rda",
   to = system.file("data", package = "Bchron"),
   overwrite = TRUE
 )
@@ -94,42 +94,22 @@ file.copy(
 cal_sub <- cr_no %>% 
   mutate(id = paste(sample_name, "-", method)) %>% 
   select(sample_name, id, depth, rc_age, sig_rc_age, method) %>% 
-  mutate(curve = if_else(rc_age > 0, "marine20", "bomb_NH1")) %>% 
-  add_row(id = "Top", sample_name = "Top", depth = 0, rc_age = 0, sig_rc_age = 1, curve = "normal")
-
-cal_dates <- with(cal_sub,
-  BchronCalibrate(rc_age, sig_rc_age, positions = depth, ids = id, calCurves = curve))
-plot(cal_dates)
-
-cal_sub_hgis <- cal_sub %>% 
-  filter(method == "hgis" | is.na(method))
-
-cal_sub_gr <- cal_sub %>% 
-  filter(method == "graphite" | is.na(method)) 
+  mutate(curve = if_else(rc_age > 0, "marine20", "bomb_NH2"),
+         rc_age_corr = if_else(curve == "marine20", rc_age - 216, rc_age),
+         sig_rc_age_corr = if_else(curve == "marine20", sqrt(sig_rc_age^2 + 92^2), sig_rc_age)) %>% 
+  add_row(id = "Top", sample_name = "Top", depth = 0, 
+          rc_age = 0, sig_rc_age = 1, 
+          rc_age_corr = 0, sig_rc_age_corr = 1, 
+          curve = "normal")
 
 
 #####
 # Calibrate dates
 #####
 
-# Calibrate hgis ages
-cal_dates_hgis <- with(cal_sub_hgis,
-  BchronCalibrate(rc_age, sig_rc_age, 
-                  positions = depth, ids = sample_name, calCurves = curve))
-
-# calibrate graphite dates
-cal_dates_gr  <- with(cal_sub_gr,
-  BchronCalibrate(rc_age, sig_rc_age, 
-                  positions = depth, ids = sample_name, 
-                  calCurves = curve))
-
-# make dataframe with cal ages
-cal_bp_gr <- map(cal_dates_gr, 1)
-sig_cal_bp_gr <- map(cal_dates_gr, 2)
-
-
-plot(cal_dates_hgis) +
-  ggtitle("HGIS dates")
+cal_dates <- with(cal_sub,
+  BchronCalibrate(rc_age_corr, sig_rc_age_corr, positions = depth, ids = id, calCurves = curve))
+plot(cal_dates)
 
 
 #####
@@ -151,26 +131,36 @@ plot(cal_dates_hgis) +
 #             extractDate = -66, 
 #             thetaStart = NULL) 
 
+# Filter out post bomb data
+cal_sub_nb <- cal_sub %>% 
+  filter(curve != "bomb_NH2")
+
+# Separate hgis and graphite
+cal_sub_hgis <- cal_sub_nb %>% 
+  filter(method == "hgis" | is.na(method))
+
+cal_sub_gr <- cal_sub_nb %>% 
+  filter(method == "graphite" | is.na(method)) 
+
 # Make hgis chronology
 # Some of the MCMC settings are causing a crash
 chron_hgis  <- with(cal_sub_hgis,
-                    Bchronology(rc_age, sig_rc_age, positions = depth, 
+                    Bchronology(rc_age_corr, sig_rc_age_corr, positions = depth, 
                                 ids = sample_name, calCurves = curve,
                                 artificialThickness = 1,
+                                allowOutside = TRUE
                                 #iterations = 15000,
                                 #burn = 2000,
                                 #thin = 12,
-                                extractDate = -66))
+                                #extractDate = -66
+                                ))
 plot(chron_hgis) +
   ggtitle("HGIS chronology")
 summary(chron_hgis, "convergence")
 
-plot(cal_dates_gr) +
-  ggtitle("Graphite dates")
-
 # Make graphite chronolgy
 chron_gr  <- with(cal_sub_gr,
-                  Bchronology(rc_age, sig_rc_age, positions = depth, 
+                  Bchronology(rc_age_corr, sig_rc_age_corr, positions = depth, 
                               ids = sample_name, calCurves = curve, 
                               artificialThickness = 1.00))
 plot(chron_gr) +

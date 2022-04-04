@@ -18,6 +18,15 @@ data <- process_hgis_results(here("data/USAMS040121R.txt"),
   mutate(time = cumsum(corr_lt) / 60,
          co2flow = concCO2(time, r = 244) * 30) #30ul/min
 
+# current vs time subplot
+cur_time <- ggplot(data, aes(time, he12C)) +
+  geom_smooth(span = .4, se = FALSE, color = "#00b7bd") +
+  geom_point(size = 3, color = "#0069b1") +
+  xlim(0, 125) +
+  labs(title = "A",
+       #title = "Ion current",
+       x = "Time (min)",
+       y = "12C current (μA)")
 
 # flow vs time subplot
 flow_time <- data.frame(x = 0:125) %>% 
@@ -27,7 +36,7 @@ flow_time <- data.frame(x = 0:125) %>%
   stat_function(fun = function(x) 30 - (concCO2(x, r = 244) * 30),
                 aes(color = "Helium"), size = 1.5) +
   scale_color_manual("Gas", values = c("#00b7bd", "#b7bf10")) +
-  labs(title = "A",
+  labs(title = "B",
        #title = "Gas flows to source",
        #subtitle = "7mL vial, 244μL/min helium, 30μL/min to source",
        y = "Gas flow (μL/min)") +
@@ -35,17 +44,6 @@ flow_time <- data.frame(x = 0:125) %>%
         axis.text.x = element_blank(),
         legend.position = c(0.87, 0.65),
         legend.background = element_rect(fill = "white", color = "black"))
-
-# current vs time subplot
-cur_time <- ggplot(data, aes(time, he12C)) +
-  geom_smooth(span = .4, se = FALSE, color = "#00b7bd") +
-  geom_point(size = 3, color = "#0069b1") +
-  xlim(0, 125) +
-  labs(title = "B",
-       #title = "Ion current",
-       x = "Time (min)",
-       y = "12C current (μA)")
-
 
 # Current vs flow subplot
 
@@ -59,6 +57,7 @@ cur_flow <- ggplot(data, aes(co2flow, he12C)) +
        y = TeX(r'(^{12}C^- current (μA))'))
 
 # Build figure and save
-flow_time / cur_time / cur_flow
+cur_time / flow_time / cur_flow
 
 ggsave(here("doc/AMS-15/AMS-15_paper/figures/fig2_current_flow.svg"))
+ggsave(here("doc/AMS-15/AMS-15_paper/figures/fig2_current_flow.pdf"))

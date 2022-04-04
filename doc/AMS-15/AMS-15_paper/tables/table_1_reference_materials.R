@@ -1,4 +1,5 @@
 # Table 1 showing performance of reference standards and performance summary
+# 
 
 
 library(tidyverse)
@@ -49,7 +50,7 @@ gt() %>%
   cols_align("right", 3)
 
 # Consensus summary
-cons_df %>% 
+cons_sum <- cons_df %>% 
   filter(Name %in% c("TIRI-I", "C-2", "NOSAMS2")) %>% 
   ungroup() %>% 
   summarize(across(c(sig_fm_corr, fm_diff),
@@ -59,10 +60,4 @@ cons_df %>%
          `Std. Dev. of consensus difference` = fm_diff_sd,
          `per-sample error` = sig_fm_corr_mean,
          N
-         ) %>%  
-  gt() %>% 
-  tab_header(title = "Reference material performance summary",
-             subtitle = "TIRI-I, C-2, and NOSAMS2. Values in pMC") %>% 
-  fmt_number(1:3, 
-             scale_by = 100,
-             decimals = 2)
+         ) 

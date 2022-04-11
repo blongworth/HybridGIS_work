@@ -78,8 +78,8 @@ ds <- sum_hgis(data) %>%
   filter((str_detect(Sample.Name, "LiveGas") & Cur > 1) |
          (str_detect(Sample.Name, "DeadGas") & Cur > 1) |
           str_detect(Sample.Name, "Blank")) %>% 
-  mutate(Gas = case_when(str_detect(Sample.Name, "LiveGas") ~ "LiveGas",
-                         str_detect(Sample.Name, "DeadGas") ~ "DeadGas",
+  mutate(Gas = case_when(str_detect(Sample.Name, "LiveGas") ~ "Modern",
+                         str_detect(Sample.Name, "DeadGas") ~ "Dead",
                          TRUE ~ "Blank"),
          Cur_inv = 1/Cur)
 
@@ -94,8 +94,8 @@ fits <- ds %>%
 blankfit <- fits %>% 
   select(Gas, term, estimate) %>% 
   pivot_wider(names_from = c(Gas, term), values_from = estimate) %>% 
-  mutate(inv_m_blank = -(`DeadGas_(Intercept)` - `LiveGas_(Intercept)`)/(DeadGas_Cur_inv - LiveGas_Cur_inv),
-         Fm_blank = `DeadGas_(Intercept)` + DeadGas_Cur_inv * inv_m_blank,
+  mutate(inv_m_blank = -(`Dead_(Intercept)` - `Modern_(Intercept)`)/(Dead_Cur_inv - Modern_Cur_inv),
+         Fm_blank = `Dead_(Intercept)` + Dead_Cur_inv * inv_m_blank,
          m_blank = 1/inv_m_blank) 
 
 # Modeled Fm and mass of blank
@@ -111,12 +111,12 @@ blank_meas <- ds %>%
 
 # Make plot of fm vs current with model fits
 
-blank_model <- ggplot(ds, aes(Cur_inv, mean, color = Gas)) +
-  geom_abline(slope = blankfit$LiveGas_Cur_inv, 
-              intercept = blankfit$`LiveGas_(Intercept)`,
+blank_model <- ggplot(ds, aes(Cur_inv, mean, color = Gas, shape = Gas)) +
+  geom_abline(slope = blankfit$Modern_Cur_inv, 
+              intercept = blankfit$`Modern_(Intercept)`,
               color = "#0069b1") +
-  geom_abline(slope = blankfit$DeadGas_Cur_inv, 
-              intercept = blankfit$`DeadGas_(Intercept)`,
+  geom_abline(slope = blankfit$Dead_Cur_inv, 
+              intercept = blankfit$`Dead_(Intercept)`,
               color = "#00a9e0") +
   geom_pointrange(aes(ymin = mean - merr, ymax = mean + merr)) + 
   scale_color_manual("Gas", values = c("#b7bf10", "#00a9e0", "#0069b1")) +
@@ -125,7 +125,7 @@ blank_model <- ggplot(ds, aes(Cur_inv, mean, color = Gas)) +
        #subtitle = "Fits cross at Fm and current of blank",
        x = "Inverse 12C Current (μA-1)",
        y = "F14C") +
-  theme(legend.position = "none",
+  theme(#legend.position = "none",
         legend.background = element_rect(fill = "white", color = "black")) 
 
 ###

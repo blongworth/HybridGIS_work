@@ -124,13 +124,13 @@ age_depth <- cr_no %>%
 chron_hgis <- read_rds(here("data_analysed/hgis_chronology.rds"))
 chron_gr <- read_rds(here("data_analysed/graphite_chronology.rds"))
 
-hgis_bchron <- plot(chron_hgis) +
+hgis_bchron <- plot(chron_hgis, dateLabels = FALSE) +
   xlim(8000, -500) +
   labs(title = "B",
        y = "Years BP",
        x = "Core depth (cm)")
 
-gr_bchron <- plot(chron_gr) +
+gr_bchron <- plot(chron_gr, dateLabels = FALSE) +
   xlim(8000, -500) +
   labs(title = "C",
        y = "Years BP",

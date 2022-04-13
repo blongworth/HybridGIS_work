@@ -27,7 +27,7 @@ cur_time <- ggplot(data, aes(time, he12C)) +
   labs(title = "A",
        #title = "Ion current",
        x = "Time (min)",
-       y = "12C current (μA)") +
+       y = TeX(r"( $^{12}C^-$ current (μA))")) +
   theme(axis.title.x = element_blank(),
         axis.text.x = element_blank())
 
@@ -43,7 +43,7 @@ flow_time <- data.frame(x = 0:125) %>%
        #title = "Gas flows to source",
        #subtitle = "7mL vial, 244μL/min helium, 30μL/min to source",
        x = "Time (min)",
-       y = "Gas flow (μL/min)") +
+       y = TeX(r"(Gas flow (μl $min^{-1}$))")) +
   theme(legend.position = c(0.87, 0.50),
         legend.background = element_rect(fill = "white", color = "black"))
 
@@ -53,12 +53,8 @@ cur_flow <- ggplot(data, aes(co2flow, he12C)) +
   geom_smooth(span = .4, se = FALSE, color = "#00b7bd") +
   geom_point(size = 3, color = "#0069b1") +
   labs(title = "C",
-       #title = bquote('Ion current is stable for a range of CO'[2]~'flow'),
-       #subtitle = bquote('Current vs. CO'[2]~'flow during vial dillution'),
-       x = bquote('CO'[2]~'Flow (μl/min)'),
-       y = "12C- current (μA)"
-       #y = TeX("^{12}C^- current (uA)")
-       )
+       x = TeX(r"($CO^2$ flow (μl $min^{-1}$))"),
+       y = TeX(r"( $^{12}C^-$ current (μA))")) 
 
 # Build figure and save
 cur_time / flow_time / cur_flow

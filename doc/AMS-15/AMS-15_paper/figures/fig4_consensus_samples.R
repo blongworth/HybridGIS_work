@@ -1,4 +1,4 @@
-# Figure 5 bland altman plot of carbonate consensus standards run as
+# Figure 4 bland altman plot of carbonate consensus standards run as
 # hgis compared to accepted value
 
 library(tidyverse)
@@ -15,7 +15,8 @@ cons_df <- results_df %>%
   filter(!(wheel %in% c("USAMS020521", "USAMS061121", "USAMS061821"))) %>% 
   mutate(he12C = he12C * 1E6) %>% 
   compare_consensus() %>% 
-  filter(!str_detect(Name, "Gas"))
+  filter(!str_detect(Name, "Gas")) %>% 
+  arrange(Name)
 
 mean_diff <- mean(cons_df$fm_diff)
 sd_diff <- sd(cons_df$fm_diff)
@@ -37,8 +38,8 @@ ggplot(aes(fm_consensus, fm_diff, color = Name, shape = Name)) +
   scale_y_continuous(breaks = seq(-0.03,0.03,0.01)) +
   labs(#title = "Agreement of HGIS with graphite measurements",
        #subtitle = "Blank corrected HGIS measurements of consensus carbonate standards",
-       x = "F14C expected (points jittered for clarity)", 
-       y = "F14C difference (HGIS - expected)")
+       x = TeX(r"($F^{14}C$ expected (points jittered for clarity))"), 
+       y = TeX(r"($F^{14}C$ difference (HGIS - expected))")) 
 
 # Save figure
 ggsave(here("doc/AMS-15/AMS-15_paper/figures/fig4_consensus_samples.svg"), width = 7, height = 4)

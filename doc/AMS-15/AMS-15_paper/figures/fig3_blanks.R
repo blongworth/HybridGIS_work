@@ -123,8 +123,8 @@ blank_model <- ggplot(ds, aes(Cur_inv, mean, color = Gas, shape = Gas)) +
   xlim(0, 10) +
   labs(title = "A",
        #subtitle = "Fits cross at Fm and current of blank",
-       x = "Inverse 12C Current (μA-1)",
-       y = "F14C") +
+       x = TeX(r"(Inverse $^{12}C^-$ current ($μA^{-1}$))"), 
+       y = TeX(r"($F^{14}C$)")) +
   theme(#legend.position = "none",
         legend.background = element_rect(fill = "white", color = "black")) 
 
@@ -153,8 +153,8 @@ fm_curr <- blanks %>%
   geom_errorbarh(aes(xmin = he12C - sig_he12C, xmax = he12C + sig_he12C)) +
   geom_point(color = "#00a9e0", size = 3) +
   labs(title = "B",
-       x = "12C Current (μA)",
-       y = "F14C") +
+       x = TeX(r"( $^{12}C^-$ current (μA))"), 
+       y = TeX(r"($F^{14}C$)")) +
   theme(legend.position = c(0.82, 0.76),
         legend.background = element_rect(fill = "white", color = "black"))
 

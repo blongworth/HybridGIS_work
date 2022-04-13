@@ -1,23 +1,23 @@
 ---
 title: "Radiocarbon measurement of CO~2~ from carbonate minerals using a hybrid gas ion source with an open split interface"
 author:
-  - name: Brett Longworth
+  - name: Brett E. Longworth
     email: blongworth@whoi.edu
     affiliation: Woods Hole Oceanographic Institution
     correspondingauthor: true
-  - name: Josh Burton
+  - name: Josh R. Burton
     email: jburton@whoi.edu
     affiliation: Woods Hole Oceanographic Institution
   - name: Simon Pendleton
     email: simon.pendleton@plymouth.edu
     affiliation:  Woods Hole Oceanographic Institution,Plymouth State University
-  - name: Sydney Moser
+  - name: Sydney D. Moser
     email: smose007@uottawa.ca
     affiliation: University of Ottawa
-  - name: Mark Roberts
+  - name: Mark L. Roberts
     email: mroberts@whoi.edu
     affiliation: Woods Hole Oceanographic Institution
-  - name: Mark Kurz
+  - name: Mark D. Kurz
     email: mkurz@whoi.edu
     affiliation: Woods Hole Oceanographic Institution
 address:
@@ -28,7 +28,7 @@ address:
   - code: University of Ottawa
     address: Geography, Environment and Geomatics, 550 Cumberland St., Ottawa, ON, Canada, K1N 6N5
 abstract: |
-  We have developed a method for measuring radiocarbon in carbonate minerals as CO~2~ gas via a NEC MCSNICS hybrid sputter gas ion source (HGIS). The method uses helium as a carrier gas to displace CO~2~ from sample vials to an open split, where a glass capillary samples the mixture for delivery directly to the HGIS. This method skips the gas transfer and quantification steps used in a closed inlet HGIS system, simplifying sample measurement. Samples larger than 8 mg carbonate can be measured. Results from measurements of consensus standards (TIRI-I, IAEA C2, and an internal modern shell standard), and samples from a marine core (F^14^C = 0.4 - 1.15) show that the method agrees well with traditional AMS measurement of the same samples as graphite, and that the 1$\sigma$ uncertainty is about 1 %. We discuss advantages and disadvantages of continuous flow sample introduction, and the effect of reduced precision on calibrated age-depth models produced using gas-source data.
+  We have developed a method for measuring radiocarbon in carbonate minerals as CO~2~ gas via a NEC MCSNICS hybrid sputter gas ion source (HGIS). The method uses helium as a carrier gas to displace CO~2~ from sample vials to an open split, where a glass capillary samples the mixture for delivery directly to the HGIS. This method skips the gas transfer and quantification steps used in a closed inlet HGIS system, simplifying sample measurement. Samples larger than 8 mg carbonate can be measured. Results from measurements of consensus standards (TIRI I, IAEA C2, and an internal modern shell standard), and samples from a marine core (F^14^C = 0.4--1.15) show that the method agrees well with traditional AMS measurement of the same samples as graphite, and that the 1$\sigma$ uncertainty is about 1 %. We discuss advantages and disadvantages of continuous flow sample introduction, and the effect of reduced precision on calibrated age-depth models produced using gas-source data.
 keywords: 
   - radiocarbon
   - carbonate
@@ -57,9 +57,9 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 library(tidyverse)
 library(hgis)
 library(here)
-#library(errors)
+library(errors)
 
-#options(errors.notation = "plus-minus")
+options(errors.notation = "plus-minus")
 
 carb <- readRDS(here("data_analysed/carb_all.rds")) %>% 
   map_dfr(2)
@@ -67,7 +67,7 @@ carb <- readRDS(here("data_analysed/carb_all.rds")) %>%
 
 # Introduction
 
-Radiocarbon Accelerator Mass Spectrometry (AMS) is a sensitive method for determining the age, provenance, and composition of carbon-containing materials. A primary disadvantage of the method is cost, which can limit the number of samples analyzed. This forces researchers to carefully select samples for analysis and may limit repeat measurements for error determination. One driver of the cost of AMS analysis is the time and effort required for sample preparation, including reduction of the sample to graphite. Analysis of CO~2~ directly via a gas-accepting AMS ion source eliminates the cost and effort of graphitization and returns results more rapidly. The NOSAMS USAMS system at the National Oceanographic AMS lab (NOSAMS) is based on a 3MV Tandetron accelerator [@Longworth2015] combined with a National Electrostatics Corporation (NEC) 134-sample gas-capable MCSNICS source [@Xu2007] . We present here a system for semi-automated analysis of carbonate minerals by acid hydrolysis in vials and introduction to the ion source in a flow of helium via an open split.
+Radiocarbon Accelerator Mass Spectrometry (AMS) is a sensitive method for determining the age, provenance, and composition of carbon-containing materials. A primary disadvantage of the method is cost, which can limit the number of samples analyzed. This forces researchers to carefully select samples for analysis and may limit repeat measurements for error determination. One driver of the cost of AMS analysis is the time and effort required for sample preparation, including reduction of the sample to graphite. Analysis of CO~2~ directly via a gas-accepting AMS ion source eliminates the cost and effort of graphitization and returns results more rapidly. The NOSAMS USAMS system at the National Oceanographic AMS lab (NOSAMS) is based on a 3MV Tandetron accelerator [@Longworth2015] combined with a National Electrostatics Corporation (NEC) 134-sample gas-capable MCSNICS source. The hybrid gas capability of this source was developed as a joint project between NEC and the Scottish Universities Environmental Research Centre (SUERC) [@Xu2007], and further improved by work at Lawrence Livermore National Laboratory (LLNL) [@Salazar2013]. We present here a system for semi-automated analysis of carbonate minerals by acid hydrolysis in vials and introduction to the ion source in a flow of helium via an open split.
 
 Most interfaces to gas-accepting sputter ion sources are a closed inlet design [@Xu2007; @Uhl2007; @ruff_gas_2007; @ruff_-line_2010; @Fahrni2013; @wacker_versatile_2013; @gottschalk_radiocarbon_2018]. A mixture of sample and helium is introduced to the source through a capillary, and flow is controlled by the pressure in the inlet volume and the length and diameter of the capillary. Pressure is adjusted by changing either the inlet volume or the amount of gas in the inlet. We designed a open inlet where a capillary samples gas for delivery to the ion source in a flowing stream that exhausts to the atmosphere, referred to here as an open split. This defines the delivery pressure as 1 ATM. CO~2~ flow to the source can be controlled by changing the length or diameter of the capillary, or by changing the ratio of CO~2~ to He in the sample stream. 
 
@@ -81,7 +81,7 @@ The gas-capable 134-sample MCSNICS from National Electrostatics Corporation (NEC
 
 ## Inlet description
 
-The open split interface (Figure \ref{fig1}) supplies a helium - CO~2~ mixture to a split where a capillary transfers gas to the ion source and the gas not taken by the capillary is vented. Flowing helium is used to displace sample CO~2~ from the sample vial to the delivery capillary in the split. The open-split interface is constructed of simple, off-the-shelf parts. The core of the design is a dual needle and split housed in a Valco tee fitting. Displacement helium flows in through the sidearm of the tee and into the sample vial through 1/16 in. stainless steel tubing, which forms the outer flow path of the concentric dual needle.
+The open split interface (Figure \ref{fig1}) supplies a CO~2~ - helium mixture to a split where a capillary transfers gas to the ion source and the gas not taken by the capillary is vented. Flowing helium is used to displace sample CO~2~ from the sample vial to the delivery capillary in the split. The open-split interface is constructed of simple, off-the-shelf parts. The core of the design is a dual needle and split housed in a Valco tee fitting. Displacement helium flows in through the sidearm of the tee and into the sample vial through 1/16 in. stainless steel tubing, which forms the outer flow path of the concentric dual needle.
 
 The mixture of sample CO~2~ and displacement helium from the vial flows up a 21 gauge (0.819 mm) needle inserted through the tee and stainless tubing which forms the inner flow path of the dual needle. The open split is a VICI Luer adapter (part ZBUMLPK) with 5cm of 1/16 in. PFTE tubing attached. The split is connected to the top of the inner needle, and the source delivery capillary is inserted into the split. The split has fairly low volume (< 1 mL). The system was operated manually during development, but could be mounted on the arm of a vial-sampling autosampler to enable automated operation.
 
@@ -109,7 +109,7 @@ Normalizing standards were prepared by evacuating vials and then filling with a 
 
 ## Measurement
 
-The HGIS measurements were carried out on a modified 3MV Tandetron AMS system [@Longworth2015]. Measurement of a sample proceeded as follows: a clean sputter target cathode was rotated into position and the target was pre-cleaned by sputtering for 5 minutes or until cathode ^12^C^-^ current fell below 100 nA. The delivery needle was then transferred to the sample vial, which started gas delivery to the split and source. Ion current was allowed to stabilize for 30 s, at which point the data acquisition was started. Data was acquired in 10 blocks of 90 s each, for 15 min total acquisition time. The displacement helium was allowed to flow constantly during cathode cleaning and analysis, and the sample needle was inserted into a helium-filled vial between samples. Normalizing standards, blanks, and secondary standards were measured identically to unknowns. Total time for a measurement was 20-25 min including target pre-cleaning and changing samples. Graphite samples were prepared at NOSAMS and measured on the CFAMS system using standard procedures [@gagnon_nosams_2000; @roberts_high-performance_2010]. 
+The HGIS measurements were carried out on a modified 3MV Tandetron AMS system [@Longworth2015]. Measurement of a sample proceeded as follows: a clean sputter target cathode was rotated into position and the target was pre-cleaned by sputtering for 5 minutes or until cathode ^12^C^-^ current fell below 100 nA. The delivery needle was then transferred to the sample vial, which started gas delivery to the split and source. Ion current was allowed to stabilize for 30 s, at which point the data acquisition was started. Data was acquired in 10 blocks of 90 s each, for 15 min total acquisition time. The displacement helium was allowed to flow constantly during cathode cleaning and analysis, and the sample needle was inserted into a helium-filled vial between samples. Normalizing standards, blanks, and secondary standards were measured identically to unknowns. One target is used per gas sample. Total time for a measurement was 20-25 min including target pre-cleaning and changing samples. Graphite samples were prepared at NOSAMS and measured on the CFAMS system using standard procedures [@gagnon_nosams_2000; @roberts_high-performance_2010]. 
 
 ## Data reduction
 
@@ -134,7 +134,7 @@ curmean <- mean(currents$c12ua) %>% format(digits = 2)
 cursd <- sd(currents$c12ua) %>% format(digits = 2)
 ```
 
-Initial work with the NEC source established optimal source parameters for consistent source performance. We used tank CO~2~ connected through a regulator and glass capillary to the ion source to measure source performance over a range of CO~2~ flows. Best ^12^C^-^ ion current for the source was 10 $\mu$A, or roughly 10% of typical graphite target current. Peak current was produced at a CO~2~ flow rate of 7.5 $\mu$l min^-1^ CO~2~, but the source produced near optimal currents with flows from 7.5-25 $\mu$l min^-1^ CO~2~. This is comparable with other hybrid sources [@Xu2007], although improved target design and continued optimization of source parameters may improve performance [@Salazar2013; @Fahrni2013; @broek_optimization_nodate]. Typical currents for this study were between 4-9 $\mu$A and average current for all samples was `r curmean` ± `r cursd` $\mu$A. Several studies have shown best currents at lower CO~2~ flow rates [@Xu2007; @Ruff2010]. 
+Initial work with the NEC source established optimal source parameters for consistent source performance. We used tank CO~2~ connected through a regulator and glass capillary to the ion source to measure source performance over a range of CO~2~ flows. Best ^12^C^-^ ion current for the source was 10 $\mu$A, or roughly 10% of typical graphite target current. Peak current was produced at a CO~2~ flow rate of 7.5 $\mu$l min^-1^ CO~2~, but the source produced near optimal currents with flows from 7.5--25 $\mu$l min^-1^ CO~2~. This is comparable with other hybrid sources [@Xu2007], although improved target design and continued optimization of source parameters may improve performance [@Salazar2013; @Fahrni2013; @broek_optimization_nodate]. Typical currents for this study were between 4-9 $\mu$A and average current for all samples was `r curmean` ± `r cursd` $\mu$A. Several studies have shown best currents at lower CO~2~ flow rates [@Xu2007; @Ruff2010]. 
 
 ```{r fig2, fig.width = 5, fig.height = 5, fig.align='center', out.width="80%", fig.cap = "\\label{fig2}Performance of the NOSAMS MCSNICS hybrid gas ion source. (a) Measured $^{12}C^-$ ion current during displacement of modern tank $CO_2$ from a sample vial with helium. (b) Modeled flows of helium and $CO_2$ to the ion source during the same dilution experiment. (c) Measured ion current for the modeled $CO_2$ flow from b. The stability of the source over a range of flow produces stable current for up to 40 min of measurement time.", echo = FALSE}
 knitr::include_graphics(here("doc/AMS-15/AMS-15_paper/figures/fig2_current_flow.pdf"))
@@ -161,19 +161,19 @@ blanks <- carb %>%
   filter(rec_num %in% c(2138, 83028),
          he12C > 2E-6,
          sample_type == "B")
-blankmean <- mean(blanks$norm_ratio) %>% format(digits = 3)
-blanksd <-  sd(blanks$norm_ratio) %>% format(digits = 2)
+blankmean <- mean(blanks$norm_ratio) %>% format(digits = 2)
+blanksd <-  sd(blanks$norm_ratio) %>% format(digits = 1)
 
 # errors should produce an "all in one" for this, but it doesn't work with inline code
 # meanblank <- as.errors(mean(blanks$norm_ratio), sd(blanks$norm_ratio))
 nblank <- length(blanks$norm_ratio)
 ```
 
-The HGIS method produced higher $^{14/12}C$ ratios for radiocarbon dead samples than the graphite method. The average uncorrected $F^{14}C$ for radiocarbon-free reference materials IAEA C1 marble and TIRI F spar calcite was `r blankmean` ± `r blanksd` (1$\sigma$ uncertainty, N=`r nblank`), compared to XXX for graphite. We investigated the sources of this method blank as a current-dependent blank and as a current-independent blank, and implemented a blank correction for the method.
+The HGIS method produced higher $^{14/12}C$ ratios for radiocarbon dead samples than the graphite method. The average uncorrected $F^{14}C$ for radiocarbon-free reference materials IAEA C1 marble and TIRI F spar calcite was `r blankmean` ± `r blanksd` (1$\sigma$ uncertainty, N=`r nblank`), compared to 0.003 ± 0.001 for graphite. We investigated the sources of this method blank as a current-dependent blank and as a current-independent blank, and implemented a blank correction for the method.
 
-HGIS cathodes produce measurable ion current, even with no gas flow. This current was initially \> 10 $\mu$A and dropped exponentially, reaching a baseline of ~100 nA after 5-10 minutes. For the range of currents in this study (3-9 $\mu$A), this baseline current represents a 1-6% contribution to the total measured sample current at the F^14^C of the target current baseline. This can be interpreted as a constant current dependent blank, analogous to a mass-dependent "constant contaminant" blank and may be modeled with the same tools [@haghipour_compound-specific_2019; @hanke_comprehensive_2017; @roberts_14c_2019; @sun_14_2020]. To assess blank contribution and ratio dependence on sample current, vials of live and dead standard gas were measured as the displacement helium flow diluted the samples, producing diminishing current over time. We used these data to develop a current-balance model following methods used to assess mass-dependent or constant contamination blanks in graphite targets [@shah_walter_ultra-small_2015; @sun_14_2020]. The constant contamination blank was also assessed directly by measuring pure helium in vials using the same method. Results from both tests are shown in Figure 3a. The inverse of the sample current is used to linearize the data, allowing assessment with a simple linear model. Fits from modern and dead dilution tests should trend towards the fraction modern of the blank, crossing at the inverse of blank current. Based on this assessment, we estimate the F^14^C of the blank as 0.43 with a current of 110 nA.
+HGIS cathodes produce measurable ion current, even with no gas flow. This current was initially \> 10 $\mu$A and dropped exponentially, reaching a baseline of ~100 nA after 5-10 minutes. For the range of currents in this study (3--9 $\mu$A), this baseline current represents a 1--6% contribution to the total measured sample current at the F^14^C of the target current baseline. This can be interpreted as a constant current dependent blank, analogous to a mass-dependent "constant contaminant" blank and may be modeled with the same tools [@haghipour_compound-specific_2019; @hanke_comprehensive_2017; @roberts_14c_2019; @sun_14_2020]. To assess blank contribution and ratio dependence on sample current, vials of live and dead standard gas were measured as the displacement helium flow diluted the samples, producing diminishing current over time. We used these data to develop a current-balance model following methods used to assess mass-dependent or constant contamination blanks in graphite targets [@shah_walter_ultra-small_2015; @sun_14_2020]. The constant contamination blank was also assessed directly by measuring pure helium in vials using the same method. Results from both tests are shown in Figure 3a. The inverse of the sample current is used to linearize the data, allowing assessment with a simple linear model. Fits from modern and dead dilution tests should trend towards the fraction modern of the blank, crossing at the inverse of blank current. Based on this assessment, we estimate the F^14^C of the blank as 0.43 with a current of 110 nA.
 
-```{r fig3, fig.width = 5, fig.height = 5, fig.align='center', out.width="80%", fig.cap = "\\label{fig3}Assessment of blanks. (a) Current dependent blank model and data. $F^{14}C$ and current of measurements from dilution tests of modern and dead tank standards are used to generate linear fits which should cross at the $F^{14}C$ and current of the constant current blank. Direct determination of $F^{14}C$ and current of the blank using clean targets and helium without $CO_2$ are also shown. (b) Fraction modern of large IAEA C1 and TIRI-F carbonate blank samples compared to sample current. Horizontal and vertical bars represent measurement uncertainty in current and ratio, respectively.", echo = FALSE}
+```{r fig3, fig.width = 5, fig.height = 5, fig.align='center', out.width="80%", fig.cap = "\\label{fig3}Assessment of blanks. (a) Current dependent blank model and data. $F^{14}C$ and current of measurements from dilution tests of modern and dead tank standards are used to generate linear fits which should cross at the $F^{14}C$ and current of the constant current blank. Direct determination of $F^{14}C$ and current of the blank using clean targets and helium without $CO_2$ are also shown. (b) Fraction modern of large IAEA C1 and TIRI F carbonate blank samples compared to sample current. Horizontal and vertical bars represent measurement uncertainty in current and ratio, respectively.", echo = FALSE}
 knitr::include_graphics(here("doc/AMS-15/AMS-15_paper/figures/fig3_blanks.pdf"))
 ```
 
@@ -194,8 +194,8 @@ where $R_{samp}$ is the ratio of the unknown sample, $R_{meas}$ is the measured 
 #library(gt)
 library(errors)
 
-options(digits = 3)
-options(scipen = 4)
+#options(digits = 3)
+options(scipen = 99)
 options(decimals = 4)
 options(errors.notation = "plus-minus")
 
@@ -218,7 +218,7 @@ cons_sum <- cons_df %>%
 
 Precision and accuracy of the method were assessed by measuring carbonate reference standards for comparison with consensus values from graphite measurements. We measured TIRI I, a roughly quarter-modern turbidite carbonate, IAEA C2, a half modern turbidite carbonate, and NOSAMS 2, a modern internal shell carbonate standard from a bivalve mollusk. Summary data for these samples are given in Table 1, and measurement data for all samples is in supplementary information. Measurement, data reduction, and blank correction was performed as described above.
 
-Reference materials analyzed with the hybrid gas method were in good agreement with consensus values. Mean difference from consensus for all measurements was F^14^C `r format(cons_sum$fm_diff_mean, digits = 1, nsmall = 4)` shows that the hybrid method has no bias in aggregate. The standard deviation of the difference in F^14^C was `r format(cons_sum$fm_diff_sd, nsmall = 4)`, which may be taken as an estimate of the 1$\sigma$ precision of the method. The mean of propagated measurement errors for these samples was `r format(cons_sum$sig_fm_corr_mean, nsmall = 4)` F^14^C for these samples, which is in good agreement with the method precision above. The method error is about three times larger than the 2--3 ‰ precision of graphite measurements, but is within the range of method precision of other gas sources.
+Reference materials analyzed with the hybrid gas method were in good agreement with consensus values. Mean difference from consensus for all measurements was F^14^C `r format(cons_sum$fm_diff_mean, digits = 1, nsmall = 4)` shows that the hybrid method has no bias in aggregate. The standard deviation of the difference in F^14^C was `r format(cons_sum$fm_diff_sd, digits = 2, nsmall = 4)`, which may be taken as an estimate of the 1$\sigma$ precision of the method. The mean of propagated measurement errors for these samples was `r format(cons_sum$sig_fm_corr_mean, digits = 2, nsmall = 4)` F^14^C for these samples, which is in good agreement with the method precision above. The method error is about three times larger than the 2--3 ‰ precision of graphite measurements, but is within the range of method precision of other gas sources.
 
 ```{r tab1, message = FALSE}
 # Summary table
@@ -238,7 +238,7 @@ cons_df %>%
          `HGIS F^14^C ± stdev` = fm_corr_err,
          `Mean per-sample error` = sig_fm_corr_mean,
          N) %>% 
-  knitr::kable(digits = 3,
+  knitr::kable(digits = c(4, 4, 4, 3, 2),
                caption = "\\label{tab1}Reference material precision and accuracy. Reference 
                values are community consensus values for TIRI I and C2, and the 
                NOSAMS internal graphite value for NOSAMS2. The mean of per-sample 
@@ -249,7 +249,7 @@ cons_df %>%
 
 The difference between reference samples and graphite consensus does not vary systematically by F^14^C, indicating that the method has no significant bias with radiocarbon content (Figure 4). Each reference standard type agrees with graphite consensus values within the standard deviation of samples measured, with slightly more measurements agreeing with graphite within 1$\sigma$ uncertainties than would be expected statistically.
 
-```{r fig4, fig.width = 5, fig.height = 5, fig.align='center', out.width="80%", fig.cap = "\\label{fig4}Agreement of standards with graphite consensus values. Difference of HGIS measurements from consensus for individual samples are plotted against their expected value. Expected values are spread to avoid overlapping points. Error bars represent 1 $\\sigma$ sample uncertainty. The black line is the mean difference from expected value for all measurements, and the blue lines are one standard deviation of all measurements.", echo = FALSE}
+```{r fig4, fig.width = 5, fig.height = 5, fig.align='center', out.width="80%", fig.cap = "\\label{fig4}Agreement of standards with graphite consensus values. Difference of HGIS measurements from consensus for individual samples are plotted against their expected value. Expected values are spread to avoid overlapping points. Error bars represent 1$\\sigma$ sample uncertainty. The black line is the mean difference from expected value for all measurements, and the blue lines are one standard deviation of all measurements.", echo = FALSE}
 knitr::include_graphics(here("doc/AMS-15/AMS-15_paper/figures/fig4_consensus_samples.pdf"))
 ```
 
@@ -286,7 +286,7 @@ Carbonate materials such as corals and bivalve shells were selected throughout t
 
 We found the HGIS and graphite measurements to be in good agreement, with no significant bias over the range in F^14^C of the core samples (0.4 to 1.15) (Figure 5a). Mean difference between hybrid and graphite measurements was -0.003 F^14^C and the standard deviation of this difference was 0.009 F^14^C. Mean per-sample 1$\sigma$ uncertainty was 0.010 F^14^C for HGIS measurements, compared with 0.002 F^14^C for graphite. Three samples were analysed by HGIS in duplicate. Two of the three pairs agreed within 1$\sigma$ and all three agreed within 2$\sigma$. 
 
-```{r fig5, fig.width = 5, fig.height = 5, fig.align='center', out.width="80%", fig.cap = "\\label{fig5}Comparison of Haiti core samples measured as graphite and via HGIS. (a) Difference between HGIS and graphite measurements of the same materials. Difference between HGIS and graphite measurements is shown on the vertical axis and plotted against the mean of the two measurements. Error bars are 1 $\\sigma$ measurement uncertainty for each sample. Graphite measurements are included to allow comparison of uncertainty. Age-depth models produced using HGIS (b) and graphite measurements (c). Grey subplots show probability distribution of calibrated ages. (d) Combined age-depth prediction and 95\\% confidence intervals for HGIS and graphte. (e) Offset of HGIS and graphite values from the mean of the models with confidence intervals.", echo = FALSE}
+```{r fig5, fig.width = 5, fig.height = 5, fig.align='center', out.width="80%", fig.cap = "\\label{fig5}Comparison of Haiti core samples measured as graphite and via HGIS. (a) Difference between HGIS and graphite measurements of the same materials. Difference between HGIS and graphite measurements is shown on the vertical axis and plotted against the mean of the two measurements. Error bars are 1$\\sigma$ measurement uncertainty for each sample. Graphite measurements are included to allow comparison of uncertainty. Bayesian age-depth models produced using HGIS (b) and graphite measurements (c). Grey subplots show probability distribution of calibrated ages. (d) Combined age-depth prediction and 95\\% confidence intervals for HGIS and graphte. (e) Offset of HGIS and graphite values from the mean of the models with confidence intervals.", echo = FALSE}
 knitr::include_graphics(here("doc/AMS-15/AMS-15_paper/figures/fig5_core_carbonates.pdf"))
 ```
 
@@ -295,12 +295,12 @@ knitr::include_graphics(here("doc/AMS-15/AMS-15_paper/figures/fig5_core_carbonat
 # Mean and sd of difference of calibrated ages?
 ```
 
-Age models were developed for both the HGIS measurements (Figure 5b) and the traditional graphite measurements (Figure 5c) of the core carbonates. We used the Bchron Baesian radiochronology package [@haslett_simple_2008] to develop these models. We applied a correction for the regional marine reservoir effect with a $\Delta$ R of -216 ± 92 years based on the Oxcal model [@ramsey_bayesian_2009] with 10 reservoir points. Samples with pre-bomb radiocarbon ages were calibrated using the Marine20 curve @heaton_marine20marine_2020. The NH zone 2 curve from Hua et. al @hua_atmospheric_2013 was used for calibration of postmodern dates, but these measurements were not included in the age model due to uncertainties in reservoir correction. The age-depth curves produced by the two datasets agree within the uncertainty of the chronologies, with the largest differences being in the uncertainty of the individual dates.
+Age models were developed for both the HGIS measurements (Figure 5b) and the traditional graphite measurements (Figure 5c) of the core carbonates. We used the Bchron Bayesian radiocarbon chronology package [@haslett_simple_2008] to develop these models. We applied a correction for the regional marine reservoir effect with a $\Delta$ R of -216 ± 92 years based on the Oxcal model [@bronk_ramsey_bayesian_2009] with 10 reservoir points. Samples with pre-bomb radiocarbon ages were calibrated using the Marine20 curve @heaton_marine20marine_2020. The NH zone 2 curve from Hua et. al @hua_atmospheric_2013 was used for calibration of postmodern dates, but these measurements were not included in the age model due to uncertainties in reservoir correction. The age-depth curves produced by the two datasets agree within the uncertainty of the chronologies (Figure 5d & 5e), with the largest differences being in the uncertainty of the individual dates.
 
 
 # Conclusions
 
-We developed a method for the analysis of carbonates using an open-split interface to a hybrid sputter gas ion source. This system produces results that agree with graphite measurements within the approximately 1% method error from 8-20 mg of carbonate. Sample preparation takes about 10 min. of person time and 6 h of automated processing and reaction time, and 20 min. of measurement time per sample. The simplicity of of this approach can potentially reduce sample cost by eliminating graphitization, and may improve reliability and reduce maintenance compared to more complex sample inlet designs. 
+We developed a method for the analysis of carbonates using an open-split interface to a hybrid sputter gas ion source. This system produces results that agree with graphite measurements within the approximately 1% method error from 8--20 mg of carbonate. Sample preparation takes about 10 min. of person time and 6 h of automated processing and reaction time, and 20 min. of measurement time per sample. The simplicity of of this approach can potentially reduce sample cost by eliminating graphitization, and may improve reliability and reduce maintenance compared to more complex sample inlet designs. 
 
 With lower cost and time per sample, the lower precision of the method may be balanced by the ability to measure more samples from a population, i.e. triplicate measurement or more core depths. This may lead to more accurate results compared to a more precise graphite measurement where reproducibility is not as well constrained. The accuracy of age-depth models is often driven by environmental factors and sparse data, rather than the precision of individual dates [@blaauw_double_2018]. The lower time and cost of the hybrid method allows analysis of more samples. This may produce more accurate age models, despite reduced precision of individual measurements. 
 
@@ -309,9 +309,3 @@ With lower cost and time per sample, the lower precision of the method may be ba
 This work was supported by the NOSAMS NSF cooperative agreement 1755125. S. Pendleton was supported by a WHOI/NOSAMS Postdoctoral fellowship. We are grateful to K. von Reden, A. Gagnon, K. Gospodinova, and J. Hlavenka for initial work and discussions on the NOSAMS HGIS; C. McIntyre, T. Broek, G. Salazar, and T. Ognibene for discussions on gas handling and gas ion sourcery; J. Gunnard and T. Broek for improvements to the text; and the staff of NOSAMS for assistance with the HGIS and preparation of graphite samples.
 
 # References {-}
-
-
-
-
-
-

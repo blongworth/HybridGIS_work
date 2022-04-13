@@ -88,8 +88,8 @@ core_compare <- ggplot(cr_no) +
   scale_color_manual(values = c("#00b7bd", "#b7bf10")) +
   labs(title = "A",
        #subtitle = "Sediment core macrofossils measured via HGIS and graphite",
-       x = "Mean of measurements (F14C)",
-       y = "HGIS - graphite (F14C)") +
+       x = TeX(r"(Mean of measurements ($F^{14}C$))"),
+       y = TeX(r"(HGIS - graphite ($F^{14}C$))")) +
   theme(legend.position = "none")
   # theme(legend.position = c(0.25, 0.85),
   #       legend.direction = "horizontal") #,

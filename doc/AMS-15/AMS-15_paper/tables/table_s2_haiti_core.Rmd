@@ -1,0 +1,38 @@
+```{r}
+library(tidyverse)
+library(here)
+library(hgis)
+library(errors)
+
+options(errors.notation = "plus-minus")
+options(scipen = 999)
+
+# Read data. Don't use first carbonate test, smaller samples, or gas standards.
+core <- read_csv(here("data_analysed/haiti_combined.csv")) %>% 
+  select(sample_name, depth, method, fm_corr, sig_fm_corr)
+
+dups <- core %>% 
+  filter(str_starts(sample_name, "HATC")) %>% 
+  select(sample_name, depth, fm_corr_hgis = fm_corr, sig_fm_corr_hgis = sig_fm_corr) %>% 
+  mutate(fm_corr_graphite = NA, sig_fm_corr_graphite = NA)
+
+core_long <- core %>% 
+  filter(!str_starts(sample_name, "HATC")) %>% 
+  pivot_wider(names_from = method, values_from = c(fm_corr, sig_fm_corr)) %>% 
+  bind_rows(dups) %>% 
+  arrange(depth)
+
+core_long %>% 
+  write_csv(here("data_analysed/haiti_summary.csv"))
+
+core_long %>% 
+  mutate (hgis = set_errors(fm_corr_hgis, sig_fm_corr_hgis),
+          graphite = set_errors(fm_corr_graphite, sig_fm_corr_graphite)) %>% 
+  select(`Sample Name` = sample_name, 
+         `Core Depth` = depth,
+         `HGIS F^14^C ± 1$\\sigma$` = hgis,
+         `graphite F^14^C ± 1$\\sigma$` = graphite) %>% 
+  knitr::kable(digits = c(3, 4, 4, 4),
+               caption = "\\label{tabS2}HGIS and graphite measurements of Haiti core carbonates.
+                          HGIS replicates are listed without a corresponding graphite value.")
+```

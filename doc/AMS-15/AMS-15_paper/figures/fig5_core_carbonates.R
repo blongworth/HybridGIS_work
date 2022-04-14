@@ -5,10 +5,9 @@ library(tidyverse)
 library(here)
 library(hgis)
 library(amstools)
-library(scales)
-library(gt)
 library(Bchron)
 library(patchwork)
+library(latex2exp)
 
 theme_set(theme_classic())
 
@@ -248,6 +247,7 @@ chron_diff <- ggplot(chron_comb, aes(Age, pos_diff, color = method,
   scale_color_manual(values = c("#00b7bd", "#b7bf10")) +
   scale_fill_manual(values = c("#00b7bd", "#b7bf10")) +
   scale_x_reverse() +
+  scale_y_reverse() +
   xlim(8000, -500) +
   labs(title = "E",
        x = "Years BP",

@@ -303,11 +303,11 @@ We developed a method for the analysis of carbonates using an open-split interfa
 
 With lower cost and time per sample, the lower precision of the method may be balanced by the ability to measure more samples from a population, i.e. triplicate measurement or more core depths. This may lead to more accurate results compared to a more precise graphite measurement where reproducibility is not well constrained by multiple measurements. The accuracy of age-depth models is often limited by environmental factors and sparse data, rather than the precision of individual dates [@blaauw_double_2018]. The lower time and cost of the hybrid method allows analysis of more samples. This may produce more accurate age models, despite reduced precision of individual measurements. 
 
-# Acknowledgements
+\section*{Acknowledgements}
 
 This work was supported by the NOSAMS NSF cooperative agreement 1755125. S. Pendleton was supported by a WHOI/NOSAMS Postdoctoral fellowship. We are grateful to K. von Reden, A. Gagnon, K. Gospodinova, and J. Hlavenka for initial work and discussions on the NOSAMS HGIS; C. McIntyre, T. Broek, G. Salazar, and T. Ognibene for discussions on gas handling and gas ion sourcery; J. Gunnard and T. Broek for improvements to the text; and the staff of NOSAMS for assistance with the HGIS and preparation of graphite samples.
 
-# Supplementary Materials
+\section*{Supplementary Materials} 
 
 ```{r tabS1, child=here("doc/AMS-15/AMS-15_paper/tables/table_s1_reference.Rmd"), message = FALSE}
 ```

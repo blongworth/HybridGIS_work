@@ -5,7 +5,7 @@ author:
     email: blongworth@whoi.edu
     affiliation: Woods Hole Oceanographic Institution
     correspondingauthor: true
-  - name: Josh R. Burton
+  - name: Joshua R. Burton
     email: jburton@whoi.edu
     affiliation: Woods Hole Oceanographic Institution
   - name: Simon L. Pendleton

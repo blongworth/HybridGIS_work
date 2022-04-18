@@ -138,8 +138,8 @@ blank_model <- ggplot(ds, aes(Cur_inv, mean, color = Gas, shape = Gas)) +
 # Get data
 blanks <- readRDS(here("data_analysed/carb_all.rds")) %>% 
   map_dfr(2) %>% 
-  filter(rec_num %in% c(2138, 83028),
-         he12C > 2E-6,
+  filter(!(wheel %in% c("USAMS020521", "USAMS061121", "USAMS061821")),
+         rec_num %in% c(2138, 83028),
          sample_type == "B") %>% 
   mutate(he12C = he12C * 1E6,
          sig_he12C = sig_he12C * 1E6)

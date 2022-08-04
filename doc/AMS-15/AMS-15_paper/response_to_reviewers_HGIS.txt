@@ -1,0 +1,35 @@
+Review reply letter for HGIS
+
+We thank the two reviewers for their time and attention to improving our work. The second reviewer had no specific questions or suggestions, and recommended publication as is. The first reviewer had several suggestions on comparison with previous methods and the provenance of our suite of marine core shell carbonates. We address these concerns in the attached revised manuscript and interleaved with their comments below.
+
+
+    More figures to describe each experimental steps should be included. For examples, photos and more comprehensive figures of the new system is useful rather than the simple figure currently depicted in the figure 1. What is the difference between previous methods with current apparatus (eg., Roberts et al., 2013 Radiocarbon)?
+
+​We have added more detail to figure 1. Our apparatus for delivery of the helium CO2 mixture is very simple and is complete as described by figure 1 and in the text. We can add photographs if neccessary but don't feel they add anything to the clarity of the method. We have referenced previous methods in the text and have discussed differences where relevant. We have added and edited text to make these sections clearer.
+
+    Figures comparing previous methods/papers reference material measurements with the present "new" methods should be shown to indicate advantage of the current method.
+
+We have not seen a methods paper with these kinds of comparisons. We reference all relevant previous papers, which include detailed discussion of those methods, including data on measurements. We believe these kinds of comparisons belong in a review paper, rather than a short methods paper.
+
+    Figures to show performance of AMS measurements has to be included such as the one similar to the figure 3 in Roberts et al., 2013.
+
+​We have added a plot of ratio over time to our ion current figure (fig 3).
+
+
+    Flowcharts is useful to describe steps of experiments compare to Roberts et al., 2013.
+
+​We believe this kind of comparison is beyond the scope of a methods paper. We reference Roberts et al 2013 as another method that uses an open split interface. We have clarified the similarities and differences between these two methods in the text.
+
+
+    At the end of the introduction, sentence to describe the purpose of this study should be added.
+    In the conclusion section, authors are advised to present future perspectives to improve accuracy should be stated.
+
+​I'll look at this and add as necessary.
+
+    I think it is useful to show the comparison between graphitized carbon results with the current method using sediment cores obtained from Haiti. However, if they describe details of sampling, geological information such as columnar sections, photos of sediments, and so forth should be put in the section 3.4. I think that the detailed sampling protocol are needed so can be amended.
+
+    If they employ new local reservoir age, they should provide further information for 10 samples. Otherwise references should be properly cited.
+
+We believe these details are beyond the scope of this methods paper. We make clear that the same samples are used for the comparison between HGIS and graphite measurements, and therefore their provenance is not the subject of this work. Details about the core setting and local reservoir age do not affect our conclusions. Details of the core, geologic context, and additional data are published in S. Moser's thesis (referenced in the text and available online), and these details will be published in a paper in prep.
+​
+

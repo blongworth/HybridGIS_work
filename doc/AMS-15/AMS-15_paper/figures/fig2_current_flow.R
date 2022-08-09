@@ -39,7 +39,7 @@ cur_rat <- ggplot(data, aes(time, he14_12)) +
   labs(title = "B",
        #title = "Ion current",
        x = "Time (min)",
-       y = TeX(r"( $^\frac{14}{12}C^-$ ratio )")) +
+       y = TeX(r"( $^{14/12}C$ ratio )")) +
   theme(axis.title.x = element_blank(),
         axis.text.x = element_blank())
 
